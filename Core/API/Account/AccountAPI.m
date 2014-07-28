@@ -23,36 +23,35 @@
     NSParameterAssert(username.length >= 5 && password.length >= 6);
     
     NSString *client_name = UIDevice.currentDevice.name;
+    if (0 == client_name.length) {
+        client_name = @"ios";
+    }
     
     NSDictionary *parameters =
-    @{  @"email":username,
-        @"password":password,
-        @"client_id":@"7C4B5AC96435EFA0",
+    @{  @"email"        :username,
+        @"password"     :password,
+        @"client_name"  :client_name,
+        @"client_id"    :@"7C4B5AC96435EFA0",
         @"client_secret":@"12d950b3c8d447f2ca6c83960fdf371d",
-        @"client_name":client_name ? client_name : @"ios",
-        @"grant_type":@"password"};
+        @"grant_type"   :@"password"};
     
     [AccountNetwork post:apiurl path:@"/api/v1/auth/ncs/authorize" authorization:@"" parameters:parameters completion:^(NSDictionary *response, NSError *error) {
-        if (error) {
-            completion(nil, error);
-            return;
-        }
-        
-        if ([response isKindOfClass:NSDictionary.class]) {
-            NSString *code = [response objectForKey:@"code"];
-            NSDictionary *data = [response objectForKey:@"data"];
-            if (200 == code.integerValue && [data isKindOfClass:NSDictionary.class]) {
-                NSString *token = [data objectForKey:@"access_token"];
-                NSString *type = [data objectForKey:@"token_type"];
-                if ([token isKindOfClass:NSString.class] && [type isKindOfClass:NSString.class]) {
-                    NSString *authorization = [NSString stringWithFormat:@"%@ %@", type, token];
-                    completion(authorization, nil);
-                    return;
+        if (!error) {
+            if ([response isKindOfClass:NSDictionary.class]) {
+                NSString *code = [response objectForKey:@"code"];
+                NSDictionary *data = [response objectForKey:@"data"];
+                if (200 == code.integerValue && [data isKindOfClass:NSDictionary.class]) {
+                    NSString *token = [data objectForKey:@"access_token"];
+                    NSString *type = [data objectForKey:@"token_type"];
+                    if ([token isKindOfClass:NSString.class] && [type isKindOfClass:NSString.class]) {
+                        NSString *authorization = [NSString stringWithFormat:@"%@ %@", type, token];
+                        completion(authorization, nil);
+                        return;
+                    }
                 }
             }
+            error = [AccountError errorWithCode:AccountError_InvalidResponseData];
         }
-        
-        error = [AccountError errorWithCode:AccountError_InvalidResponseData];
         completion(nil, error);
     }];
 }

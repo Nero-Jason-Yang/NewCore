@@ -12,7 +12,7 @@ typedef enum FileType {
     FileType_Normal = 0,
     FileType_Directory = 1,
     FileType_SymbolicLink = 3,
-    FileType_Search = 9,
+    FileType_Search = 9, // Custom-Defined, treat search as a collection.
     FileType_MusicAlbum = 10,
     FileType_MusicArtist = 11,
     FileType_MusicGenre = 12,

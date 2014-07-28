@@ -8,6 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
+#define AccountAPIPath_AuthNcsAuthorize           @"/api/v1/auth/ncs/authorize"
+#define AccountAPIPath_AuthNcsRevoke              @"/api/v1/auth/ncs/revoke"
+#define AccountAPIPath_AuthNcsPasswordchange      @"/api/v1/auth/ncs/passwordchange"
+#define AccountAPIPath_AuthNcsPasswordrenew       @"/api/v1/auth/ncs/passwordrenew"
+#define AccountAPIPath_User                       @"/api/v1/user"
+#define AccountAPIPath_UserAccepttos              @"/api/v1/user/accepttos"
+#define AccountAPIPath_SubscriptionsPogoplugLogin @"/api/v1/subscriptions/pogoplug/login"
+#define AccountAPIPath_SubscriptionsStorageAuth   @"/api/v1/subscriptions/storage/auth"
+
 @interface AccountAPI : NSObject
 
 + (void)auth_ncs_authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *authorization, NSError *error))completion;
