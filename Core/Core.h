@@ -7,90 +7,73 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "StorageFile.h"
+#import "Typedef.h"
+#import "Error.h"
+#import "File.h"
 
-#define AccountNeedLoginNotification @"AccountNeedLoginNotification"
+@interface Core : NSObject
 
-typedef enum : uint8_t {
-    AccountState_Unknown = 0,
-    AccountState_Logouted,
-    AccountState_Logining,
-    AccountState_LoginSucceeded,
-    AccountState_LoginFailed,
-    AccountState_Unauthorized,
-} AccountState;
-
-@interface CoreAPI : NSObject
-
-+ (CoreAPI *)sharedInstance;
++ (Core *)sharedInstance;
 
 @property (nonatomic,readonly) AccountState accountState;
-/*
-@property (nonatomic,readonly) NSURL *accountApiUrl;
-
-@property (nonatomic,readonly) NSURL *storageApiUrl; // pogoplug subscription api url.
-@property (nonatomic,readonly) NSString *pogoplugDeviceID;
-@property (nonatomic,readonly) NSString *pogoplugServiceID;
-@property (nonatomic,readonly) NSURL *pogoplugServiceApiUrl; // pogoplug service api url.
-*/
 
 #pragma mark - account actions
 
-- (void)login:(NSString *)username password:(NSString *)password completion:(void(^)(NSError *))completion;
-- (void)logout:(void(^)(NSError *))completion;
-- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *))completion;
-- (void)forgotPassword:(NSString *)email completion:(void(^)(NSError *))completion;
-- (void)acceptTOS:(NSString *)email completion:(void(^)(NSError *))completion;
+- (void)login:(NSString *)username password:(NSString *)password completion:(Completion)completion;
+- (void)logout:(Completion)completion;
+- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion;
+- (void)forgotPassword:(NSString *)email completion:(Completion)completion;
+- (void)acceptTOS:(NSString *)email completion:(Completion)completion;
 
 #pragma mark - file actions
 
 // open a file with name, if not found then create it.
-- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(StorageFile *, NSError *))completion;
-- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void(^)(NSError *error))completion;
-- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void(^)(NSError *error))completion;
-- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void(^)(NSError *error))completion;
-- (void)downloadFile:(NSString *)fileid completion:(void(^)(NSData *data, NSError *error))completion;
+- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(FileCompletion)completion;
+- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(Completion)completion;
+- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(Completion)completion;
+- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(Completion)completion;
+- (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion;
 
 // to retrieve file URL.
-- (NSError *)forFile:(StorageFile *)file getThumbnailURL:(NSURL **)URL;
-- (NSError *)forFile:(StorageFile *)file getPreviewURL:(NSURL **)URL;
-- (NSError *)forFile:(StorageFile *)file getStreamURL:(NSURL **)URL;
+- (NSError *)forFile:(File *)file getThumbnailURL:(NSURL **)URL;
+- (NSError *)forFile:(File *)file getPreviewURL:(NSURL **)URL;
+- (NSError *)forFile:(File *)file getStreamURL:(NSURL **)URL;
 
 // to retrieve file cache-key.
-- (NSError *)forFile:(StorageFile *)file getThumbnailCacheKey:(NSString **)key;
-- (NSError *)forFile:(StorageFile *)file getPreviewCacheKey:(NSString **)key;
-- (NSError *)forFile:(StorageFile *)file getOriginCacheKey:(NSString **)key;
+- (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key;
+- (NSError *)forFile:(File *)file getPreviewCacheKey:(NSString **)key;
+- (NSError *)forFile:(File *)file getOriginCacheKey:(NSString **)key;
 
 #pragma mark - collection actions
 
 // various kinds of root collections.
-@property (nonatomic,readonly) StorageFile *root;
-@property (nonatomic,readonly) StorageFile *photoTimelines;
-@property (nonatomic,readonly) StorageFile *photoAlbums;
-@property (nonatomic,readonly) StorageFile *videoTimelines;
-@property (nonatomic,readonly) StorageFile *videoAlbums;
-@property (nonatomic,readonly) StorageFile *documents;
-@property (nonatomic,readonly) StorageFile *musicSongs;
-@property (nonatomic,readonly) StorageFile *musicAlbums;
-@property (nonatomic,readonly) StorageFile *musicArtists;
-@property (nonatomic,readonly) StorageFile *musicGenres;
-@property (nonatomic,readonly) StorageFile *musicPlaylists;
-@property (nonatomic,readonly) StorageFile *genericCollections; // a generic collection is a group of files, used for multi-share.
+@property (nonatomic,readonly) File *root;
+@property (nonatomic,readonly) File *photoTimelines;
+@property (nonatomic,readonly) File *photoAlbums;
+@property (nonatomic,readonly) File *videoTimelines;
+@property (nonatomic,readonly) File *videoAlbums;
+@property (nonatomic,readonly) File *documents;
+@property (nonatomic,readonly) File *musicSongs;
+@property (nonatomic,readonly) File *musicAlbums;
+@property (nonatomic,readonly) File *musicArtists;
+@property (nonatomic,readonly) File *musicGenres;
+@property (nonatomic,readonly) File *musicPlaylists;
+@property (nonatomic,readonly) File *genericCollections; // a generic collection is a group of files, used for multi-share.
 
 // list children.
-- (NSError *)forCollection:(StorageFile *)collection getCachedFiles:(NSArray/*<StorageFile>*/**)files;
-- (NSError *)forCollection:(StorageFile *)collection refresh:(NSUInteger)size getFiles:(NSArray/*<StorageFile>*/**)files;
-- (NSError *)forCollection:(StorageFile *)collection next:(NSUInteger)size getFiles:(NSArray/*<StorageFile>*/**)files;
+- (NSError *)forCollection:(File *)collection getCachedFiles:(NSArray/*<File>*/**)files;
+- (NSError *)forCollection:(File *)collection refresh:(NSUInteger)size getFiles:(NSArray/*<File>*/**)files;
+- (NSError *)forCollection:(File *)collection next:(NSUInteger)size getFiles:(NSArray/*<File>*/**)files;
 
 // create custom collection.
-- (NSError *)openPhotoAlbum:(NSString *)name album:(StorageFile **)album;
-- (NSError *)openMusicPlaylist:(NSString *)name playlist:(StorageFile **)playlist;
-- (NSError *)openGenericCollection:(NSString *)name collection:(StorageFile **)collection;
+- (NSError *)openPhotoAlbum:(NSString *)name album:(File **)album;
+- (NSError *)openMusicPlaylist:(NSString *)name playlist:(File **)playlist;
+- (NSError *)openGenericCollection:(NSString *)name collection:(File **)collection;
 
 // add file to custom collection.
-- (NSError *)forPhotoAlbum:(StorageFile *)album addFile:(StorageFile **)file getItem:(StorageFile **)item;
-- (NSError *)forMusicPlaylist:(StorageFile *)playlist addFile:(StorageFile **)file getItem:(StorageFile **)item;
-- (NSError *)forGenericCollection:(StorageFile *)collection addFile:(StorageFile **)file getItem:(StorageFile **)item;
+- (NSError *)forPhotoAlbum:(File *)album addFile:(File **)file getItem:(File **)item;
+- (NSError *)forMusicPlaylist:(File *)playlist addFile:(File **)file getItem:(File **)item;
+- (NSError *)forGenericCollection:(File *)collection addFile:(File **)file getItem:(File **)item;
 
 #pragma mark - share actions
 

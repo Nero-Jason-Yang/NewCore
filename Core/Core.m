@@ -12,9 +12,9 @@
 #import "PogoplugAPI.h"
 #import "PogoplugError.h"
 #import "PogoplugResponse.h"
-#import "StorageFile+Pogoplug.h"
+#import "File+Pogoplug.h"
 
-@interface CoreAPI ()
+@interface Core ()
 // account
 @property (nonatomic) NSURL *accountApiUrl;
 @property (nonatomic) NSString *accountToken;
@@ -29,31 +29,31 @@
 @property (nonatomic) NSString *pogoplugServiceID;
 @property (nonatomic) NSURL *pogoplugServiceApiUrl; // pogoplug service api url.
 // various kinds of root collections.
-@property (nonatomic) StorageFile *root;
-@property (nonatomic) StorageFile *photoTimelines;
-@property (nonatomic) StorageFile *photoAlbums;
-@property (nonatomic) StorageFile *videoTimelines;
-@property (nonatomic) StorageFile *videoAlbums;
-@property (nonatomic) StorageFile *documents;
-@property (nonatomic) StorageFile *musicSongs;
-@property (nonatomic) StorageFile *musicAlbums;
-@property (nonatomic) StorageFile *musicArtists;
-@property (nonatomic) StorageFile *musicGenres;
-@property (nonatomic) StorageFile *musicPlaylists;
-@property (nonatomic) StorageFile *genericCollections; // a generic collection is a group of files, used for multi-share.
+@property (nonatomic) File *root;
+@property (nonatomic) File *photoTimelines;
+@property (nonatomic) File *photoAlbums;
+@property (nonatomic) File *videoTimelines;
+@property (nonatomic) File *videoAlbums;
+@property (nonatomic) File *documents;
+@property (nonatomic) File *musicSongs;
+@property (nonatomic) File *musicAlbums;
+@property (nonatomic) File *musicArtists;
+@property (nonatomic) File *musicGenres;
+@property (nonatomic) File *musicPlaylists;
+@property (nonatomic) File *genericCollections; // a generic collection is a group of files, used for multi-share.
 @end
 
-@implementation CoreAPI
+@implementation Core
 {
     NSObject *_storageTokenLocker;
 }
 
-+ (CoreAPI *)sharedInstance
++ (Core *)sharedInstance
 {
-    static CoreAPI *instance = nil;
+    static Core *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[CoreAPI alloc] init];
+        instance = [[Core alloc] init];
     });
     return instance;
 }
@@ -69,7 +69,7 @@
 
 #pragma mark - account actions
 
-- (void)login:(NSString *)username password:(NSString *)password completion:(void (^)(NSError *))completion
+- (void)login:(NSString *)username password:(NSString *)password completion:(Completion)completion
 {
     NSParameterAssert(username && password);
     NSParameterAssert(completion);
@@ -91,7 +91,7 @@
     }];
 }
 
-- (void)logout:(void(^)(NSError *))completion
+- (void)logout:(Completion)completion
 {
     NSParameterAssert(completion);
     
@@ -110,7 +110,7 @@
     }];
 }
 
-- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *))completion
+- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion
 {
     NSParameterAssert(newPassword && oldPassword);
     NSParameterAssert(completion);
@@ -118,7 +118,7 @@
     [AccountAPI auth_ncs_passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
 }
 
-- (void)forgotPassword:(NSString *)email completion:(void(^)(NSError *))completion
+- (void)forgotPassword:(NSString *)email completion:(Completion)completion
 {
     NSParameterAssert(email);
     NSParameterAssert(completion);
@@ -126,7 +126,7 @@
     [AccountAPI auth_ncs_passwordrenew:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
 }
 
-- (void)acceptTOS:(NSString *)email completion:(void (^)(NSError *))completion
+- (void)acceptTOS:(NSString *)email completion:(Completion)completion
 {
     NSParameterAssert(email);
     NSParameterAssert(completion);
@@ -174,7 +174,7 @@
     @synchronized(self) {
         if (self.accountToken) {
             self.accountToken = nil;
-            [[NSNotificationCenter defaultCenter] postNotificationName:AccountNeedLoginNotification object:self];
+            [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
         }
         self.accountState = AccountState_Unauthorized;
     }
@@ -182,7 +182,7 @@
 
 #pragma mark - storage actions
 
-- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(StorageFile *, NSError *))completion
+- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(FileCompletion)completion
 {
     NSParameterAssert(filename);
     NSParameterAssert(completion);
@@ -197,16 +197,16 @@
     NSString *pogoplugFileType = [NSNumber numberWithInteger:type].description;
     
     [PogoplugAPI createFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
-        StorageFile *file = nil;
+        File *file = nil;
         if (!error) {
             PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
-            error = [StorageFile makeFile:&file fromPogoplugResponse:response.file];
+            error = [File makeFile:&file fromPogoplugResponse:response.file];
         }
         completion(file, error);
     }];
 }
 
-- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void (^)(NSError *))completion
+- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(Completion)completion
 {
     NSParameterAssert(fileid && newname);
     NSParameterAssert(completion);
@@ -225,7 +225,7 @@
     }];
 }
 
-- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void (^)(NSError *))completion
+- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(Completion)completion
 {
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
@@ -244,7 +244,7 @@
     }];
 }
 
-- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void (^)(NSError *))completion
+- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(Completion)completion
 {
     NSParameterAssert(fileid && data);
     NSParameterAssert(completion);
@@ -259,7 +259,7 @@
     [PogoplugAPI uploadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid data:data completion:completion];
 }
 
-- (void)downloadFile:(NSString *)fileid completion:(void(^)(NSData *data, NSError *error))completion
+- (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion
 {
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
@@ -274,23 +274,23 @@
     [PogoplugAPI downloadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid completion:completion];
 }
 
-- (NSError *)forFile:(StorageFile *)file getThumbnailURL:(NSURL **)URL
+- (NSError *)forFile:(File *)file getThumbnailURL:(NSURL **)URL
 {
     return [self forFile:file withFlag:PogoplugFlag_Thumbnail getURL:URL];
 }
 
-- (NSError *)forFile:(StorageFile *)file getPreviewURL:(NSURL **)URL
+- (NSError *)forFile:(File *)file getPreviewURL:(NSURL **)URL
 {
     return [self forFile:file withFlag:PogoplugFlag_Preview getURL:URL];
 }
 
-- (NSError *)forFile:(StorageFile *)file getStreamURL:(NSURL **)URL
+- (NSError *)forFile:(File *)file getStreamURL:(NSURL **)URL
 {
     NSString *flag = [file.streamtype.lowercaseString isEqualToString:@"full"] ? PogoplugFlag_Stream : nil;
     return [self forFile:file withFlag:flag getURL:URL];
 }
 
-- (NSError *)forFile:(StorageFile *)file withFlag:(NSString *)flag getURL:(NSURL **)URL
+- (NSError *)forFile:(File *)file withFlag:(NSString *)flag getURL:(NSURL **)URL
 {
     NSParameterAssert(file && URL);
     
@@ -308,22 +308,22 @@
     return nil;
 }
 
-- (NSError *)forFile:(StorageFile *)file getThumbnailCacheKey:(NSString **)key
+- (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key
 {
     return [self forFile:file withFlag:PogoplugFlag_Thumbnail getCacheKey:key];
 }
 
-- (NSError *)forFile:(StorageFile *)file getPreviewCacheKey:(NSString **)key
+- (NSError *)forFile:(File *)file getPreviewCacheKey:(NSString **)key
 {
     return [self forFile:file withFlag:PogoplugFlag_Preview getCacheKey:key];
 }
 
-- (NSError *)forFile:(StorageFile *)file getOriginCacheKey:(NSString **)key
+- (NSError *)forFile:(File *)file getOriginCacheKey:(NSString **)key
 {
     return [self forFile:file withFlag:nil getCacheKey:key];
 }
 
-- (NSError *)forFile:(StorageFile *)file withFlag:(NSString *)flag getCacheKey:(NSString **)key
+- (NSError *)forFile:(File *)file withFlag:(NSString *)flag getCacheKey:(NSString **)key
 {
     NSParameterAssert(file && key);
     
@@ -346,55 +346,55 @@
 
 #pragma mark - collection actions
 
-- (NSError *)forCollection:(StorageFile *)collection getCachedFiles:(NSArray **)files
+- (NSError *)forCollection:(File *)collection getCachedFiles:(NSArray **)files
 {
     // TODO
     return nil;
 }
 
-- (NSError *)forCollection:(StorageFile *)collection refresh:(NSUInteger)size getFiles:(NSArray **)files
+- (NSError *)forCollection:(File *)collection refresh:(NSUInteger)size getFiles:(NSArray **)files
 {
     // TODO
     return nil;
 }
 
-- (NSError *)forCollection:(StorageFile *)collection next:(NSUInteger)size getFiles:(NSArray **)files
+- (NSError *)forCollection:(File *)collection next:(NSUInteger)size getFiles:(NSArray **)files
 {
     // TODO
     return nil;
 }
 
-- (NSError *)openPhotoAlbum:(NSString *)name album:(StorageFile **)album
+- (NSError *)openPhotoAlbum:(NSString *)name album:(File **)album
 {
     // TODO
     return nil;
 }
 
-- (NSError *)openMusicPlaylist:(NSString *)name playlist:(StorageFile **)playlist
+- (NSError *)openMusicPlaylist:(NSString *)name playlist:(File **)playlist
 {
     // TODO
     return nil;
 }
 
-- (NSError *)openGenericCollection:(NSString *)name collection:(StorageFile **)collection
+- (NSError *)openGenericCollection:(NSString *)name collection:(File **)collection
 {
     // TODO
     return nil;
 }
 
-- (NSError *)forPhotoAlbum:(StorageFile *)album addFile:(StorageFile **)file getItem:(StorageFile **)item
+- (NSError *)forPhotoAlbum:(File *)album addFile:(File **)file getItem:(File **)item
 {
     // TODO
     return nil;
 }
 
-- (NSError *)forMusicPlaylist:(StorageFile *)playlist addFile:(StorageFile **)file getItem:(StorageFile **)item
+- (NSError *)forMusicPlaylist:(File *)playlist addFile:(File **)file getItem:(File **)item
 {
     // TODO
     return nil;
 }
 
-- (NSError *)forGenericCollection:(StorageFile *)collection addFile:(StorageFile **)file getItem:(StorageFile **)item
+- (NSError *)forGenericCollection:(File *)collection addFile:(File **)file getItem:(File **)item
 {
     // TODO
     return nil;
@@ -438,7 +438,7 @@
 {
     NSString *accountToken = self.accountToken;
     if (!accountToken) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:AccountNeedLoginNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
         return [AccountError errorWithCode:AccountError_Unauthorized];
     }
     *token = accountToken;

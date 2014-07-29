@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "CoreError.h"
+#import "Error.h"
 
-@implementation CoreError
+@implementation Error
 
 @end

@@ -6,15 +6,15 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "StorageFile+Pogoplug.h"
+#import "File+Pogoplug.h"
 
-@implementation StorageFile (Pogoplug)
+@implementation File (Pogoplug)
 
-+ (NSError *)makeFile:(StorageFile **)file fromPogoplugResponse:(PogoplugResponse_File *)response
++ (NSError *)makeFile:(File **)file fromPogoplugResponse:(PogoplugResponse_File *)response
 {
     NSParameterAssert(file && response);
     
-    StorageMutableFile *mfile = [[StorageMutableFile alloc] init];
+    MutableFile *mfile = [[MutableFile alloc] init];
     mfile.fileid = response.fileID;
     mfile.parentid = response.parentID;
     mfile.ownerid = response.ownerID;

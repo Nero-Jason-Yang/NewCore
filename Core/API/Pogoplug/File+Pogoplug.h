@@ -6,11 +6,11 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "StorageFile.h"
+#import "File.h"
 #import "PogoplugResponse.h"
 
-@interface StorageFile (Pogoplug)
+@interface File (Pogoplug)
 
-+ (NSError *)makeFile:(StorageFile **)file fromPogoplugResponse:(PogoplugResponse_File *)response;
++ (NSError *)makeFile:(File **)file fromPogoplugResponse:(PogoplugResponse_File *)response;
 
 @end
