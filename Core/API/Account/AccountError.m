@@ -1,6 +1,4 @@
 #import "AccountError.h"
-#import "GAI.h"
-#import "GAIDictionaryBuilder.h"
 
 @implementation AccountError
 
@@ -87,44 +85,34 @@
 
 + (NSError *)errorWithCode:(AccountErrorCode)code
 {
-    return [self errorWithCode:code description:nil];
+    return [self errorWithCode:code message:nil reason:nil];
 }
 
-+ (NSError *)errorWithCode:(AccountErrorCode)code description:(NSString *)description
++ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message
 {
-    NSString *desc = [self descriptionForCode:code];
-    if (desc.length > 0) {
-        description = desc;
-    }
-    else if (0 == description.length) {
-        description = [self descriptionForCode:AccountError_Unknown];
-    }
-    
-    NSDictionary *info = @{NSLocalizedDescriptionKey:description};
-    return [NSError errorWithDomain:ErrorDomain_Account code:code userInfo:info];
+    return [self errorWithCode:code message:message reason:nil];
 }
 
-+ (NSError *)errorWithCode:(AccountErrorCode)code description:(NSString *)description info:(NSDictionary *)info
++ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message reason:(NSString *)reason
 {
-    NSString *desc = [self descriptionForCode:code];
-    if (desc.length > 0) {
-        description = desc;
-    }
-    else if (0 == description.length) {
-        description = [self descriptionForCode:AccountError_Unknown];
+    NSString *description = [self descriptionForCode:code];
+    if (0 == description.length || (code == AccountError_Unknown && message.length > 0)) {
+        description = message;
     }
     
-    NSMutableDictionary *userInfo = @{NSLocalizedDescriptionKey:description}.mutableCopy;
-    [userInfo addEntriesFromDictionary:info];
-    return [NSError errorWithDomain:ErrorDomain_Account code:code userInfo:userInfo];
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    userInfo[NSLocalizedDescriptionKey] = description;
+    if (reason.length > 0) {
+        userInfo[NSLocalizedFailureReasonErrorKey] = reason;
+    }
+    
+    return [self errorWithDomain:ErrorDomain_Account code:code userInfo:userInfo];
 }
 
-+ (NSError *)unknownErrorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
++ (NSError *)errorWithStatusCode:(NSInteger)statusCode
 {
-    NSString *str = [NSString stringWithFormat:@"Nero Account Error with HTTP status-code:%d, exception-code:%@, exception-message:%@", (int)statusCode, code, message];
-    [[GAI sharedInstance].defaultTracker send:[GAIDictionaryBuilder createExceptionWithDescription:str withFatal:@NO].build];
-    
-    return [self errorWithCode:AccountError_Unknown description:message];
+    // TODO
+    return [self errorWithDomain:ErrorDomain_Account code:statusCode userInfo:nil];
 }
 
 @end

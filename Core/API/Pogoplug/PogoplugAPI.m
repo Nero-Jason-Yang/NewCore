@@ -8,103 +8,31 @@
 
 #import "PogoplugAPI.h"
 #import "PogoplugError.h"
+#import "PogoplugNetwork.h"
+
 #import "AFNetworkReachabilityManager.h"
-#import "PogoplugOperationManager.h"
 
 @implementation PogoplugAPI
 
-+ (NSError *)checkParameters:(NSURL *)host valtoken:(NSString *)valtoken fillRequestParameters:(NSMutableDictionary *)parameters
-{
-    NSParameterAssert([host isKindOfClass:NSURL.class]);
-    NSParameterAssert([valtoken isKindOfClass:NSString.class] && valtoken.length > 0);
-    NSParameterAssert([parameters isKindOfClass:NSMutableDictionary.class]);
-    
-    if (![host isKindOfClass:NSURL.class]) {
-        return [PogoplugError error:PogoplugError_HostUnspecified];
-    }
-    
-    if (0 == valtoken.length) {
-        return [PogoplugError error:PogoplugError_Unauthorized];
-    }
-    
-    if (![AFNetworkReachabilityManager sharedManager].reachable) {
-        return [PogoplugError error:PogoplugError_NetworkNotAvailable];
-    }
-    
-    if (parameters) {
-        parameters[@"valtoken"] = valtoken;
-    }
-    
-    return nil;
-}
-
-+ (NSError *)checkParameters:(NSURL *)host valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fillRequestParameters:(NSMutableDictionary *)parameters
-{
-    NSError *error = [self checkParameters:host valtoken:valtoken fillRequestParameters:parameters];
-    if (error) {
-        return error;
-    }
-    
-    NSParameterAssert(deviceid.length > 0 && serviceid.length > 0);
-    
-    if (0 == deviceid.length || 0 == serviceid.length) {
-        // TODO
-        // report to GA.
-        return [PogoplugError error:PogoplugError_Unknown];
-    }
-    
-    if (parameters) {
-        parameters[@"deviceid"] = deviceid;
-        parameters[@"serviceid"] = serviceid;
-    }
-    
-    return nil;
-}
-
-+ (NSString *)stringWithDate:(NSDate *)date
-{
-    long long value = (long long)(date.timeIntervalSince1970 * 1000.0);
-    return [NSNumber numberWithLongLong:value].description;
-}
-
-+ (NSDate *)dateWithString:(NSString *)string
-{
-    return [NSDate dateWithTimeIntervalSince1970:string.longLongValue/1000.0];
-}
-
-+ (NSError *)listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken result:(NSDictionary **)result
++ (void)listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"listDevices" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_ListDevices parameters:parameters completion:completion];
 }
 
-+ (NSError *)getFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid filename:(NSString *)filename parentid:(NSString *)parentid result:(NSDictionary **)result
++ (void)getFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid filename:(NSString *)filename parentid:(NSString *)parentid completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSParameterAssert(fileid || filename);
@@ -119,31 +47,16 @@
         parameters[@"parentid"] = parentid;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"getFile" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_GetFile parameters:parameters completion:completion];
 }
 
-+ (NSError *)listFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid parentid:(NSString *)parentid offset:(NSUInteger)offset maxcount:(NSUInteger)maxcount showhidden:(BOOL)showhidden sortcrit:(NSString *)sortcrit filtercrit:(NSString *)filtercrit result:(NSDictionary **)result
++ (void)listFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid parentid:(NSString *)parentid offset:(NSUInteger)offset maxcount:(NSUInteger)maxcount showhidden:(BOOL)showhidden sortcrit:(NSString *)sortcrit filtercrit:(NSString *)filtercrit completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSParameterAssert(parentid);
@@ -167,31 +80,16 @@
         parameters[@"filtercrit"] = filtercrit;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"listFiles" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_ListFiles parameters:parameters completion:completion];
 }
 
-+ (NSError *)searchFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid searchcrit:(NSString *)searchcrit offset:(NSUInteger)offset maxcount:(NSUInteger)maxcount showhidden:(BOOL)showhidden sortcrit:(NSString *)sortcrit result:(NSDictionary **)result
++ (void)searchFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid searchcrit:(NSString *)searchcrit offset:(NSUInteger)offset maxcount:(NSUInteger)maxcount showhidden:(BOOL)showhidden sortcrit:(NSString *)sortcrit completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSParameterAssert(searchcrit);
@@ -212,31 +110,16 @@
         parameters[@"sortcrit"] = sortcrit;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"searchFiles" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_SearchFiles parameters:parameters completion:completion];
 }
 
-+ (NSError *)createFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid filename:(NSString *)filename parentid:(NSString *)parentid type:(NSString *)type mtime:(NSDate *)mtime ctime:(NSDate *)ctime result:(NSDictionary **)result
++ (void)createFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid filename:(NSString *)filename parentid:(NSString *)parentid type:(NSString *)type mtime:(NSDate *)mtime ctime:(NSDate *)ctime completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSParameterAssert(filename);
@@ -257,31 +140,16 @@
         parameters[@"ctime"] = [self stringWithDate:ctime];
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/createFile" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_CreateFile parameters:parameters completion:completion];
 }
 
-+ (NSError *)removeFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid recurse:(BOOL)recurse
++ (void)removeFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid recurse:(BOOL)recurse completion:(void (^)(NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
     NSParameterAssert(fileid);
@@ -293,24 +161,18 @@
         parameters[@"recurse"] = @"1";
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/removeFile" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_RemoveFile parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+        completion(error);
+    }];
 }
 
-+ (NSError *)moveFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid newname:(NSString *)newname
++ (void)moveFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid newname:(NSString *)newname completion:(void (^)(NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
     NSParameterAssert(fileid);
@@ -324,24 +186,18 @@
         parameters[@"filename"] = newname;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/moveFile" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_MoveFile parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+        completion(error);
+    }];
 }
 
-+ (NSError *)enableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid name:(NSString *)name password:(NSString *)password permissions:(NSString *)permissions result:(NSDictionary **)result
++ (void)enableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid name:(NSString *)name password:(NSString *)password permissions:(NSString *)permissions completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSParameterAssert(fileid.length > 0);
@@ -359,31 +215,16 @@
         parameters[@"permissions"] = permissions;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/enableShare" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
-    }
-    
-    if (result) {
-        *result = json;
-    }
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_EnableShare parameters:parameters completion:completion];
 }
 
-+ (NSError *)disableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid
++ (void)disableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid completion:(void (^)(NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
     NSParameterAssert(fileid.length > 0);
@@ -392,24 +233,18 @@
         parameters[@"fileid"] = fileid;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/disableShare" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_DisableShare parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+        completion(error);
+    }];
 }
 
-+ (NSError *)sendShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid emails:(NSArray *)emails
++ (void)sendShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid emails:(NSArray *)emails completion:(void (^)(NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
     NSParameterAssert(fileid.length > 0 && emails.count > 0);
@@ -421,24 +256,18 @@
         parameters[@"emails"] = [emails componentsJoinedByString:@","];
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/sendShare" relativeToURL:apiurl];
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    [manager GET:url.path parameters:parameters operation:nil error:&error];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugNetwork get:apiurl path:PogoplugPath_SendShare parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+        completion(error);
+    }];
 }
 
-+ (NSError *)listShares:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid result:(NSDictionary **)result
++ (void)listShares:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken fillRequestParameters:parameters];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     if (deviceid) {
@@ -448,26 +277,84 @@
         parameters[@"serviceid"] = serviceid;
     }
     
-    NSParameterAssert([apiurl.absoluteString.lastPathComponent isEqualToString:@"api"]);
-    NSURL *url = [NSURL URLWithPath:@"json/listShares" relativeToURL:apiurl];
+    [PogoplugNetwork get:apiurl path:PogoplugPath_ListShare parameters:parameters completion:completion];
+}
+
+#pragma mark utils
+
++ (void)uploadFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid data:(NSData *)data completion:(void (^)(NSError *))completion
+{
+    NSURL *fileurl = nil;
+    NSError *error = [self getFileURL:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fileid:fileid flag:nil name:nil fileurl:&fileurl];
+    if (error) {
+        completion(error);
+        return;
+    }
     
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:url.baseURL];
-    NSDictionary *json = [manager GET:url.path parameters:parameters operation:nil error:&error];
+    [PogoplugNetwork put:apiurl path:fileurl.path data:data completion:completion];
+}
+
++ (void)downloadFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid completion:(void (^)(NSData *, NSError *))completion
+{
+    NSURL *fileurl = nil;
+    NSError *error = [self getFileURL:apiurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fileid:fileid flag:nil name:nil fileurl:&fileurl];
+    if (error) {
+        completion(nil, error);
+        return;
+    }
+    
+    [PogoplugNetwork down:apiurl path:fileurl.path completion:completion];
+}
+
++ (NSError *)checkParameters:(NSURL *)host valtoken:(NSString *)valtoken fillRequestParameters:(NSMutableDictionary *)parameters
+{
+    NSParameterAssert([host isKindOfClass:NSURL.class]);
+    NSParameterAssert([valtoken isKindOfClass:NSString.class] && valtoken.length > 0);
+    NSParameterAssert([parameters isKindOfClass:NSMutableDictionary.class]);
+    
+    if (![host isKindOfClass:NSURL.class]) {
+        return [PogoplugError errorWithCode:PogoplugError_HostUnspecified];
+    }
+    
+    if (0 == valtoken.length) {
+        return [PogoplugError errorWithCode:PogoplugError_Unauthorized];
+    }
+    
+    if (![AFNetworkReachabilityManager sharedManager].reachable) {
+        return [PogoplugError errorWithCode:PogoplugError_NetworkNotAvailable];
+    }
+    
+    if (parameters) {
+        parameters[@"valtoken"] = valtoken;
+    }
+    
+    return nil;
+}
+
++ (NSError *)checkParameters:(NSURL *)host valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fillRequestParameters:(NSMutableDictionary *)parameters
+{
+    NSError *error = [self checkParameters:host valtoken:valtoken fillRequestParameters:parameters];
     if (error) {
         return error;
     }
     
-    if (![json isKindOfClass:NSDictionary.class]) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
+    NSParameterAssert(deviceid.length > 0 && serviceid.length > 0);
+    
+    if (0 == deviceid.length || 0 == serviceid.length) {
+        // TODO
+        // report to GA.
+        return [PogoplugError errorWithCode:PogoplugError_Unknown];
     }
     
-    if (result) {
-        *result = json;
+    if (parameters) {
+        parameters[@"deviceid"] = deviceid;
+        parameters[@"serviceid"] = serviceid;
     }
+    
     return nil;
 }
 
-+ (NSError *)getFileURL:(NSURL *)svcurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid flag:(opt NSString *)flag name:(opt NSString *)name result:(out NSURL **)result
++ (NSError *)getFileURL:(NSURL *)svcurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid flag:(NSString *)flag name:(NSString *)name fileurl:(out NSURL **)fileurl
 {
     NSError *error = [self checkParameters:svcurl valtoken:valtoken deviceid:deviceid serviceid:serviceid fillRequestParameters:nil];
     if (error) {
@@ -476,7 +363,7 @@
     
     NSParameterAssert(fileid.length > 0);
     
-    if (result) {
+    if (fileurl) {
         NSString *path = @"/svc/files";
         if (valtoken) {
             path = [path stringByAppendingPathComponent:valtoken];
@@ -497,9 +384,20 @@
             path = [path stringByAppendingPathComponent:name];
         }
         
-        *result = [NSURL URLWithPath:path relativeToURL:svcurl];
+        *fileurl = [NSURL URLWithPath:path relativeToURL:svcurl];
     }
     return nil;
+}
+
++ (NSString *)stringWithDate:(NSDate *)date
+{
+    long long value = (long long)(date.timeIntervalSince1970 * 1000.0);
+    return [NSNumber numberWithLongLong:value].description;
+}
+
++ (NSDate *)dateWithString:(NSString *)string
+{
+    return [NSDate dateWithTimeIntervalSince1970:string.longLongValue/1000.0];
 }
 
 @end

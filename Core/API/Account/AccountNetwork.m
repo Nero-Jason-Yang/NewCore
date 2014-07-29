@@ -8,27 +8,41 @@
 
 #import "AccountNetwork.h"
 #import "AccountError.h"
+#import "AccountAPI.h"
 #import "AFNetworking.h"
 
-@interface AccountRequestOperationManager : AFHTTPRequestOperationManager
-- (instancetype)initWithBaseURL:(NSURL *)url;
-@end
-
 @interface AccountResponseSerializer : AFJSONResponseSerializer
-
+- (instancetype)initWithRequestPath:(NSString *)requestPath;
 @end
 
 @implementation AccountNetwork
-
-+ (NSOperationQueue *)operationQueue
 {
-    static NSOperationQueue *queue;
+    AFHTTPRequestSerializer *_requestSerializer;
+    NSTimeInterval _timeoutInterval;
+    NSOperationQueue *_operationQueue;
+    dispatch_queue_t _completionQueue;
+}
+
+- (id)init
+{
+    if (self = [super init]) {
+        _requestSerializer = [AFJSONRequestSerializer serializer];
+        _timeoutInterval = 15.0;
+        _operationQueue = [[NSOperationQueue alloc] init];
+        _operationQueue.maxConcurrentOperationCount = 1;
+        _completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    }
+    return self;
+}
+
++ (instancetype)sharedInstance
+{
+    static id _instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        queue = [[NSOperationQueue alloc] init];
-        queue.maxConcurrentOperationCount = 1;
+        _instance = [[self alloc] init];
     });
-    return queue;
+    return _instance;
 }
 
 + (void)post:(NSURL *)url path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
@@ -54,43 +68,26 @@
         return;
     }
     
-    NSDictionary *header = nil;
-    if (authorization.length > 0) {
-        header = @{@"authorization":authorization};
-    }
-    
-    // TODO
-    // ...
-}
-
-@end
-
-@implementation AccountRequestOperationManager
-
-- (instancetype)initWithBaseURL:(NSURL *)url
-{
-    if (self = [super initWithBaseURL:url]) {
-        self.requestSerializer = [AFJSONRequestSerializer serializer];
-        self.responseSerializer = [AccountResponseSerializer serializer];
-        self.securityPolicy.allowInvalidCertificates = YES;
-        self.operationQueue.maxConcurrentOperationCount = 1;
-    }
-    return self;
+    [[self sharedInstance] post:url path:path authorization:authorization parameters:parameters completion:completion];
 }
 
 - (void)post:(NSURL *)url path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
 {
-    NSString *URLString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
-    NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:@"POST" URLString:URLString parameters:parameters];
+    NSString *URLString = [[NSURL URLWithString:path relativeToURL:url] absoluteString];
+    NSMutableURLRequest *request = [_requestSerializer requestWithMethod:@"POST" URLString:URLString parameters:parameters];
+    if (_timeoutInterval > 0.0) {
+        request.timeoutInterval = _timeoutInterval;
+    }
     if (authorization.length > 0) {
         [request setValue:authorization forHTTPHeaderField:@"authorization"];
     }
     
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    operation.responseSerializer = self.responseSerializer;
-    operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
-    operation.credential = self.credential;
-    operation.securityPolicy = self.securityPolicy;
+    operation.responseSerializer = [[AccountResponseSerializer alloc] initWithRequestPath:path];
+    operation.shouldUseCredentialStorage = NO;
+    operation.credential = nil;
+    operation.securityPolicy.allowInvalidCertificates = YES;
+    operation.completionQueue = _completionQueue;
     
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         completion(responseObject, nil);
@@ -98,7 +95,7 @@
         completion(nil, error);
     }];
     
-    [self.operationQueue addOperation:operation];
+    [_operationQueue addOperation:operation];
 }
 
 @end
@@ -118,46 +115,42 @@
     return self;
 }
 
+#pragma mark <AFURLResponseSerialization>
+
 - (id)responseObjectForResponse:(NSURLResponse *)response data:(NSData *)data error:(NSError **)error
 {
-    id json = [self JSONObjectFromData:data withResponse:response];
-    
+    // retrieve http status code.
     NSInteger statusCode = 200;
     if ([response isKindOfClass:NSHTTPURLResponse.class]) {
         statusCode = ((NSHTTPURLResponse *)response).statusCode;
-        if (statusCode == 503) {
-            NSString *description = nil;
-            NSDictionary *info = nil;
-            if (json) {
-                NSDictionary *details = json[@"details"];
-                if ([details isKindOfClass:NSDictionary.class]) {
-                    description = details[@"message"];
-                }
-                info = details;
-            }
-            *error = [AccountError errorWithCode:AccountError_ServiceUnavailable description:description info:info];
-            return nil;
-        }
     }
     
-    if (!json) {
-        return [super responseObjectForResponse:response data:data error:error];
+    // convert data to json.
+    id json = [self JSONObjectFromData:data withResponse:response];
+    
+    // get exception code and message.
+    NSString *exceptionCode = nil, *message = nil;
+    if ([json isKindOfClass:NSDictionary.class]) {
+        [self getDetails:json exceptionCode:&exceptionCode message:&message];
     }
     
-    NSString *message;
-    NSString *code = [self exceptionCodeFromDictionary:json exceptionMessage:&message];
-    if (code) {
-        *error = [self errorWithStatusCode:statusCode exceptionCode:code message:message];
+    // find error.
+    NSError *e = [self getErrorForPath:_requestPath data:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    if (e) {
+        *error = e;
         return nil;
     }
     
-    if (statusCode >= 400) {
-        *error = [NSError errorWithHTTPStatusCode:statusCode];
-        return nil;
+    // for account apis, the response data must be a dictionary.
+    if ([json isKindOfClass:NSDictionary.class]) {
+        return json;
     }
     
-    return json;
+    *error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+    return nil;
 }
+
+#pragma mark internal
 
 - (id)JSONObjectFromData:(NSData *)data withResponse:(NSURLResponse *)response
 {
@@ -182,9 +175,9 @@
         NSData *responseData = [responseString dataUsingEncoding:NSUTF8StringEncoding];
         
         if (responseData.length > 0) {
-            NSError *e;
-            id json = [NSJSONSerialization JSONObjectWithData:responseData options:self.readingOptions error:&e];
-            if (!e) {
+            NSError *error;
+            id json = [NSJSONSerialization JSONObjectWithData:responseData options:self.readingOptions error:&error];
+            if (!error) {
                 return json;
             }
         }
@@ -193,183 +186,214 @@
     return nil;
 }
 
-- (NSString *)exceptionCodeFromDictionary:(id)dic exceptionMessage:(NSString **)exceptionMessage
+- (void)getDetails:(NSDictionary *)response exceptionCode:(NSString **)exceptionCode message:(NSString **)message
 {
-    if (![dic isKindOfClass:NSDictionary.class]) {
-        return nil;
-    }
+    NSParameterAssert([response isKindOfClass:NSDictionary.class]);
+    NSParameterAssert(exceptionCode && message);
     
-    NSDictionary *details = [dic objectForKey:@"details"];
+    NSDictionary *details = [response objectForKey:@"details"];
     if (![details isKindOfClass:NSDictionary.class]) {
-        return nil;
+        return;
     }
     
     NSArray *exceptionDetails = [details objectForKey:@"exception_details"];
-    if (![exceptionDetails isKindOfClass:NSArray.class]) {
-        return nil;
-    }
-    
-    for (NSDictionary *exceptionDetail in exceptionDetails) {
-        if ([exceptionDetail isKindOfClass:NSDictionary.class]) {
-            NSString *exceptionCode = [exceptionDetail objectForKey:@"code"];
-            if ([exceptionCode isKindOfClass:NSString.class] && exceptionCode.length > 0) {
-                if (exceptionMessage) {
-                    NSString *message = [exceptionDetail objectForKey:@"message"];
-                    if (![message isKindOfClass:NSString.class]) {
-                        message = @"";
-                    }
-                    *exceptionMessage = message;
-                }
-                return exceptionCode;
+    if ([exceptionDetails isKindOfClass:NSArray.class]) {
+        for (NSDictionary *exception in exceptionDetails) {
+            if ([self getException:exception code:exceptionCode message:message]) {
+                break;
             }
         }
+    }
+    else if ([exceptionDetails isKindOfClass:NSDictionary.class]) {
+        [self getException:(NSDictionary *)exceptionDetails code:exceptionCode message:message];
+    }
+    
+    if (!*message) {
+        *message = details[@"message"];
+    }
+}
+
+- (BOOL)getException:(NSDictionary *)exception code:(NSString **)code message:(NSString **)message
+{
+    NSParameterAssert([exception isKindOfClass:NSDictionary.class]);
+    NSParameterAssert(code && message);
+    
+    NSString *s_code = exception[@"code"];
+    NSString *s_message = exception[@"message"];
+    
+    if ([s_code isKindOfClass:NSString.class]) {
+        *code = s_code;
+        *message = [s_message isKindOfClass:NSString.class] ? s_message : @"";
+        return YES;
+    }
+    
+    return NO;
+}
+
+#pragma mark errors
+
+- (NSError *)getErrorForPath:(NSString *)path data:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)exceptionCode message:(NSString *)message
+{
+    NSError *error = nil;
+    
+    if (statusCode == 401) {
+        error = [AccountError errorWithCode:AccountError_Unauthorized];
+    }
+    else if (statusCode == 503) {
+        error = [AccountError errorWithCode:AccountError_ServiceUnavailable];
+    }
+    else if ([path isEqualToString:AccountAPIPath_AuthNcsAuthorize]) {
+        error = [self getErrorForLogin:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    else if ([path isEqualToString:AccountAPIPath_AuthNcsRevoke]) {
+        error = [self getErrorForLogout:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    else if ([path isEqualToString:AccountAPIPath_AuthNcsPasswordchange]) {
+        error = [self getErrorForPasswordchange:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    else if ([path isEqualToString:AccountAPIPath_AuthNcsPasswordrenew]) {
+        error = [self getErrorForPasswordrenew:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    else if ([path isEqualToString:AccountAPIPath_UserAccepttos]) {
+        error = [self getErrorForAccepttos:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    else {
+        error = [self getUnknownErrorForPath:path data:data statusCode:statusCode exceptionCode:exceptionCode message:message];
+    }
+    
+    return error;
+}
+
+- (NSError *)getErrorForLogin:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+{
+    if ([code isEqualToString:@"data:1"]) {
+        return [AccountError errorWithCode:AccountError_Login_DataMissing message:message];
+    }
+    if ([code isEqualToString:@"login:1"]) {
+        return [AccountError errorWithCode:AccountError_Login_NicknameMissing message:message];
+    }
+    if ([code isEqualToString:@"login:2"]) {
+        return [AccountError errorWithCode:AccountError_Login_PasswordMissing message:message];
+    }
+    if ([code isEqualToString:@"login:3"]) {
+        return [AccountError errorWithCode:AccountError_Login_AccountInactived message:message];
+    }
+    if ([code isEqualToString:@"login:4"]) {
+        return [AccountError errorWithCode:AccountError_Login_EmailPasswordMismatched message:message];
+    }
+    if ([code isEqualToString:@"login:6"]) {
+        return [AccountError errorWithCode:AccountError_Login_TOSChanged message:message];
+    }
+    if ([code isEqualToString:@"login:7"]) {
+        return [AccountError errorWithCode:AccountError_Login_NotFound message:message];
     }
     return nil;
 }
 
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
-}
-
-@end
-
-@implementation NeroLoginResponseSerializer
-
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"data:1"]) {
-        return [AccountError errorWithCode:AccountError_Login_DataMissing description:message];
-    }
-    if ([code isEqualToString:@"login:1"]) {
-        return [AccountError errorWithCode:AccountError_Login_NicknameMissing description:message];
-    }
-    if ([code isEqualToString:@"login:2"]) {
-        return [AccountError errorWithCode:AccountError_Login_PasswordMissing description:message];
-    }
-    if ([code isEqualToString:@"login:3"]) {
-        return [AccountError errorWithCode:AccountError_Login_AccountInactived description:message];
-    }
-    if ([code isEqualToString:@"login:4"]) {
-        return [AccountError errorWithCode:AccountError_Login_EmailPasswordMismatched description:message];
-    }
-    if ([code isEqualToString:@"login:6"]) {
-        return [AccountError errorWithCode:AccountError_Login_TOSChanged description:message];
-    }
-    if ([code isEqualToString:@"login:7"]) {
-        return [AccountError errorWithCode:AccountError_Login_NotFound description:message];
-    }
-    
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
-}
-
-@end
-
-@implementation NeroRegisterResponseSerializer
-
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+- (NSError *)getErrorForLogout:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
 {
     if ([code isEqualToString:@"register:1"]) {
-        return [AccountError errorWithCode:AccountError_Register_NicknameMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_NicknameMissing message:message];
     }
     if ([code isEqualToString:@"register:3"]) {
-        return [AccountError errorWithCode:AccountError_Register_EmailMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_EmailMissing message:message];
     }
     if ([code isEqualToString:@"register:4"]) {
-        return [AccountError errorWithCode:AccountError_Register_CountryMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_CountryMissing message:message];
     }
     if ([code isEqualToString:@"register:5"]) {
-        return [AccountError errorWithCode:AccountError_Register_SecurityCodeMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_SecurityCodeMissing message:message];
     }
     if ([code isEqualToString:@"register:6"]) {
-        return [AccountError errorWithCode:AccountError_Register_PasswordMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_PasswordMissing message:message];
     }
     if ([code isEqualToString:@"register:7"]) {
-        return [AccountError errorWithCode:AccountError_Register_ChecksumMissing description:message];
+        return [AccountError errorWithCode:AccountError_Register_ChecksumMissing message:message];
     }
     if ([code isEqualToString:@"register:8"]) {
-        return [AccountError errorWithCode:AccountError_Register_ActivateFailed description:message];
+        return [AccountError errorWithCode:AccountError_Register_ActivateFailed message:message];
     }
     if ([code isEqualToString:@"invalid:email:String:1202"]) {
-        return [AccountError errorWithCode:AccountError_Register_AlreadyExisted description:message];
+        return [AccountError errorWithCode:AccountError_Register_AlreadyExisted message:message];
     }
-    
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
+    return nil;
 }
 
-@end
-
-@implementation NeroPasswordChangeResponseSerializer
-
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+- (NSError *)getErrorForPasswordchange:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
 {
     if ([code isEqualToString:@"password:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_OldPasswordMissing description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_OldPasswordMissing message:message];
     }
     if ([code isEqualToString:@"password:2"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordMissing description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordMissing message:message];
     }
     if ([code isEqualToString:@"password:3"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordTooShort description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordTooShort message:message];
     }
     if ([code isEqualToString:@"password:4"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_OldPasswordIncorrect description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_OldPasswordIncorrect message:message];
     }
     if ([code isEqualToString:@"invalid:email:String:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_EmailMissing description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_EmailMissing message:message];
     }
     if ([code isEqualToString:@"user:passwordchange:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_NotFound description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_NotFound message:message];
     }
     if ([code isEqualToString:@"invalid:passwordnew:String:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordMissing description:message];
+        return [AccountError errorWithCode:AccountError_PasswordChange_NewPasswordMissing message:message];
     }
-    
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
+    return nil;
 }
 
-@end
-
-@implementation NeroPasswordRenewResponseSerializer
-
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+- (NSError *)getErrorForPasswordrenew:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
 {
     if ([code isEqualToString:@"invalid:email:String:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordRenew_EmailMissing description:message];
+        return [AccountError errorWithCode:AccountError_PasswordRenew_EmailMissing message:message];
     }
     if ([code isEqualToString:@"user:passwordrenew:1"]) {
-        return [AccountError errorWithCode:AccountError_PasswordRenew_SendFailed description:message];
+        return [AccountError errorWithCode:AccountError_PasswordRenew_SendFailed message:message];
     }
     if ([code isEqualToString:@"user:passwordrenew:2"]) {
-        return [AccountError errorWithCode:AccountError_PasswordRenew_NotEnoughTime description:message];
+        return [AccountError errorWithCode:AccountError_PasswordRenew_NotEnoughTime message:message];
     }
-    
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
+    return nil;
 }
 
-@end
-
-@implementation NeroAcceptTOSResponseSerializer
-
-- (NSError *)errorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+- (NSError *)getErrorForAccepttos:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
 {
     if ([code isEqualToString:@"email:missing"]) {
-        return [AccountError errorWithCode:AccountError_AcceptTOS_EmailMissing description:message];
+        return [AccountError errorWithCode:AccountError_AcceptTOS_EmailMissing message:message];
     }
     if ([code isEqualToString:@"tos:missing"]) {
-        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSMissing description:message];
+        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSMissing message:message];
     }
     if ([code isEqualToString:@"ots:invalid"]) {
-        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSInvalid description:message];
+        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSInvalid message:message];
     }
     if (statusCode == 403) {
-        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSDateOld description:nil];
+        return [AccountError errorWithCode:AccountError_AcceptTOS_TOSDateOld message:nil];
     }
     if (statusCode == 404) {
-        return [AccountError errorWithCode:AccountError_AcceptTOS_NotFound description:nil];
+        return [AccountError errorWithCode:AccountError_AcceptTOS_NotFound message:nil];
+    }
+    return nil;
+}
+
+- (NSError *)getUnknownErrorForPath:(NSString *)requestPath data:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
+{
+    if (code.length > 0) {
+        NSString *reason = [NSString stringWithFormat:@"Nero Account Error with HTTP status-code:%d, exception-code:%@, message:%@", (int)statusCode, code, message];
+        
+        //[[GAI sharedInstance].defaultTracker send:[GAIDictionaryBuilder createExceptionWithDescription:str withFatal:@NO].build];
+        
+        return [AccountError errorWithCode:AccountError_Unknown message:message reason:reason];
     }
     
-    return [AccountError unknownErrorWithStatusCode:statusCode exceptionCode:code message:message];
+    if (statusCode >= 400) {
+        return [AccountError errorWithStatusCode:statusCode];
+    }
+    
+    return nil;
 }
 
 @end

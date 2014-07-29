@@ -9,6 +9,9 @@
 #import "SDWebImageCompat.h"
 #import "SDWebImageManager.h"
 
+extern char operationKey;
+extern char operationArrayKey;
+
 /**
  * Integrates SDWebImage async downloading and caching of remote images with UIImageView.
  *
@@ -146,19 +149,5 @@
 - (void)cancelCurrentImageLoad;
 
 - (void)cancelCurrentArrayLoad;
-
-@end
-
-#import "File.h"
-
-@interface UIImageView (File)
-
-- (void)setImageWithFile:(id<File>)file type:(FileContentType)type placeholderImage:(UIImage *)placeholder;
-
-- (void)setImageWithFile:(id<File>)file type:(FileContentType)type placeholderImage:(UIImage *)placeholder options:(SDWebImageOptions)options progress:(SDWebImageDownloaderProgressBlock)progressBlock completed:(SDWebImageCompletedBlock)completedBlock;
-
-- (void)clearFadeinEffect;
-
-+ (void)refreshImageCacheWithFile:(id<File>)file type:(FileContentType)type;
 
 @end

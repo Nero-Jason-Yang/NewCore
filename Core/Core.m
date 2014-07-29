@@ -6,14 +6,12 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "CoreAPI.h"
-#import "NSError+Core.h"
+#import "Core.h"
 #import "AccountAPI.h"
 #import "AccountError.h"
 #import "PogoplugAPI.h"
 #import "PogoplugError.h"
 #import "PogoplugResponse.h"
-#import "PogoPlugOperationManager.h"
 #import "StorageFile+Pogoplug.h"
 
 @interface CoreAPI ()
@@ -71,193 +69,209 @@
 
 #pragma mark - account actions
 
-- (NSError *)login:(NSString *)username password:(NSString *)password
+- (void)login:(NSString *)username password:(NSString *)password completion:(void (^)(NSError *))completion
 {
     NSParameterAssert(username && password);
+    NSParameterAssert(completion);
     
     if (0 == username.length || 0 == password.length) {
         NSParameterAssert(0);
-        return [AccountError errorWithCode:AccountError_Login_DataMissing];
+        NSError *error = [AccountError errorWithCode:AccountError_Login_DataMissing];
+        completion(error);
+        return;
     }
     
     self.accountState = AccountState_Logining;
     
-    NSString *authorization = nil;
-    NSError *error = [AccountAPI auth_ncs_authorize:self.accountApiUrl username:username password:password authorization:&authorization];
-    
-    if (error) {
-        self.accountToken = nil;
-        self.accountState = AccountState_LoginFailed;
-        return error;
-    }
-    else {
-        //self.username = username;
-        //self.lastLoginDate = [NSDate date];
-        
-        self.accountToken = authorization;
-        self.accountState = AccountState_LoginSucceeded;
-        
-        //[self tryTransferImageCacheFromDatabase];
-        return nil;
-    }
+    __weak typeof(self) wself = self;
+    [AccountAPI auth_ncs_authorize:self.accountApiUrl username:username password:password completion:^(NSString *authorization, NSError *error) {
+        __strong typeof(wself) sself = wself;
+        [sself onLogin:error username:username authorization:authorization];
+        completion(error);
+    }];
 }
 
-- (NSError *)logout
+- (void)logout:(void(^)(NSError *))completion
 {
-    if (self.accountToken) {
-        NSError *error = [AccountAPI auth_ncs_revoke:self.accountApiUrl authorization:self.accountToken];
-        if (error.isTimeout) {
-            for (int i = 0; i < 3 && error.isTimeout; i ++) {
-                error = [AccountAPI auth_ncs_revoke:self.accountApiUrl authorization:self.accountToken];
-            }
-        }
-        if (error) {
-            return error;
-        }
+    NSParameterAssert(completion);
+    
+    NSString *authorization = self.accountToken;
+    if (!authorization) {
+        self.accountState = AccountState_Logouted;
+        completion(nil);
+        return;
     }
     
-    self.accountToken = nil;
-    self.accountState = AccountState_Logouted;
-    return nil;
+    __weak typeof(self) wself = self;
+    [AccountAPI auth_ncs_revoke:self.accountApiUrl authorization:authorization completion:^(NSError *error) {
+        __strong typeof(wself) sself = wself;
+        [sself onLogout:error];
+        completion(error);
+    }];
 }
 
-- (NSError *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword
+- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(newPassword && oldPassword);
+    NSParameterAssert(completion);
     
-    return [AccountAPI auth_ncs_passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword];
+    [AccountAPI auth_ncs_passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
 }
 
-- (NSError *)forgotPassword:(NSString *)email
+- (void)forgotPassword:(NSString *)email completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(email);
+    NSParameterAssert(completion);
     
-    return [AccountAPI auth_ncs_passwordrenew:self.accountApiUrl authorization:self.accountToken email:email];
+    [AccountAPI auth_ncs_passwordrenew:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
 }
 
-- (NSError *)acceptTOS:(NSString *)email
+- (void)acceptTOS:(NSString *)email completion:(void (^)(NSError *))completion
 {
     NSParameterAssert(email);
+    NSParameterAssert(completion);
     
-    return [AccountAPI user_accepttos:self.accountApiUrl authorization:self.accountToken email:email];
+    [AccountAPI user_accepttos:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
+}
+
+#pragma mark - account results
+
+- (void)onLogin:(NSError *)error username:(NSString *)username authorization:(NSString *)authorization
+{
+    @synchronized(self) {
+        if (error) {
+            self.accountToken = nil;
+            self.accountState = AccountState_LoginFailed;
+        }
+        else {
+            //self.username = username;
+            //self.lastLoginDate = [NSDate date];
+            
+            self.accountToken = authorization;
+            self.accountState = AccountState_LoginSucceeded;
+            
+            //[self tryTransferImageCacheFromDatabase];
+        }
+    }
+}
+
+- (void)onLogout:(NSError *)error
+{
+    @synchronized(self) {
+        if (error) {
+            // TODO
+            // log or trace.
+        }
+        else {
+            self.accountToken = nil;
+            self.accountState = AccountState_Logouted;
+        }
+    }
+}
+
+- (void)onUnauthorized
+{
+    @synchronized(self) {
+        if (self.accountToken) {
+            self.accountToken = nil;
+            [[NSNotificationCenter defaultCenter] postNotificationName:AccountNeedLoginNotification object:self];
+        }
+        self.accountState = AccountState_Unauthorized;
+    }
 }
 
 #pragma mark - storage actions
 
-- (NSError *)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime file:(StorageFile **)file
+- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(StorageFile *, NSError *))completion
 {
-    NSParameterAssert(filename && file);
+    NSParameterAssert(filename);
+    NSParameterAssert(completion);
     
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
     NSString *pogoplugFileType = [NSNumber numberWithInteger:type].description;
     
-    NSDictionary *result = nil;
-    error = [PogoplugAPI createFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime result:&result];
-    if (error) {
-        return error;
-    }
-    
-    PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:result];
-    error = [StorageFile makeFile:file fromPogoplugResponse:response.file];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugAPI createFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
+        StorageFile *file = nil;
+        if (!error) {
+            PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
+            error = [StorageFile makeFile:&file fromPogoplugResponse:response.file];
+        }
+        completion(file, error);
+    }];
 }
 
-- (NSError *)renameFile:(NSString *)fileid newname:(NSString *)newname
+- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void (^)(NSError *))completion
 {
     NSParameterAssert(fileid && newname);
+    NSParameterAssert(completion);
     
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
-    error = [PogoplugAPI moveFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid newname:newname];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugAPI moveFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
+        // TODO
+        // to change it in database
+        completion(error);
+    }];
 }
 
-- (NSError *)deleteFile:(NSString *)fileid recurse:(BOOL)recurse
+- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void (^)(NSError *))completion
 {
     NSParameterAssert(fileid);
+    NSParameterAssert(completion);
     
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
-    error = [PogoplugAPI removeFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid recurse:recurse];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugAPI removeFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
+        // TODO
+        // to remove it from database
+        completion(error);
+    }];
 }
 
-- (NSError *)uploadFile:(NSString *)fileid data:(NSData *)data
+- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void (^)(NSError *))completion
 {
     NSParameterAssert(fileid && data);
+    NSParameterAssert(completion);
     
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
-        return error;
+        completion(error);
+        return;
     }
     
-    NSURL *fileURL = nil;
-    error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid flag:nil name:nil result:&fileURL];
-    if (error) {
-        return error;
-    }
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:fileURL];
-    if (![manager uploadData:data withPath:fileURL.path parameters:nil error:&error]) {
-        return error;
-    }
-    
-    return nil;
+    [PogoplugAPI uploadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid data:data completion:completion];
 }
 
-- (NSError *)downloadFile:(NSString *)fileid data:(NSData **)data
+- (void)downloadFile:(NSString *)fileid completion:(void(^)(NSData *data, NSError *error))completion
 {
-    NSParameterAssert(fileid && data);
+    NSParameterAssert(fileid);
+    NSParameterAssert(completion);
     
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
-        return error;
+        completion(nil, error);
+        return;
     }
     
-    NSURL *fileURL = nil;
-    error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid flag:nil name:nil result:&fileURL];
-    if (error) {
-        return error;
-    }
-    
-    PogoplugOperationManager *manager = [PogoplugOperationManager managerWithBaseURL:fileURL];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    NSData *responseData = [manager GET:fileURL.path parameters:nil operation:NULL error:&error];
-    if (!responseData) {
-        return error;
-    }
-    
-    if (data) {
-        *data = responseData;
-    }
-    return nil;
+    [PogoplugAPI downloadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid completion:completion];
 }
 
 - (NSError *)forFile:(StorageFile *)file getThumbnailURL:(NSURL **)URL
@@ -286,7 +300,7 @@
         return error;
     }
     
-    error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil result:URL];
+    error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:URL];
     if (error) {
         return error;
     }
@@ -398,6 +412,7 @@
         return error;
     }
     
+    /*
     NSDictionary *dictionary = nil;
     error = [PogoplugAPI enableShare:self.storageApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid name:nil password:nil permissions:nil result:&dictionary];
     if (error) {
@@ -413,6 +428,7 @@
     if (shareURL) {
         *shareURL = url;
     }
+    */
     return nil;
 }
 
@@ -448,6 +464,8 @@
 
 - (NSError *)refreshStorageToken
 {
+    return nil;
+    /*
     NSString *accountToken = nil;
     NSError *error = [self getAccountToken:&accountToken];
     if (error) {
@@ -487,6 +505,7 @@
     }
     
     return [PogoplugError error:PogoplugError_InvalidResponseData];
+     */
 }
 
 #pragma mark -

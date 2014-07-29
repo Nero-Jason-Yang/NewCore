@@ -52,8 +52,8 @@ typedef enum : int32_t {
 @interface AccountError : NSError
 
 + (NSError *)errorWithCode:(AccountErrorCode)code;
-+ (NSError *)errorWithCode:(AccountErrorCode)code description:(NSString *)description;
-+ (NSError *)errorWithCode:(AccountErrorCode)code description:(NSString *)description info:(NSDictionary *)info;
-+ (NSError *)unknownErrorWithStatusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message;
++ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message;
++ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message reason:(NSString *)reason;
++ (NSError *)errorWithStatusCode:(NSInteger)statusCode;
 
 @end

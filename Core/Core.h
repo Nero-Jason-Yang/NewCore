@@ -36,20 +36,20 @@ typedef enum : uint8_t {
 
 #pragma mark - account actions
 
-- (NSError *)login:(NSString *)username password:(NSString *)password;
-- (NSError *)logout;
-- (NSError *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword;
-- (NSError *)forgotPassword:(NSString *)email;
-- (NSError *)acceptTOS:(NSString *)email;
+- (void)login:(NSString *)username password:(NSString *)password completion:(void(^)(NSError *))completion;
+- (void)logout:(void(^)(NSError *))completion;
+- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *))completion;
+- (void)forgotPassword:(NSString *)email completion:(void(^)(NSError *))completion;
+- (void)acceptTOS:(NSString *)email completion:(void(^)(NSError *))completion;
 
 #pragma mark - file actions
 
 // open a file with name, if not found then create it.
-- (NSError *)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime file:(StorageFile **)file;
-- (NSError *)renameFile:(NSString *)fileid newname:(NSString *)newname;
-- (NSError *)deleteFile:(NSString *)fileid recurse:(BOOL)recurse;
-- (NSError *)uploadFile:(NSString *)fileid data:(NSData *)data;
-- (NSError *)downloadFile:(NSString *)fileid data:(NSData **)data;
+- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(StorageFile *, NSError *))completion;
+- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void(^)(NSError *error))completion;
+- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void(^)(NSError *error))completion;
+- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void(^)(NSError *error))completion;
+- (void)downloadFile:(NSString *)fileid completion:(void(^)(NSData *data, NSError *error))completion;
 
 // to retrieve file URL.
 - (NSError *)forFile:(StorageFile *)file getThumbnailURL:(NSURL **)URL;

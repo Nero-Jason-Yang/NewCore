@@ -19,6 +19,6 @@ typedef enum : int32_t {
 
 @interface PogoplugError : NSError
 
-+ (NSError *)error:(PogoplugErrorCode)code;
++ (NSError *)errorWithCode:(PogoplugErrorCode)code;
 
 @end
