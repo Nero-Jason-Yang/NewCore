@@ -14,6 +14,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    NSString *a = nil, *b = nil;
+    NSString *string = [NSString stringWithFormat:@"%@%@", a?a:@"", b?b:@""];
+    if (string.length == 0) {
+        string = @"hello";
+    }
     return YES;
 }
 

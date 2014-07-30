@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define opt // optional parameter indicator
-
 #define PogoplugFile_NormalFile        @"0"
 #define PogoplugFile_Directory         @"1"
 #define PogoplugFile_SymbolicLink      @"3"

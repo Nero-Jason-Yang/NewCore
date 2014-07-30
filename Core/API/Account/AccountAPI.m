@@ -6,12 +6,10 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
+#import "Core.h"
 #import "AccountAPI.h"
-#import "AccountError.h"
 #import "AccountNetwork.h"
 
-#import "Core.h"
-#import "AccountError.h"
 #import "AFNetworkReachabilityManager.h"
 
 @implementation AccountAPI

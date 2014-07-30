@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#define opt // optional parameter indicator
+
 @interface Utils : NSObject
 
 @end

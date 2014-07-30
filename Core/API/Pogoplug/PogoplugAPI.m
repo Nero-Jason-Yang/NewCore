@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
+#import "Core.h"
 #import "PogoplugAPI.h"
-#import "PogoplugError.h"
 #import "PogoplugNetwork.h"
 
 #import "AFNetworkReachabilityManager.h"
@@ -313,15 +313,15 @@
     NSParameterAssert([parameters isKindOfClass:NSMutableDictionary.class]);
     
     if (![host isKindOfClass:NSURL.class]) {
-        return [PogoplugError errorWithCode:PogoplugError_HostUnspecified];
+        return [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug api url not specified." file:__FILE__ line:__LINE__];
     }
     
     if (0 == valtoken.length) {
-        return [PogoplugError errorWithCode:PogoplugError_Unauthorized];
+        return [Error errorWithCode:Error_Unauthorized underlyingError:nil debugString:@"Pogoplug token not specified." file:__FILE__ line:__LINE__];
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
-        return [PogoplugError errorWithCode:PogoplugError_NetworkNotAvailable];
+        return [Error errorWithCode:Error_NetworkUnavailable underlyingError:nil debugString:@"Network not reachable." file:__FILE__ line:__LINE__];
     }
     
     if (parameters) {
@@ -343,7 +343,7 @@
     if (0 == deviceid.length || 0 == serviceid.length) {
         // TODO
         // report to GA.
-        return [PogoplugError errorWithCode:PogoplugError_Unknown];
+        return [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug deviceid or serviceid not specified." file:__FILE__ line:__LINE__];
     }
     
     if (parameters) {

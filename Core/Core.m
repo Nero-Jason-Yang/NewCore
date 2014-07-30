@@ -8,9 +8,7 @@
 
 #import "Core.h"
 #import "AccountAPI.h"
-#import "AccountError.h"
 #import "PogoplugAPI.h"
-#import "PogoplugError.h"
 #import "PogoplugResponse.h"
 #import "File+Pogoplug.h"
 
