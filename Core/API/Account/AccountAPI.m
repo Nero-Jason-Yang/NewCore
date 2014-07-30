@@ -48,7 +48,7 @@
                     }
                 }
             }
-            error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+            error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         }
         completion(nil, error);
     }];
@@ -78,7 +78,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -109,7 +109,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_PasswordChange_Failed];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -137,7 +137,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_PasswordRenew_Failed];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -161,7 +161,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(nil, error);
     }];
 }
@@ -192,7 +192,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_AcceptTOS_Failed];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -221,7 +221,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(nil, nil, error);
     }];
 }
@@ -276,7 +276,7 @@
             }
         }
         
-        error = [AccountError errorWithCode:AccountError_InvalidResponseData];
+        error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"invalid response data" file:__FILE__ line:__LINE__];
         completion(0, error);
     }];
 }

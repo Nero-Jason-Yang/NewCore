@@ -60,18 +60,14 @@ typedef enum : int32_t {
     // handle: for backup, ui tell user to try again later manually;
     //       : for browsing and setting, ui should alert user with the message.
     Error_Failed,
+    // notice: A "Failed" error must contains an underlying error as details,
+    //         if there has no underlying error it should be created as "Unknown"
+    //         or "Unexpected" error, based on it has friendly message or not.
     
 } ErrorCode;
 
 
 typedef enum : int32_t {
-    AccountError_Unknown = 0,
-    AccountError_HostUnspecified,
-    AccountError_NetworkNotAvailable,
-    AccountError_ServiceUnavailable,
-    AccountError_Unauthorized,
-    AccountError_InvalidResponseData, // unexpected, the response data is invalid.
-    
     AccountError_Login_DataMissing,
     AccountError_Login_NicknameMissing,
     AccountError_Login_PasswordMissing,
@@ -79,15 +75,6 @@ typedef enum : int32_t {
     AccountError_Login_EmailPasswordMismatched,
     AccountError_Login_TOSChanged,
     AccountError_Login_NotFound,
-    
-    AccountError_Register_NicknameMissing,
-    AccountError_Register_EmailMissing,
-    AccountError_Register_CountryMissing,
-    AccountError_Register_SecurityCodeMissing,
-    AccountError_Register_PasswordMissing,
-    AccountError_Register_ChecksumMissing,
-    AccountError_Register_ActivateFailed,
-    AccountError_Register_AlreadyExisted,
     
     AccountError_PasswordChange_OldPasswordMissing,
     AccountError_PasswordChange_NewPasswordMissing,
@@ -100,14 +87,12 @@ typedef enum : int32_t {
     AccountError_PasswordRenew_EmailMissing,
     AccountError_PasswordRenew_SendFailed,
     AccountError_PasswordRenew_NotEnoughTime,
-    AccountError_PasswordRenew_Failed,
     
     AccountError_AcceptTOS_EmailMissing,
     AccountError_AcceptTOS_TOSMissing,
     AccountError_AcceptTOS_TOSInvalid,
     AccountError_AcceptTOS_TOSDateOld,
     AccountError_AcceptTOS_NotFound,
-    AccountError_AcceptTOS_Failed,
     
 } AccountErrorCode;
 
@@ -183,11 +168,8 @@ typedef enum : int32_t {
 @end
 
 @interface AccountError : NSError
-+ (instancetype)errorWithCode:(NSString *)code message:(NSString *)message reason:(opt NSString *)reason underlying:(opt NSError *)underlying position:(opt NSString *)position;
-+ (NSError *)errorWithCode:(AccountErrorCode)code;
-+ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message;
-+ (NSError *)errorWithCode:(AccountErrorCode)code message:(NSString *)message reason:(NSString *)reason;
-+ (NSError *)errorWithStatusCode:(NSInteger)statusCode;
++ (AccountError *)errorWithCode:(AccountErrorCode)code underlyingError:(opt NSError *)underlyingError debugString:(opt NSString *)debugString file:(char *)file line:(int)line;
++ (AccountError *)errorWithException:(NSString *)exceptionCode message:(NSString *)message underlyingError:(opt NSError *)underlyingError debugString:(opt NSString *)debugString file:(char *)file line:(int)line;
 @end
 
 @interface PogoplugError : NSError

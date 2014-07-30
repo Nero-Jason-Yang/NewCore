@@ -74,7 +74,7 @@
     
     if (0 == username.length || 0 == password.length) {
         NSParameterAssert(0);
-        NSError *error = [AccountError errorWithCode:AccountError_Login_DataMissing];
+        NSError *error = [AccountError errorWithCode:AccountError_Login_DataMissing underlyingError:nil debugString:@"invalid input username or password" file:__FILE__ line:__LINE__];
         completion(error);
         return;
     }
@@ -437,7 +437,7 @@
     NSString *accountToken = self.accountToken;
     if (!accountToken) {
         [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
-        return [AccountError errorWithCode:AccountError_Unauthorized];
+        return [Error errorWithCode:Error_Unauthorized underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
     }
     *token = accountToken;
     return nil;
