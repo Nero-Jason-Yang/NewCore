@@ -89,13 +89,13 @@
     
     if (0 == url.scheme.length || 0 == url.host.length) {
         NSAssert(NO, @"Invalid account base url:(%@).", url);
-        NSError *error = [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug send request with invalid url." file:__FILE__ line:__LINE__];
+        NSError *error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug send request with invalid url." file:__FILE__ line:__LINE__];
         completion(nil, error);
         return;
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
-        NSError *error = [Error errorWithCode:Error_NetworkUnavailable underlyingError:nil debugString:@"Network not reachable." file:__FILE__ line:__LINE__];
+        NSError *error = [CoreError errorWithCode:Error_NetworkUnavailable underlyingError:nil debugString:@"Network not reachable." file:__FILE__ line:__LINE__];
         completion(nil, error);
         return;
     }

@@ -73,8 +73,12 @@
     NSParameterAssert(completion);
     
     if (0 == username.length || 0 == password.length) {
-        NSParameterAssert(0);
-        NSError *error = [AccountError errorWithCode:AccountError_Login_DataMissing underlyingError:nil debugString:@"invalid input username or password" file:__FILE__ line:__LINE__];
+        NSError *error = nil;
+        if (0 == username.length) {
+            error = [AccountError errorWithCode:Error_Account_Login_NicknameMissing response:nil method:@"CoreLogin" comment:@"not input username" file:__FILE__ line:__LINE__];
+        } else {
+            error = [AccountError errorWithCode:Error_Account_Login_PasswordMissing response:nil method:@"CoreLogin" comment:@"not input password" file:__FILE__ line:__LINE__];
+        }
         completion(error);
         return;
     }
@@ -420,7 +424,7 @@
     PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
     NSURL *url = [NSURL URLWithString:response.shareURL];
     if (0 == url.absoluteString.length) {
-        return [PogoplugError error:PogoplugError_InvalidResponseData];
+        return [PogoplugError error:Error_Pogoplug_InvalidResponseData];
     }
     
     if (shareURL) {
@@ -437,7 +441,7 @@
     NSString *accountToken = self.accountToken;
     if (!accountToken) {
         [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
-        return [Error errorWithCode:Error_Unauthorized underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
+        return [CoreError errorWithCode:Error_Unauthorized underlyingError:nil method:@"CoreGetAccountToken" comment:@"no authorization stored." file:__FILE__ line:__LINE__];
     }
     *token = accountToken;
     return nil;
@@ -502,7 +506,7 @@
         }
     }
     
-    return [PogoplugError error:PogoplugError_InvalidResponseData];
+    return [PogoplugError error:Error_Pogoplug_InvalidResponseData];
      */
 }
 

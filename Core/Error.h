@@ -8,12 +8,22 @@
 
 #import <Foundation/Foundation.h>
 
-@class Error;
+@class CoreError;
 @class AccountError;
 @class PogoplugError;
 @class HttpError;
 
-#define ErrorDomain         @"Core"
+// NSError
+//   |
+//   -----------
+//   |         |
+// BaseError  HttpError
+//   |
+//   ------------------------
+//   |         |            |
+// CoreError AccountError PogoplugError
+
+#define CoreErrorDomain     @"Core"
 #define AccountErrorDomain  @"Account"
 #define PogoplugErrorDomain @"Pogoplug"
 #define HttpErrorDomain     @"Http"
@@ -64,119 +74,130 @@ typedef enum : int32_t {
     //         if there has no underlying error it should be created as "Unknown"
     //         or "Unexpected" error, based on it has friendly message or not.
     
-} ErrorCode;
+} CoreErrorCode;
 
 
 typedef enum : int32_t {
-    AccountError_Login_DataMissing,
-    AccountError_Login_NicknameMissing,
-    AccountError_Login_PasswordMissing,
-    AccountError_Login_AccountInactived,
-    AccountError_Login_EmailPasswordMismatched,
-    AccountError_Login_TOSChanged,
-    AccountError_Login_NotFound,
+    Error_Account_Unknown = 0,
     
-    AccountError_PasswordChange_OldPasswordMissing,
-    AccountError_PasswordChange_NewPasswordMissing,
-    AccountError_PasswordChange_NewPasswordTooShort,
-    AccountError_PasswordChange_OldPasswordIncorrect,
-    AccountError_PasswordChange_EmailMissing,
-    AccountError_PasswordChange_NotFound,
-    AccountError_PasswordChange_Failed,
+    Error_Account_Login_DataMissing,
+    Error_Account_Login_NicknameMissing,
+    Error_Account_Login_PasswordMissing,
+    Error_Account_Login_AccountInactived,
+    Error_Account_Login_EmailPasswordMismatched,
+    Error_Account_Login_TOSChanged,
+    Error_Account_Login_NotFound,
     
-    AccountError_PasswordRenew_EmailMissing,
-    AccountError_PasswordRenew_SendFailed,
-    AccountError_PasswordRenew_NotEnoughTime,
+    Error_Account_PasswordChange_OldPasswordMissing,
+    Error_Account_PasswordChange_NewPasswordMissing,
+    Error_Account_PasswordChange_NewPasswordTooShort,
+    Error_Account_PasswordChange_OldPasswordIncorrect,
+    Error_Account_PasswordChange_EmailMissing,
+    Error_Account_PasswordChange_NotFound,
+    Error_Account_PasswordChange_Failed,
     
-    AccountError_AcceptTOS_EmailMissing,
-    AccountError_AcceptTOS_TOSMissing,
-    AccountError_AcceptTOS_TOSInvalid,
-    AccountError_AcceptTOS_TOSDateOld,
-    AccountError_AcceptTOS_NotFound,
+    Error_Account_PasswordRenew_EmailMissing,
+    Error_Account_PasswordRenew_SendFailed,
+    Error_Account_PasswordRenew_NotEnoughTime,
     
+    Error_Account_AcceptTOS_EmailMissing,
+    Error_Account_AcceptTOS_TOSMissing,
+    Error_Account_AcceptTOS_TOSInvalid,
+    Error_Account_AcceptTOS_TOSDateOld,
+    Error_Account_AcceptTOS_NotFound,
 } AccountErrorCode;
 
 typedef enum : int32_t {
-    PogoplugError_ClientError       = 400,
-    PogoplugError_ServerError       = 500,
-    PogoplugError_InvalidArgument   = 600,
-    PogoplugError_OutOfRange        = 601,
-    PogoplugError_NotImplemented    = 602,
-    PogoplugError_NotAuthorized     = 606,
-    PogoplugError_Timeout           = 607,
-    PogoplugError_TemporaryFailure  = 608,
-    PogoplugError_NoSuchUser        = 800,
-    PogoplugError_NoSuchDevice      = 801,
-    PogoplugError_NoSuchService     = 802,
-    PogoplugError_NoSuchFile        = 804,
-    PogoplugError_InsufficientPermissions = 805,
-    PogoplugError_NotAvailable      = 806,
-    PogoplugError_StorageOffline    = 807,
-    PogoplugError_FileExists        = 808,
-    PogoplugError_NoSuchFileName    = 809,
-    PogoplugError_UserExists        = 810,
-    PogoplugError_UserNotValidated  = 811,
-    PogoplugError_NameTooLong       = 812,
-    PogoplugError_PasswordNotSet    = 813,
-    PogoplugError_ServiceExpired    = 815,
-    PogoplugError_InsufficientSpace = 817,
-    PogoplugError_Unsupported       = 818,
-    PogoplugError_ProvisionFailure  = 819,
-    PogoplugError_NotProvisioned    = 820,
-    PogoplugError_InvalidName       = 822,
-    PogoplugError_LimitReached      = 825,
-    PogoplugError_InvalidToken      = 826,
-    PogoplugError_TrialNotAllowed   = 831,
-    PogoplugError_CopyrightDenied   = 832,
-    PogoplugError_NotFound,
+    Error_Pogoplug_Unknown = 0,
+    
+    Error_Pogoplug_ClientError       = 400,
+    Error_Pogoplug_ServerError       = 500,
+    Error_Pogoplug_InvalidArgument   = 600,
+    Error_Pogoplug_OutOfRange        = 601,
+    Error_Pogoplug_NotImplemented    = 602,
+    Error_Pogoplug_NotAuthorized     = 606,
+    Error_Pogoplug_Timeout           = 607,
+    Error_Pogoplug_TemporaryFailure  = 608,
+    Error_Pogoplug_NoSuchUser        = 800,
+    Error_Pogoplug_NoSuchDevice      = 801,
+    Error_Pogoplug_NoSuchService     = 802,
+    Error_Pogoplug_NoSuchFile        = 804,
+    Error_Pogoplug_InsufficientPermissions = 805,
+    Error_Pogoplug_NotAvailable      = 806,
+    Error_Pogoplug_StorageOffline    = 807,
+    Error_Pogoplug_FileExists        = 808,
+    Error_Pogoplug_NoSuchFileName    = 809,
+    Error_Pogoplug_UserExists        = 810,
+    Error_Pogoplug_UserNotValidated  = 811,
+    Error_Pogoplug_NameTooLong       = 812,
+    Error_Pogoplug_PasswordNotSet    = 813,
+    Error_Pogoplug_ServiceExpired    = 815,
+    Error_Pogoplug_InsufficientSpace = 817,
+    Error_Pogoplug_Unsupported       = 818,
+    Error_Pogoplug_ProvisionFailure  = 819,
+    Error_Pogoplug_NotProvisioned    = 820,
+    Error_Pogoplug_InvalidName       = 822,
+    Error_Pogoplug_LimitReached      = 825,
+    Error_Pogoplug_InvalidToken      = 826,
+    Error_Pogoplug_TrialNotAllowed   = 831,
+    Error_Pogoplug_CopyrightDenied   = 832,
+    Error_Pogoplug_NotFound,
 } PogoplugErrorCode;
 
 typedef enum : int32_t {
-    HttpError_BadRequest            = 400,
-    HttpError_Unauthorized          = 401,
-    HttpError_PaymentRequired       = 402,
-    HttpError_Forbidden             = 403,
-    HttpError_NotFound              = 404,
-    HttpError_MethodNotAllowed      = 405,
-    HttpError_NotAcceptable         = 406,
-    HttpError_RequestTimeout        = 408,
-    HttpError_Conflict              = 409,
-    HttpError_Gone                  = 410,
-    HttpError_LengthRequired        = 411,
-    HttpError_PreconditionFailed    = 412,
-    HttpError_RequestURITooLong     = 414,
-    HttpError_ExpectationFailed     = 417,
-    HttpError_TooManyConnections    = 421,
-    HttpError_UnprocessableEntity   = 422,
-    HttpError_Locked                = 423,
-    HttpError_FailedDependency      = 424,
-    HttpError_UnorderedCollection   = 425,
-    HttpError_UpgradeRequired       = 426,
-    HttpError_RetryWith             = 449,
-    HttpError_InternalServerError   = 500,
-    HttpError_NotImplemented        = 501,
-    HttpError_BadGateway            = 502,
-    HttpError_ServiceUnavailable    = 503,
-    HttpError_GatewayTimeout        = 504,
-    HttpError_InsufficientStorage   = 507,
-    HttpError_LoopDetected          = 508,
-    HttpError_NotExtended           = 510,
+    Error_Http_BadRequest            = 400,
+    Error_Http_Unauthorized          = 401,
+    Error_Http_PaymentRequired       = 402,
+    Error_Http_Forbidden             = 403,
+    Error_Http_NotFound              = 404,
+    Error_Http_MethodNotAllowed      = 405,
+    Error_Http_NotAcceptable         = 406,
+    Error_Http_RequestTimeout        = 408,
+    Error_Http_Conflict              = 409,
+    Error_Http_Gone                  = 410,
+    Error_Http_LengthRequired        = 411,
+    Error_Http_PreconditionFailed    = 412,
+    Error_Http_RequestURITooLong     = 414,
+    Error_Http_ExpectationFailed     = 417,
+    Error_Http_TooManyConnections    = 421,
+    Error_Http_UnprocessableEntity   = 422,
+    Error_Http_Locked                = 423,
+    Error_Http_FailedDependency      = 424,
+    Error_Http_UnorderedCollection   = 425,
+    Error_Http_UpgradeRequired       = 426,
+    Error_Http_RetryWith             = 449,
+    Error_Http_InternalServerError   = 500,
+    Error_Http_NotImplemented        = 501,
+    Error_Http_BadGateway            = 502,
+    Error_Http_ServiceUnavailable    = 503,
+    Error_Http_GatewayTimeout        = 504,
+    Error_Http_InsufficientStorage   = 507,
+    Error_Http_LoopDetected          = 508,
+    Error_Http_NotExtended           = 510,
 } HttpErrorCode;
 
-@interface Error : NSError
-+ (Error *)errorWithCode:(ErrorCode)code underlyingError:(opt NSError *)underlyingError debugString:(opt NSString *)debugString file:(char *)file line:(int)line;
+@interface BaseError : NSError
 @end
 
-@interface AccountError : NSError
-+ (AccountError *)errorWithCode:(AccountErrorCode)code underlyingError:(opt NSError *)underlyingError debugString:(opt NSString *)debugString file:(char *)file line:(int)line;
-+ (AccountError *)errorWithException:(NSString *)exceptionCode message:(NSString *)message underlyingError:(opt NSError *)underlyingError debugString:(opt NSString *)debugString file:(char *)file line:(int)line;
+@interface CoreError : BaseError
++ (CoreError *)     errorWithCode:(CoreErrorCode)code underlyingError:(opt NSError *)underlyingError
+                           method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
 @end
 
-@interface PogoplugError : NSError
-+ (instancetype)errorWithCode:(NSInteger)code reason:(opt NSString *)reason underlying:(opt NSError *)underlying position:(opt NSString *)position;
-+ (NSError *)errorWithCode:(PogoplugErrorCode)code;
+@interface AccountError : BaseError
++ (AccountError *)  errorWithCode:(AccountErrorCode)code response:(NSHTTPURLResponse *)response
+                           method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
++ (BaseError *)errorWithException:(NSString *)exception message:(NSString *)message response:(NSHTTPURLResponse *)response
+                           method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
+@end
+
+@interface PogoplugError : BaseError
++ (PogoplugError *) errorWithCode:(PogoplugErrorCode)code response:(NSHTTPURLResponse *)response
+                           method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
++ (BaseError *)errorWithException:(NSString *)exception message:(NSString *)message response:(NSHTTPURLResponse *)response
+                           method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
 @end
 
 @interface HttpError : NSError
-+ (instancetype)errorWithCode:(NSInteger)code reason:(opt NSString *)reason position:(opt NSString *)position;
++ (HttpError *) errorWithResponse:(NSHTTPURLResponse *)response;
 @end

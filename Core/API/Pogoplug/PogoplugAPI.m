@@ -313,15 +313,15 @@
     NSParameterAssert([parameters isKindOfClass:NSMutableDictionary.class]);
     
     if (![host isKindOfClass:NSURL.class]) {
-        return [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug api url not specified." file:__FILE__ line:__LINE__];
+        return [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:@"PogoplugAPI" comment:@"api url not specified" file:__FILE__ line:__LINE__];
     }
     
     if (0 == valtoken.length) {
-        return [Error errorWithCode:Error_Unauthorized underlyingError:nil debugString:@"Pogoplug token not specified." file:__FILE__ line:__LINE__];
+        return [CoreError errorWithCode:Error_Unauthorized underlyingError:nil method:@"PogoplugAPI" comment:@"token not specified." file:__FILE__ line:__LINE__];
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
-        return [Error errorWithCode:Error_NetworkUnavailable underlyingError:nil debugString:@"Network not reachable." file:__FILE__ line:__LINE__];
+        return [CoreError errorWithCode:Error_NetworkUnavailable underlyingError:nil method:@"PogoplugAPI" comment:@"Network not reachable." file:__FILE__ line:__LINE__];
     }
     
     if (parameters) {
@@ -343,7 +343,7 @@
     if (0 == deviceid.length || 0 == serviceid.length) {
         // TODO
         // report to GA.
-        return [Error errorWithCode:Error_Unexpected underlyingError:nil debugString:@"Pogoplug deviceid or serviceid not specified." file:__FILE__ line:__LINE__];
+        return [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:@"PogoplugAPI" comment:@"deviceid or serviceid not specified." file:__FILE__ line:__LINE__];
     }
     
     if (parameters) {
