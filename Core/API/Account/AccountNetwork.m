@@ -127,21 +127,8 @@
         [self getDetails:json exceptionCode:&exception message:&message];
     }
     
-    // error from response exception.
-    if (exception.length > 0) {
-        *error = [AccountError errorWithException:exception message:message response:(NSHTTPURLResponse *)response method:_requestPath comment:[NSString stringWithFormat:@"response JSON data: %@", json] file:__FILE__ line:__LINE__];
-        return nil;
-    }
-    
-    // error from HTTP response.
-    NSError *e = nil;
-    if ([response isKindOfClass:NSHTTPURLResponse.class]) {
-        e = [HttpError errorWithResponse:(NSHTTPURLResponse *)response];
-    }
-    
-    // for account apis, the response data must be a dictionary.
-    if (e || ![json isKindOfClass:NSDictionary.class]) {
-        *error = [CoreError errorWithCode:Error_Unexpected underlyingError:e method:@"AccountNetwork" comment:[NSString stringWithFormat:@"invalid response data: %@", json] file:__FILE__ line:__LINE__];
+    *error = [AccountError errorWithResponse:(NSHTTPURLResponse *)response json:json exception:exception message:message method:_requestPath file:__FILE__ line:__LINE__];
+    if (*error) {
         return nil;
     }
     

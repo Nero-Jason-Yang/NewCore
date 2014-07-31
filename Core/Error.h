@@ -189,6 +189,7 @@ typedef enum : int32_t {
                            method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
 + (BaseError *)errorWithException:(NSString *)exception message:(NSString *)message response:(NSHTTPURLResponse *)response
                            method:(NSString *)method comment:(NSString *)comment file:(char *)file line:(int)line;
++ (BaseError *)errorWithResponse:(NSHTTPURLResponse *)response json:(NSDictionary *)json exception:(NSString *)exception message:(NSString *)message method:(NSString *)method file:(char *)file line:(int)line;
 @end
 
 @interface PogoplugError : BaseError

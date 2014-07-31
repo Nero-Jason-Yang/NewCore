@@ -272,169 +272,92 @@
     }
 }
 
-#pragma mark errors
-
-- (NSError *)getErrorForPath:(NSString *)path statusCode:(NSInteger)statusCode exceptionCode:(NSString *)exceptionCode message:(NSString *)message
-{
-    NSError *error = nil;
-    
-    if ([path isEqualToString:AccountAPIPath_AuthNcsAuthorize]) {
-        error = [self getErrorForLogin:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    else if ([path isEqualToString:AccountAPIPath_AuthNcsRevoke]) {
-        error = [self getErrorForLogout:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    else if ([path isEqualToString:AccountAPIPath_AuthNcsPasswordchange]) {
-        error = [self getErrorForPasswordchange:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    else if ([path isEqualToString:AccountAPIPath_AuthNcsPasswordrenew]) {
-        error = [self getErrorForPasswordrenew:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    else if ([path isEqualToString:AccountAPIPath_UserAccepttos]) {
-        error = [self getErrorForAccepttos:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    else {
-        error = [self getUnknownErrorForPath:path data:nil statusCode:statusCode exceptionCode:exceptionCode message:message];
-    }
-    
-    return error;
-}
-
-- (NSError *)getErrorForLogin:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"data:1"]) {
-        return [AccountError errorWithCode:Error_Account_Login_DataMissing message:message];
-    }
-    if ([code isEqualToString:@"login:1"]) {
-        return [AccountError errorWithCode:Error_Account_Login_NicknameMissing message:message];
-    }
-    if ([code isEqualToString:@"login:2"]) {
-        return [AccountError errorWithCode:Error_Account_Login_PasswordMissing message:message];
-    }
-    if ([code isEqualToString:@"login:3"]) {
-        return [AccountError errorWithCode:Error_Account_Login_AccountInactived message:message];
-    }
-    if ([code isEqualToString:@"login:4"]) {
-        return [AccountError errorWithCode:Error_Account_Login_EmailPasswordMismatched message:message];
-    }
-    if ([code isEqualToString:@"login:6"]) {
-        return [AccountError errorWithCode:Error_Account_Login_TOSChanged message:message];
-    }
-    if ([code isEqualToString:@"login:7"]) {
-        return [AccountError errorWithCode:Error_Account_Login_NotFound message:message];
-    }
-    return nil;
-}
-
-- (NSError *)getErrorForLogout:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"register:1"]) {
-        return [AccountError errorWithCode:Error_Account_Register_NicknameMissing message:message];
-    }
-    if ([code isEqualToString:@"register:3"]) {
-        return [AccountError errorWithCode:Error_Account_Register_EmailMissing message:message];
-    }
-    if ([code isEqualToString:@"register:4"]) {
-        return [AccountError errorWithCode:Error_Account_Register_CountryMissing message:message];
-    }
-    if ([code isEqualToString:@"register:5"]) {
-        return [AccountError errorWithCode:Error_Account_Register_SecurityCodeMissing message:message];
-    }
-    if ([code isEqualToString:@"register:6"]) {
-        return [AccountError errorWithCode:Error_Account_Register_PasswordMissing message:message];
-    }
-    if ([code isEqualToString:@"register:7"]) {
-        return [AccountError errorWithCode:Error_Account_Register_ChecksumMissing message:message];
-    }
-    if ([code isEqualToString:@"register:8"]) {
-        return [AccountError errorWithCode:Error_Account_Register_ActivateFailed message:message];
-    }
-    if ([code isEqualToString:@"invalid:email:String:1202"]) {
-        return [AccountError errorWithCode:Error_Account_Register_AlreadyExisted message:message];
-    }
-    return nil;
-}
-
-- (NSError *)getErrorForPasswordchange:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"password:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_OldPasswordMissing message:message];
-    }
-    if ([code isEqualToString:@"password:2"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_NewPasswordMissing message:message];
-    }
-    if ([code isEqualToString:@"password:3"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_NewPasswordTooShort message:message];
-    }
-    if ([code isEqualToString:@"password:4"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_OldPasswordIncorrect message:message];
-    }
-    if ([code isEqualToString:@"invalid:email:String:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_EmailMissing message:message];
-    }
-    if ([code isEqualToString:@"user:passwordchange:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_NotFound message:message];
-    }
-    if ([code isEqualToString:@"invalid:passwordnew:String:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordChange_NewPasswordMissing message:message];
-    }
-    return nil;
-}
-
-- (NSError *)getErrorForPasswordrenew:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"invalid:email:String:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordRenew_EmailMissing message:message];
-    }
-    if ([code isEqualToString:@"user:passwordrenew:1"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordRenew_SendFailed message:message];
-    }
-    if ([code isEqualToString:@"user:passwordrenew:2"]) {
-        return [AccountError errorWithCode:Error_Account_PasswordRenew_NotEnoughTime message:message];
-    }
-    return nil;
-}
-
-- (NSError *)getErrorForAccepttos:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if ([code isEqualToString:@"email:missing"]) {
-        return [AccountError errorWithCode:Error_Account_AcceptTOS_EmailMissing message:message];
-    }
-    if ([code isEqualToString:@"tos:missing"]) {
-        return [AccountError errorWithCode:Error_Account_AcceptTOS_TOSMissing message:message];
-    }
-    if ([code isEqualToString:@"ots:invalid"]) {
-        return [AccountError errorWithCode:Error_Account_AcceptTOS_TOSInvalid message:message];
-    }
-    if (statusCode == 403) {
-        return [AccountError errorWithCode:Error_Account_AcceptTOS_TOSDateOld message:nil];
-    }
-    if (statusCode == 404) {
-        return [AccountError errorWithCode:Error_Account_AcceptTOS_NotFound message:nil];
-    }
-    return nil;
-}
-
-- (NSError *)getUnknownErrorForPath:(NSString *)requestPath data:(NSData *)data statusCode:(NSInteger)statusCode exceptionCode:(NSString *)code message:(NSString *)message
-{
-    if (code.length > 0) {
-        NSString *reason = [NSString stringWithFormat:@"Nero Account Error with HTTP status-code:%d, exception-code:%@, message:%@", (int)statusCode, code, message];
-        
-        //[[GAI sharedInstance].defaultTracker send:[GAIDictionaryBuilder createExceptionWithDescription:str withFatal:@NO].build];
-        
-        return [AccountError errorWithCode:Error_Account_Unknown message:message reason:reason];
-    }
-    
-    if (statusCode >= 400) {
-        return [AccountError errorWithStatusCode:statusCode];
-    }
-    
-    return nil;
-}
-
 + (AccountErrorCode)codeWithException:(NSString *)exception message:(NSString *)message response:(NSHTTPURLResponse *)response method:(NSString *)method
 {
-    // TODO
+    if ([method isEqualToString:AccountAPIPath_AuthNcsAuthorize]) {
+        if ([exception isEqualToString:@"data:1"]) {
+            return Error_Account_Login_DataMissing;
+        }
+        if ([exception isEqualToString:@"login:1"]) {
+            return Error_Account_Login_NicknameMissing;
+        }
+        if ([exception isEqualToString:@"login:2"]) {
+            return Error_Account_Login_PasswordMissing;
+        }
+        if ([exception isEqualToString:@"login:3"]) {
+            return Error_Account_Login_AccountInactived;
+        }
+        if ([exception isEqualToString:@"login:4"]) {
+            return Error_Account_Login_EmailPasswordMismatched;
+        }
+        if ([exception isEqualToString:@"login:6"]) {
+            return Error_Account_Login_TOSChanged;
+        }
+        if ([exception isEqualToString:@"login:7"]) {
+            return Error_Account_Login_NotFound;
+        }
+        return 0;
+    }
+    
+    if ([method isEqualToString:AccountAPIPath_AuthNcsRevoke]) {
+        return 0;
+    }
+    
+    if ([method isEqualToString:AccountAPIPath_AuthNcsPasswordchange]) {
+        if ([exception isEqualToString:@"password:1"]) {
+            return Error_Account_PasswordChange_OldPasswordMissing;
+        }
+        if ([exception isEqualToString:@"password:2"]) {
+            return Error_Account_PasswordChange_NewPasswordMissing;
+        }
+        if ([exception isEqualToString:@"password:3"]) {
+            return Error_Account_PasswordChange_NewPasswordTooShort;
+        }
+        if ([exception isEqualToString:@"password:4"]) {
+            return Error_Account_PasswordChange_OldPasswordIncorrect;
+        }
+        if ([exception isEqualToString:@"invalid:email:String:1"]) {
+            return Error_Account_PasswordChange_EmailMissing;
+        }
+        if ([exception isEqualToString:@"user:passwordchange:1"]) {
+            return Error_Account_PasswordChange_NotFound;
+        }
+        if ([exception isEqualToString:@"invalid:passwordnew:String:1"]) {
+            return Error_Account_PasswordChange_NewPasswordMissing;
+        }
+        return 0;
+    }
+    
+    if ([method isEqualToString:AccountAPIPath_AuthNcsPasswordrenew]) {
+        if ([exception isEqualToString:@"invalid:email:String:1"]) {
+            return Error_Account_PasswordRenew_EmailMissing;
+        }
+        if ([exception isEqualToString:@"user:passwordrenew:1"]) {
+            return Error_Account_PasswordRenew_SendFailed;
+        }
+        if ([exception isEqualToString:@"user:passwordrenew:2"]) {
+            return Error_Account_PasswordRenew_NotEnoughTime;
+        }
+        return 0;
+    }
+    
+    if ([method isEqualToString:AccountAPIPath_UserAccepttos]) {
+        if ([exception isEqualToString:@"email:missing"]) {
+            return Error_Account_AcceptTOS_EmailMissing;
+        }
+        if ([exception isEqualToString:@"tos:missing"]) {
+            return Error_Account_AcceptTOS_TOSMissing;
+        }
+        if ([exception isEqualToString:@"ots:invalid"]) {
+            return Error_Account_AcceptTOS_TOSInvalid;
+        }
+        if (response.statusCode == 403) {
+            return Error_Account_AcceptTOS_TOSDateOld;
+        }
+        if (response.statusCode == 404) {
+            return Error_Account_AcceptTOS_NotFound;
+        }
+    }
     
     return 0;
 }
@@ -468,6 +391,50 @@
     }
     
     return [[AccountError alloc] initWithDomain:AccountErrorDomain code:code underlyingError:underlyingError method:method comment:comment file:file line:line];
+}
+
++ (BaseError *)errorWithResponse:(NSHTTPURLResponse *)response json:(NSDictionary *)json exception:(NSString *)exception message:(NSString *)message method:(NSString *)method file:(char *)file line:(int)line
+{
+    HttpError *underlyingError = [HttpError errorWithResponse:response];
+    NSString *comment = (underlyingError || exception.length > 0) ? [NSString stringWithFormat:@"response data: %@", json] : nil;
+    
+    if (underlyingError) {
+        switch (underlyingError.code) {
+            case 401:
+                return [CoreError errorWithCode:Error_Unauthorized underlyingError:underlyingError method:method comment:comment file:file line:line];
+            case 503:
+                return [CoreError errorWithCode:Error_ServiceUnavailable underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+    }
+    
+    if (exception.length > 0) {
+        AccountErrorCode code = [self codeWithException:exception message:message response:response method:method];
+        
+        if (code != 0) {
+            return [[AccountError alloc] initWithDomain:AccountErrorDomain code:code underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+        else if (message.length > 0) {
+            return [[CoreError alloc] initWithDomain:CoreErrorDomain code:Error_Unknown underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+        else {
+            return [[CoreError alloc] initWithDomain:CoreErrorDomain code:Error_Unexpected underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+    }
+    
+    if (underlyingError) {
+        if ([method isEqualToString:AccountAPIPath_AuthNcsRevoke]) {
+            return [CoreError errorWithCode:Error_Failed underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+        else {
+            return [CoreError errorWithCode:Error_Unknown underlyingError:underlyingError method:method comment:comment file:file line:line];
+        }
+    }
+    
+    if (![json isKindOfClass:NSDictionary.class] && [method isEqualToString:AccountAPIPath_AuthNcsRevoke]) {
+        return [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:method comment:comment file:__FILE__ line:__LINE__];
+    }
+    
+    return nil;
 }
 
 @end
