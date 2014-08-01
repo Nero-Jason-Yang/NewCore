@@ -50,19 +50,19 @@
     NSParameterAssert(path.length > 0);
     
     if (0 == url.scheme.length || 0 == url.host.length) {
-        NSError *error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:@"AccountNetwork" comment:[NSString stringWithFormat:@"invalid base url:%@", url] file:__FILE__ line:__LINE__];
+        NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"invalid base url:%@", url] file:__FILE__ line:__LINE__];
         completion(nil, error);
         return;
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
-        NSError *error = [CoreError errorWithCode:Error_NetworkUnavailable underlyingError:nil method:@"AccountNetwork" comment:@"network is not reachable" file:__FILE__ line:__LINE__];
+        NSError *error = [Error errorWithCode:Error_NetworkUnavailable subCode:Error_None underlyingError:nil debugString:@"network is not reachable" file:__FILE__ line:__LINE__];
         completion(nil, error);
         return;
     }
     
     if (!authorization) {
-        NSError *error = [CoreError errorWithCode:Error_Unauthorized underlyingError:nil method:@"AccountNetwork" comment:@"authorization is not specified" file:__FILE__ line:__LINE__];
+        NSError *error = [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"authorization is not specified" file:__FILE__ line:__LINE__];
         completion(nil, error);
         return;
     }
@@ -91,7 +91,8 @@
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
         completion(responseObject, nil);
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        completion(nil, error);
+        NSError *e = [Error errorWithCode:Error_Failed subCode:Error_None underlyingError:error debugString:@"post failed." file:__FILE__ line:__LINE__];
+        completion(nil, e);
     }];
     
     [_operationQueue addOperation:operation];
@@ -127,7 +128,7 @@
         [self getDetails:json exceptionCode:&exception message:&message];
     }
     
-    *error = [AccountError errorWithResponse:(NSHTTPURLResponse *)response json:json exception:exception message:message method:_requestPath file:__FILE__ line:__LINE__];
+    *error = [Error tryGetErrorWithAccountResponse:(id)response JSONObject:json requestPath:_requestPath];
     if (*error) {
         return nil;
     }

@@ -25,7 +25,6 @@
 		EEB5501319862C0200F8A614 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EEB5501119862C0200F8A614 /* InfoPlist.strings */; };
 		EEB5501519862C0200F8A614 /* NewCoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5501419862C0200F8A614 /* NewCoreTests.m */; };
 		EEB55031198630D200F8A614 /* Core.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55024198630D200F8A614 /* Core.m */; };
-		EEB5508E1986448300F8A614 /* PogoplugAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550871986448300F8A614 /* PogoplugAPI.m */; };
 		EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5508B1986448300F8A614 /* PogoplugResponse.m */; };
 		EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5508D1986448300F8A614 /* File+Pogoplug.m */; };
 		EEB550D8198649E000F8A614 /* AFHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55098198649E000F8A614 /* AFHTTPRequestOperation.m */; };
@@ -58,12 +57,13 @@
 		EEB550F3198649E000F8A614 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D2198649E000F8A614 /* UIImageView+AFNetworking.m */; };
 		EEB550F4198649E000F8A614 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D5198649E000F8A614 /* UIProgressView+AFNetworking.m */; };
 		EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D7198649E000F8A614 /* UIWebView+AFNetworking.m */; };
-		EEB550FB198649FB00F8A614 /* AccountAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550F8198649FB00F8A614 /* AccountAPI.m */; };
 		EEB5510319864A8F00F8A614 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510219864A8F00F8A614 /* Utils.m */; };
-		EEB5510619864C5300F8A614 /* AccountNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510519864C5300F8A614 /* AccountNetwork.m */; };
 		EEB551091987895300F8A614 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB551081987895300F8A614 /* Error.m */; };
-		EEB5510C19878AAB00F8A614 /* PogoplugNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510B19878AAB00F8A614 /* PogoplugNetwork.m */; };
 		EEB5510F19879A1E00F8A614 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510E19879A1E00F8A614 /* File.m */; };
+		EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55115198B706F00F8A614 /* AccountAPI.m */; };
+		EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55117198B71E100F8A614 /* AccountNetwork.m */; };
+		EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55119198B737F00F8A614 /* PogoplugAPI.m */; };
+		EEB5511C198B73FC00F8A614 /* PogoplugNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,8 +102,6 @@
 		EEB5501419862C0200F8A614 /* NewCoreTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NewCoreTests.m; sourceTree = "<group>"; };
 		EEB55023198630D200F8A614 /* Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		EEB55024198630D200F8A614 /* Core.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Core.m; sourceTree = "<group>"; };
-		EEB550861986448300F8A614 /* PogoplugAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugAPI.h; sourceTree = "<group>"; };
-		EEB550871986448300F8A614 /* PogoplugAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugAPI.m; sourceTree = "<group>"; };
 		EEB5508A1986448300F8A614 /* PogoplugResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugResponse.h; sourceTree = "<group>"; };
 		EEB5508B1986448300F8A614 /* PogoplugResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugResponse.m; sourceTree = "<group>"; };
 		EEB5508C1986448300F8A614 /* File+Pogoplug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "File+Pogoplug.h"; sourceTree = "<group>"; };
@@ -172,17 +170,19 @@
 		EEB550D6198649E000F8A614 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
 		EEB550D7198649E000F8A614 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		EEB550F7198649FB00F8A614 /* AccountAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountAPI.h; sourceTree = "<group>"; };
-		EEB550F8198649FB00F8A614 /* AccountAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountAPI.m; sourceTree = "<group>"; };
 		EEB5510119864A8F00F8A614 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		EEB5510219864A8F00F8A614 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		EEB5510419864C5200F8A614 /* AccountNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountNetwork.h; sourceTree = "<group>"; };
-		EEB5510519864C5300F8A614 /* AccountNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountNetwork.m; sourceTree = "<group>"; };
 		EEB551071987895300F8A614 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
 		EEB551081987895300F8A614 /* Error.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Error.m; sourceTree = "<group>"; };
-		EEB5510A19878AAB00F8A614 /* PogoplugNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugNetwork.h; sourceTree = "<group>"; };
-		EEB5510B19878AAB00F8A614 /* PogoplugNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugNetwork.m; sourceTree = "<group>"; };
 		EEB5510D19879A1E00F8A614 /* File.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		EEB5510E19879A1E00F8A614 /* File.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = File.m; sourceTree = "<group>"; };
+		EEB55113198B6AAD00F8A614 /* PogoplugAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugAPI.h; sourceTree = "<group>"; };
+		EEB55114198B6AAD00F8A614 /* PogoplugNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugNetwork.h; sourceTree = "<group>"; };
+		EEB55115198B706F00F8A614 /* AccountAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountAPI.m; sourceTree = "<group>"; };
+		EEB55117198B71E100F8A614 /* AccountNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountNetwork.m; sourceTree = "<group>"; };
+		EEB55119198B737F00F8A614 /* PogoplugAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugAPI.m; sourceTree = "<group>"; };
+		EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugNetwork.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,10 +316,10 @@
 		EEB550851986448300F8A614 /* Pogoplug */ = {
 			isa = PBXGroup;
 			children = (
-				EEB550861986448300F8A614 /* PogoplugAPI.h */,
-				EEB550871986448300F8A614 /* PogoplugAPI.m */,
-				EEB5510A19878AAB00F8A614 /* PogoplugNetwork.h */,
-				EEB5510B19878AAB00F8A614 /* PogoplugNetwork.m */,
+				EEB55113198B6AAD00F8A614 /* PogoplugAPI.h */,
+				EEB55119198B737F00F8A614 /* PogoplugAPI.m */,
+				EEB55114198B6AAD00F8A614 /* PogoplugNetwork.h */,
+				EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */,
 				EEB5508A1986448300F8A614 /* PogoplugResponse.h */,
 				EEB5508B1986448300F8A614 /* PogoplugResponse.m */,
 				EEB5508C1986448300F8A614 /* File+Pogoplug.h */,
@@ -428,9 +428,9 @@
 			isa = PBXGroup;
 			children = (
 				EEB550F7198649FB00F8A614 /* AccountAPI.h */,
-				EEB550F8198649FB00F8A614 /* AccountAPI.m */,
+				EEB55115198B706F00F8A614 /* AccountAPI.m */,
 				EEB5510419864C5200F8A614 /* AccountNetwork.h */,
-				EEB5510519864C5300F8A614 /* AccountNetwork.m */,
+				EEB55117198B71E100F8A614 /* AccountNetwork.m */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -532,7 +532,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EEB550FB198649FB00F8A614 /* AccountAPI.m in Sources */,
 				EEB550EB198649E000F8A614 /* UIImage+GIF.m in Sources */,
 				EEB54FFF19862C0200F8A614 /* DetailViewController.m in Sources */,
 				EEB550D9198649E000F8A614 /* AFHTTPRequestOperationManager.m in Sources */,
@@ -541,10 +540,10 @@
 				EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */,
 				EEB551091987895300F8A614 /* Error.m in Sources */,
 				EEB550F2198649E000F8A614 /* UIButton+AFNetworking.m in Sources */,
+				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
 				EEB550F0198649E000F8A614 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
-				EEB5508E1986448300F8A614 /* PogoplugAPI.m in Sources */,
 				EEB550E5198649E000F8A614 /* SDWebImageDecoder.m in Sources */,
 				EEB550DE198649E000F8A614 /* AFURLRequestSerialization.m in Sources */,
 				EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */,
@@ -555,8 +554,8 @@
 				EEB550E2198649E000F8A614 /* NSData+ImageContentType.m in Sources */,
 				EEB5510F19879A1E00F8A614 /* File.m in Sources */,
 				EEB550E6198649E000F8A614 /* SDWebImageDownloader.m in Sources */,
-				EEB5510619864C5300F8A614 /* AccountNetwork.m in Sources */,
 				EEB550D8198649E000F8A614 /* AFHTTPRequestOperation.m in Sources */,
+				EEB5511C198B73FC00F8A614 /* PogoplugNetwork.m in Sources */,
 				EEB550DC198649E000F8A614 /* AFSecurityPolicy.m in Sources */,
 				EEB55031198630D200F8A614 /* Core.m in Sources */,
 				EEB550DB198649E000F8A614 /* AFNetworkReachabilityManager.m in Sources */,
@@ -568,10 +567,11 @@
 				EEB54FF319862C0200F8A614 /* AppDelegate.m in Sources */,
 				EEB550E9198649E000F8A614 /* SDWebImagePrefetcher.m in Sources */,
 				EEB54FEF19862C0200F8A614 /* main.m in Sources */,
+				EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */,
 				EEB550E7198649E000F8A614 /* SDWebImageDownloaderOperation.m in Sources */,
 				EEB550DF198649E000F8A614 /* AFURLResponseSerialization.m in Sources */,
+				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
 				EEB550E8198649E000F8A614 /* SDWebImageManager.m in Sources */,
-				EEB5510C19878AAB00F8A614 /* PogoplugNetwork.m in Sources */,
 				EEB550EF198649E000F8A614 /* AFNetworkActivityIndicatorManager.m in Sources */,
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,

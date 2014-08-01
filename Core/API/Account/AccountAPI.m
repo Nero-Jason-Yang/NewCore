@@ -48,7 +48,8 @@
                     }
                 }
             }
-            error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_AuthNcsAuthorize comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+            
+            error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         }
         completion(nil, error);
     }];
@@ -78,7 +79,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_AuthNcsRevoke comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -109,7 +110,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_AuthNcsPasswordchange comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -137,7 +138,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_AuthNcsPasswordrenew comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -161,7 +162,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_User comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(nil, error);
     }];
 }
@@ -192,7 +193,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_UserAccepttos comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
 }
@@ -221,7 +222,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_SubscriptionsPogoplugLogin comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(nil, nil, error);
     }];
 }
@@ -276,7 +277,7 @@
             }
         }
         
-        error = [CoreError errorWithCode:Error_Unexpected underlyingError:nil method:AccountAPIPath_SubscriptionsStorageAuth comment:[NSString stringWithFormat:@"invalid response data: %@", response] file:__FILE__ line:__LINE__];
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(0, error);
     }];
 }

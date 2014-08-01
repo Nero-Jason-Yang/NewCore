@@ -75,9 +75,9 @@
     if (0 == username.length || 0 == password.length) {
         NSError *error = nil;
         if (0 == username.length) {
-            error = [AccountError errorWithCode:Error_Account_Login_NicknameMissing response:nil method:@"CoreLogin" comment:@"not input username" file:__FILE__ line:__LINE__];
+            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_NicknameMissing underlyingError:nil debugString:@"not input username." file:__FILE__ line:__LINE__];
         } else {
-            error = [AccountError errorWithCode:Error_Account_Login_PasswordMissing response:nil method:@"CoreLogin" comment:@"not input password" file:__FILE__ line:__LINE__];
+            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_PasswordMissing underlyingError:nil debugString:@"not input password" file:__FILE__ line:__LINE__];
         }
         completion(error);
         return;
@@ -441,7 +441,7 @@
     NSString *accountToken = self.accountToken;
     if (!accountToken) {
         [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
-        return [CoreError errorWithCode:Error_Unauthorized underlyingError:nil method:@"CoreGetAccountToken" comment:@"no authorization stored." file:__FILE__ line:__LINE__];
+        return [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
     }
     *token = accountToken;
     return nil;
