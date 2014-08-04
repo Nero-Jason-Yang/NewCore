@@ -86,7 +86,7 @@
     self.accountState = AccountState_Logining;
     
     __weak typeof(self) wself = self;
-    [AccountAPI auth_ncs_authorize:self.accountApiUrl username:username password:password completion:^(NSString *authorization, NSError *error) {
+    [AccountAPI authorize:self.accountApiUrl username:username password:password completion:^(NSString *authorization, NSError *error) {
         __strong typeof(wself) sself = wself;
         [sself onLogin:error username:username authorization:authorization];
         completion(error);
@@ -105,7 +105,7 @@
     }
     
     __weak typeof(self) wself = self;
-    [AccountAPI auth_ncs_revoke:self.accountApiUrl authorization:authorization completion:^(NSError *error) {
+    [AccountAPI revoke:self.accountApiUrl authorization:authorization completion:^(NSError *error) {
         __strong typeof(wself) sself = wself;
         [sself onLogout:error];
         completion(error);
@@ -117,7 +117,7 @@
     NSParameterAssert(newPassword && oldPassword);
     NSParameterAssert(completion);
     
-    [AccountAPI auth_ncs_passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
+    [AccountAPI passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
 }
 
 - (void)forgotPassword:(NSString *)email completion:(Completion)completion
@@ -125,7 +125,7 @@
     NSParameterAssert(email);
     NSParameterAssert(completion);
     
-    [AccountAPI auth_ncs_passwordrenew:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
+    [AccountAPI passwordrenew:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
 }
 
 - (void)acceptTOS:(NSString *)email completion:(Completion)completion
@@ -133,7 +133,7 @@
     NSParameterAssert(email);
     NSParameterAssert(completion);
     
-    [AccountAPI user_accepttos:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
+    [AccountAPI accepttos:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
 }
 
 #pragma mark - account results

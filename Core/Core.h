@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Typedef.h"
+#import "Types.h"
 #import "Error.h"
 #import "File.h"
 

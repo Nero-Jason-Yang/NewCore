@@ -14,7 +14,7 @@
 
 @implementation AccountAPI
 
-+ (void)auth_ncs_authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *authorization, NSError *error))completion
++ (void)authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *authorization, NSError *error))completion
 {
     NSParameterAssert(completion);
     
@@ -55,7 +55,7 @@
     }];
 }
 
-+ (void)auth_ncs_revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSError *error))completion
++ (void)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     
@@ -84,7 +84,7 @@
     }];
 }
 
-+ (void)auth_ncs_passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSError *error))completion
++ (void)passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -115,7 +115,7 @@
     }];
 }
 
-+ (void)auth_ncs_passwordrenew:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
++ (void)passwordrenew:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -167,7 +167,7 @@
     }];
 }
 
-+ (void)user_accepttos:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
++ (void)accepttos:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -198,7 +198,7 @@
     }];
 }
 
-+ (void)subscriptions_pogoplug_login:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSString *apihost, NSString *token, NSError *error))completion
++ (void)pogopluglogin:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSString *apihost, NSString *token, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -227,7 +227,7 @@
     }];
 }
 
-+ (void)subscriptions_storage_auth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(int64_t freeSpace, NSError *error))completion
++ (void)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(int64_t freeSpace, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);

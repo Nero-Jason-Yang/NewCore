@@ -123,6 +123,10 @@ typedef enum : int32_t {
 - (ErrorSubCode)subCode;
 - (NSString *)localizedDescription;
 - (NSString *)localizedDescriptionWithComment:(NSString *)comment;
+
+// standard error creation.
 + (Error *)errorWithCode:(ErrorCode)code subCode:(ErrorSubCode)subCode underlyingError:(NSError *)underlyingError debugString:(NSString *)debugString file:(char *)file line:(int)line;
+
+// try to create error for response of account apis.
 + (Error *)tryGetErrorWithAccountResponse:(NSHTTPURLResponse *)response JSONObject:(NSDictionary *)json requestPath:(NSString *)path;
 @end

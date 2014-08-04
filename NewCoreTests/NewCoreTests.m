@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "Database.h"
 
 @interface NewCoreTests : XCTestCase
 

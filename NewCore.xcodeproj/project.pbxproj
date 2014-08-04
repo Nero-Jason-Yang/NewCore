@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE0036A7198F5AAB0002628D /* Database.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036A6198F5AAB0002628D /* Database.m */; };
+		EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */; };
+		EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B0198F64E00002628D /* NSURL+Utils.m */; };
+		EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B3198F652D0002628D /* NSDate+Pogoplug.m */; };
+		EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B6198F659F0002628D /* NSError+HTTP.m */; };
+		EE0036BA198F68930002628D /* NSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B9198F68930002628D /* NSBundle+Utils.m */; };
+		EE0036C2198F80EA0002628D /* DatabaseScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036C1198F80EA0002628D /* DatabaseScheme.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -57,7 +64,6 @@
 		EEB550F3198649E000F8A614 /* UIImageView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D2198649E000F8A614 /* UIImageView+AFNetworking.m */; };
 		EEB550F4198649E000F8A614 /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D5198649E000F8A614 /* UIProgressView+AFNetworking.m */; };
 		EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB550D7198649E000F8A614 /* UIWebView+AFNetworking.m */; };
-		EEB5510319864A8F00F8A614 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510219864A8F00F8A614 /* Utils.m */; };
 		EEB551091987895300F8A614 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB551081987895300F8A614 /* Error.m */; };
 		EEB5510F19879A1E00F8A614 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5510E19879A1E00F8A614 /* File.m */; };
 		EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55115198B706F00F8A614 /* AccountAPI.m */; };
@@ -77,7 +83,22 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		46B49C171987E37600F6E36C /* Typedef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Typedef.h; sourceTree = "<group>"; };
+		46B49C171987E37600F6E36C /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		EE0036A5198F5AAB0002628D /* Database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Database.h; sourceTree = "<group>"; };
+		EE0036A6198F5AAB0002628D /* Database.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Database.m; sourceTree = "<group>"; };
+		EE0036A9198F635E0002628D /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		EE0036AC198F63720002628D /* NSManagedObjectContext+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Utils.h"; sourceTree = "<group>"; };
+		EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+Utils.m"; sourceTree = "<group>"; };
+		EE0036AF198F64E00002628D /* NSURL+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+Utils.h"; sourceTree = "<group>"; };
+		EE0036B0198F64E00002628D /* NSURL+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+Utils.m"; sourceTree = "<group>"; };
+		EE0036B2198F652D0002628D /* NSDate+Pogoplug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+Pogoplug.h"; sourceTree = "<group>"; };
+		EE0036B3198F652D0002628D /* NSDate+Pogoplug.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+Pogoplug.m"; sourceTree = "<group>"; };
+		EE0036B5198F659F0002628D /* NSError+HTTP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSError+HTTP.h"; sourceTree = "<group>"; };
+		EE0036B6198F659F0002628D /* NSError+HTTP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+HTTP.m"; sourceTree = "<group>"; };
+		EE0036B8198F68930002628D /* NSBundle+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Utils.h"; sourceTree = "<group>"; };
+		EE0036B9198F68930002628D /* NSBundle+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Utils.m"; sourceTree = "<group>"; };
+		EE0036C0198F80EA0002628D /* DatabaseScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseScheme.h; sourceTree = "<group>"; };
+		EE0036C1198F80EA0002628D /* DatabaseScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseScheme.m; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -170,8 +191,6 @@
 		EEB550D6198649E000F8A614 /* UIWebView+AFNetworking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+AFNetworking.h"; sourceTree = "<group>"; };
 		EEB550D7198649E000F8A614 /* UIWebView+AFNetworking.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		EEB550F7198649FB00F8A614 /* AccountAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountAPI.h; sourceTree = "<group>"; };
-		EEB5510119864A8F00F8A614 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
-		EEB5510219864A8F00F8A614 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Utils.m; sourceTree = "<group>"; };
 		EEB5510419864C5200F8A614 /* AccountNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountNetwork.h; sourceTree = "<group>"; };
 		EEB551071987895300F8A614 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
 		EEB551081987895300F8A614 /* Error.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Error.m; sourceTree = "<group>"; };
@@ -211,6 +230,33 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EE0036A4198F5A960002628D /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				EE0036A5198F5AAB0002628D /* Database.h */,
+				EE0036A6198F5AAB0002628D /* Database.m */,
+				EE0036C0198F80EA0002628D /* DatabaseScheme.h */,
+				EE0036C1198F80EA0002628D /* DatabaseScheme.m */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
+		EE0036A8198F635E0002628D /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				EE0036A9198F635E0002628D /* Utils.h */,
+				EE0036B8198F68930002628D /* NSBundle+Utils.h */,
+				EE0036B9198F68930002628D /* NSBundle+Utils.m */,
+				EE0036B5198F659F0002628D /* NSError+HTTP.h */,
+				EE0036B6198F659F0002628D /* NSError+HTTP.m */,
+				EE0036AC198F63720002628D /* NSManagedObjectContext+Utils.h */,
+				EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */,
+				EE0036AF198F64E00002628D /* NSURL+Utils.h */,
+				EE0036B0198F64E00002628D /* NSURL+Utils.m */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		EEB54FD419862C0200F8A614 = {
 			isa = PBXGroup;
 			children = (
@@ -297,8 +343,9 @@
 				EEB551081987895300F8A614 /* Error.m */,
 				EEB5510D19879A1E00F8A614 /* File.h */,
 				EEB5510E19879A1E00F8A614 /* File.m */,
-				46B49C171987E37600F6E36C /* Typedef.h */,
+				46B49C171987E37600F6E36C /* Types.h */,
 				EEB550371986314C00F8A614 /* API */,
+				EE0036A4198F5A960002628D /* Database */,
 				EEB55095198649E000F8A614 /* References */,
 			);
 			path = Core;
@@ -324,6 +371,8 @@
 				EEB5508B1986448300F8A614 /* PogoplugResponse.m */,
 				EEB5508C1986448300F8A614 /* File+Pogoplug.h */,
 				EEB5508D1986448300F8A614 /* File+Pogoplug.m */,
+				EE0036B2198F652D0002628D /* NSDate+Pogoplug.h */,
+				EE0036B3198F652D0002628D /* NSDate+Pogoplug.m */,
 			);
 			path = Pogoplug;
 			sourceTree = "<group>";
@@ -331,8 +380,7 @@
 		EEB55095198649E000F8A614 /* References */ = {
 			isa = PBXGroup;
 			children = (
-				EEB5510119864A8F00F8A614 /* Utils.h */,
-				EEB5510219864A8F00F8A614 /* Utils.m */,
+				EE0036A8198F635E0002628D /* Utils */,
 				EEB550AA198649E000F8A614 /* SDWebImage */,
 				EEB55096198649E000F8A614 /* AFNetworking */,
 				EEB550C8198649E000F8A614 /* UIKit+AFNetworking */,
@@ -539,6 +587,7 @@
 				EEB550DD198649E000F8A614 /* AFURLConnectionOperation.m in Sources */,
 				EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */,
 				EEB551091987895300F8A614 /* Error.m in Sources */,
+				EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */,
 				EEB550F2198649E000F8A614 /* UIButton+AFNetworking.m in Sources */,
 				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
@@ -548,10 +597,11 @@
 				EEB550DE198649E000F8A614 /* AFURLRequestSerialization.m in Sources */,
 				EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */,
 				EEB550DA198649E000F8A614 /* AFHTTPSessionManager.m in Sources */,
+				EE0036A7198F5AAB0002628D /* Database.m in Sources */,
 				EEB550F1198649E000F8A614 /* UIAlertView+AFNetworking.m in Sources */,
-				EEB5510319864A8F00F8A614 /* Utils.m in Sources */,
 				EEB550EE198649E000F8A614 /* UIImageView+WebCache.m in Sources */,
 				EEB550E2198649E000F8A614 /* NSData+ImageContentType.m in Sources */,
+				EE0036BA198F68930002628D /* NSBundle+Utils.m in Sources */,
 				EEB5510F19879A1E00F8A614 /* File.m in Sources */,
 				EEB550E6198649E000F8A614 /* SDWebImageDownloader.m in Sources */,
 				EEB550D8198649E000F8A614 /* AFHTTPRequestOperation.m in Sources */,
@@ -565,17 +615,21 @@
 				EEB550F4198649E000F8A614 /* UIProgressView+AFNetworking.m in Sources */,
 				EEB550E1198649E000F8A614 /* MKAnnotationView+WebCache.m in Sources */,
 				EEB54FF319862C0200F8A614 /* AppDelegate.m in Sources */,
+				EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */,
 				EEB550E9198649E000F8A614 /* SDWebImagePrefetcher.m in Sources */,
 				EEB54FEF19862C0200F8A614 /* main.m in Sources */,
 				EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */,
+				EE0036C2198F80EA0002628D /* DatabaseScheme.m in Sources */,
 				EEB550E7198649E000F8A614 /* SDWebImageDownloaderOperation.m in Sources */,
 				EEB550DF198649E000F8A614 /* AFURLResponseSerialization.m in Sources */,
 				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
 				EEB550E8198649E000F8A614 /* SDWebImageManager.m in Sources */,
 				EEB550EF198649E000F8A614 /* AFNetworkActivityIndicatorManager.m in Sources */,
+				EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */,
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,
 				EEB550E3198649E000F8A614 /* SDImageCache.m in Sources */,
+				EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

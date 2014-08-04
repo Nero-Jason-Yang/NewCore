@@ -1,4 +1,5 @@
 #import "PogoplugResponse.h"
+#import "NSDate+Pogoplug.h"
 
 @interface PogoplugResponse_User ()
 - (id)initWithDictionary:(NSDictionary *)dictionary;

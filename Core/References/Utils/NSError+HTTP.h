@@ -1,33 +1,16 @@
 //
-//  Utils.h
+//  NSError+HTTP.h
 //  NewCore
 //
-//  Created by Jason Yang on 14-7-28.
+//  Created by Jason Yang on 14-8-4.
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-#define opt // optional parameter indicator
-
-@interface Utils : NSObject
-
-@end
-
-
-@interface NSURL (Utils)
-+ (NSURL *)URLWithPath:(NSString *)path relativeToURL:(NSURL *)url;
-+ (NSURL *)URLWithScheme:(NSString *)scheme relativeToURL:(NSURL *)url;
-@end
-
-@interface NSDate (Pogoplug)
-+ (id)dateWithPogoplugTimeString:(NSString *)string;
-- (NSString *)pogoplugTimeString;
-@end
-
-@interface NSError (HTTP)
 #define HTTPErrorDomain @"HTTP"
 #define HTTPHeaderFieldsErrorKey @"HTTPHeaderFields" // object is type of NSDictionary.
+
 enum {
     HTTPErrorBadRequest            = 400,
     HTTPErrorUnauthorized          = 401,
@@ -59,5 +42,9 @@ enum {
     HTTPErrorLoopDetected          = 508,
     HTTPErrorNotExtended           = 510,
 };
+
+@interface NSError (HTTP)
+
 + (id)errorWithResponse:(NSHTTPURLResponse *)response;
+
 @end
