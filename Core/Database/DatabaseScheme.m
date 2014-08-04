@@ -10,26 +10,31 @@
 
 @implementation DatabaseScheme
 
-- (id)initWithBuildNumber:(NSUInteger)buildNumber upgrader:(id)upgrader selector:(SEL)selector;
+- (id)initWithBuildNumber:(NSUInteger)buildNumber storeName:(NSString *)storeName modelName:(NSString *)modelName upgrader:(id)upgrader selector:(SEL)selector
 {
     if (self = [super init]) {
         _buildNumber = buildNumber;
+        _storeName = storeName;
+        _modelName = modelName;
         _upgrader = upgrader;
         _selector = selector;
+        _storeURL = [DatabaseScheme storeURLWithName:storeName forBuildNumber:buildNumber];
+        _modelURL = [DatabaseScheme modelURLWithName:modelName];
     }
     return self;
 }
 
-+ (NSURL *)storeURLForBuildNumber:(NSUInteger)buildNumber
++ (NSURL *)storeURLWithName:(NSString *)name forBuildNumber:(NSUInteger)buildNumber
 {
-    // TODO
-    return nil;
+    NSURL *docURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
+    NSURL *baseURL = [docURL URLByAppendingPathComponent:@"Database"];
+    NSURL *storeURL = [baseURL URLByAppendingPathComponent:[name stringByAppendingFormat:@".%d", buildNumber]];
+    return [storeURL URLByAppendingPathExtension:@"sqlite"];
 }
 
-+ (NSURL *)modelURLForBuildNumber:(NSUInteger)buildNumber
++ (NSURL *)modelURLWithName:(NSString *)name
 {
-    // TODO
-    return nil;
+    return [[NSBundle mainBundle] URLForResource:name withExtension:@"momd"];
 }
 
 @end

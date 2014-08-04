@@ -23,20 +23,6 @@
     return instance;
 }
 
-- (NSArray *)allSchemes
-{
-    static NSArray *schemes = nil;
-    
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        schemes = @[[[DatabaseScheme alloc] initWithBuildNumber:0 upgrader:self selector:@selector(setupDatabase)],
-                    [[DatabaseScheme alloc] initWithBuildNumber:2 upgrader:self selector:@selector(upgradeDatabase2)],
-                    ];
-    });
-    
-    return schemes;
-}
-
 - (id)init
 {
     if (self = [super init]) {
@@ -45,32 +31,54 @@
     return self;
 }
 
+- (NSArray *)allSchemes
+{
+    NSArray *schemes =
+    @[[[DatabaseScheme alloc] initWithBuildNumber:1 storeName:@"Database" modelName:@"Database" upgrader:self selector:@selector(upgradeDatabase1:)],
+      [[DatabaseScheme alloc] initWithBuildNumber:0 storeName:@"Database" modelName:@"Database" upgrader:self selector:@selector(setupDatabase:)]];
+    return schemes;
+}
+
 - (void)tryUpgradeDatabaseWithSchemes:(NSArray *)schemes at:(NSUInteger)index
 {
-    if (index < schemes.count) {
-        DatabaseScheme *scheme = schemes[index];
-        NSURL *storeURL = scheme.storeURL;
-        if (storeURL) {
-            if (![[NSFileManager defaultManager] fileExistsAtPath:storeURL.path]) {
-                [self tryUpgradeDatabaseWithSchemes:schemes at:index+1];
-                if ([scheme.upgrader respondsToSelector:scheme.selector]) {
-                    [scheme.upgrader performSelector:scheme.selector];
-                }
-            }
-        }
+    if (index >= schemes.count) {
+        return; // finished trying all schemes.
+    }
+    
+    DatabaseScheme *scheme = schemes[index];
+    NSParameterAssert([scheme isKindOfClass:DatabaseScheme.class]);
+    NSString *path = scheme.storeURL.path;
+    NSParameterAssert(path.length > 0);
+    
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        return; // database at index already created.
+    }
+    
+    // try to upgrade database to previous scheme.
+    [self tryUpgradeDatabaseWithSchemes:schemes at:index+1];
+    
+    // upgrade database with current scheme.
+    NSParameterAssert(scheme.upgrader && scheme.selector);
+    NSParameterAssert([scheme.upgrader respondsToSelector:scheme.selector]);
+    if ([scheme.upgrader respondsToSelector:scheme.selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        [scheme.upgrader performSelector:scheme.selector withObject:scheme];
+#pragma clang diagnostic pop
+        return;
     }
 }
 
 #pragma mark database upgraders
 
-- (void)setupDatabase
+- (void)setupDatabase:(DatabaseScheme *)scheme
 {
-    
+    // TODO
 }
 
-- (void)upgradeDatabase2
+- (void)upgradeDatabase1:(DatabaseScheme *)scheme
 {
-    
+    // TODO
 }
 
 @end

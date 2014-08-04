@@ -10,12 +10,16 @@
 
 @interface DatabaseScheme : NSObject
 
-@property (nonatomic,readonly) NSUInteger buildNumber;
+@property (nonatomic,readonly) NSUInteger buildNumber; // app build number
+@property (nonatomic,readonly) NSString *storeName; // database store name => store URL
+@property (nonatomic,readonly) NSString *modelName; // database model name => model URL
+
 @property (nonatomic,readonly,weak) id upgrader;
 @property (nonatomic,readonly) SEL selector;
-@property (nonatomic,readonly) NSURL *modelURL;
-@property (nonatomic,readonly) NSURL *storeURL;
 
-- (id)initWithBuildNumber:(NSUInteger)buildNumber upgrader:(id)upgrader selector:(SEL)selector;
+@property (nonatomic,readonly) NSURL *storeURL;
+@property (nonatomic,readonly) NSURL *modelURL;
+
+- (id)initWithBuildNumber:(NSUInteger)buildNumber storeName:(NSString *)storeName modelName:(NSString *)modelName upgrader:(id)upgrader selector:(SEL)selector;
 
 @end
