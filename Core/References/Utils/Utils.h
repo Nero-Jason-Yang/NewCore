@@ -9,11 +9,11 @@
 #import <Foundation/Foundation.h>
 
 #define opt // optional parameter indicator
+#define _PerformSelectorBegin _Pragma("clang diagnostic push") _Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"")
+#define _PerformSelectorEnd   _Pragma("clang diagnostic pop")
 
 #import "NSBundle+Utils.h"
 #import "NSError+HTTP.h"
 #import "NSManagedObjectContext+Utils.h"
 #import "NSURL+Utils.h"
-
-#define _PerformSelectorBegin _Pragma("clang diagnostic push")  _Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"")
-#define _PerformSelectorEnd   _Pragma("clang diagnostic pop")
+#import "Database.h"

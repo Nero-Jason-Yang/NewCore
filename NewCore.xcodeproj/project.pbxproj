@@ -7,13 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EE0036A7198F5AAB0002628D /* Database.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036A6198F5AAB0002628D /* Database.m */; };
 		EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */; };
 		EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B0198F64E00002628D /* NSURL+Utils.m */; };
 		EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B3198F652D0002628D /* NSDate+Pogoplug.m */; };
 		EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B6198F659F0002628D /* NSError+HTTP.m */; };
 		EE0036BA198F68930002628D /* NSBundle+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B9198F68930002628D /* NSBundle+Utils.m */; };
-		EE0036C2198F80EA0002628D /* DatabaseScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036C1198F80EA0002628D /* DatabaseScheme.m */; };
+		EE0036CA19936C9D0002628D /* Backup.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EE0036C819936C9D0002628D /* Backup.xcdatamodeld */; };
+		EE0036CD19936CB50002628D /* BackupDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036CC19936CB50002628D /* BackupDatabase.m */; };
+		EE0036D319936D1F0002628D /* BackupService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036D219936D1F0002628D /* BackupService.m */; };
+		EE0036D6199372150002628D /* BackupFile.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036D5199372150002628D /* BackupFile.m */; };
+		EE0036DB1993731D0002628D /* Database.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036D81993731D0002628D /* Database.m */; };
+		EE0036DF1993766C0002628D /* Browsing.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EE0036DD1993766C0002628D /* Browsing.xcdatamodeld */; };
+		EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E11993767D0002628D /* BrowsingDatabase.m */; };
+		EE0036E5199376900002628D /* BrowsingService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E4199376900002628D /* BrowsingService.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -84,8 +90,6 @@
 
 /* Begin PBXFileReference section */
 		46B49C171987E37600F6E36C /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
-		EE0036A5198F5AAB0002628D /* Database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Database.h; sourceTree = "<group>"; };
-		EE0036A6198F5AAB0002628D /* Database.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Database.m; sourceTree = "<group>"; };
 		EE0036A9198F635E0002628D /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		EE0036AC198F63720002628D /* NSManagedObjectContext+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Utils.h"; sourceTree = "<group>"; };
 		EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+Utils.m"; sourceTree = "<group>"; };
@@ -97,8 +101,20 @@
 		EE0036B6198F659F0002628D /* NSError+HTTP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSError+HTTP.m"; sourceTree = "<group>"; };
 		EE0036B8198F68930002628D /* NSBundle+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+Utils.h"; sourceTree = "<group>"; };
 		EE0036B9198F68930002628D /* NSBundle+Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+Utils.m"; sourceTree = "<group>"; };
-		EE0036C0198F80EA0002628D /* DatabaseScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DatabaseScheme.h; sourceTree = "<group>"; };
-		EE0036C1198F80EA0002628D /* DatabaseScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DatabaseScheme.m; sourceTree = "<group>"; };
+		EE0036C919936C9D0002628D /* Backup.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Backup.xcdatamodel; sourceTree = "<group>"; };
+		EE0036CB19936CB50002628D /* BackupDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupDatabase.h; sourceTree = "<group>"; };
+		EE0036CC19936CB50002628D /* BackupDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupDatabase.m; sourceTree = "<group>"; };
+		EE0036D119936D1F0002628D /* BackupService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupService.h; sourceTree = "<group>"; };
+		EE0036D219936D1F0002628D /* BackupService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupService.m; sourceTree = "<group>"; };
+		EE0036D4199372150002628D /* BackupFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupFile.h; sourceTree = "<group>"; };
+		EE0036D5199372150002628D /* BackupFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupFile.m; sourceTree = "<group>"; };
+		EE0036D71993731D0002628D /* Database.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Database.h; sourceTree = "<group>"; };
+		EE0036D81993731D0002628D /* Database.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Database.m; sourceTree = "<group>"; };
+		EE0036DE1993766C0002628D /* Browsing.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Browsing.xcdatamodel; sourceTree = "<group>"; };
+		EE0036E01993767D0002628D /* BrowsingDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowsingDatabase.h; sourceTree = "<group>"; };
+		EE0036E11993767D0002628D /* BrowsingDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingDatabase.m; sourceTree = "<group>"; };
+		EE0036E3199376900002628D /* BrowsingService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowsingService.h; sourceTree = "<group>"; };
+		EE0036E4199376900002628D /* BrowsingService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingService.m; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -230,17 +246,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EE0036A4198F5A960002628D /* Database */ = {
-			isa = PBXGroup;
-			children = (
-				EE0036A5198F5AAB0002628D /* Database.h */,
-				EE0036A6198F5AAB0002628D /* Database.m */,
-				EE0036C0198F80EA0002628D /* DatabaseScheme.h */,
-				EE0036C1198F80EA0002628D /* DatabaseScheme.m */,
-			);
-			path = Database;
-			sourceTree = "<group>";
-		};
 		EE0036A8198F635E0002628D /* Utils */ = {
 			isa = PBXGroup;
 			children = (
@@ -253,8 +258,36 @@
 				EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */,
 				EE0036AF198F64E00002628D /* NSURL+Utils.h */,
 				EE0036B0198F64E00002628D /* NSURL+Utils.m */,
+				EE0036D71993731D0002628D /* Database.h */,
+				EE0036D81993731D0002628D /* Database.m */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		EE0036C619936C270002628D /* Backup */ = {
+			isa = PBXGroup;
+			children = (
+				EE0036C819936C9D0002628D /* Backup.xcdatamodeld */,
+				EE0036CB19936CB50002628D /* BackupDatabase.h */,
+				EE0036CC19936CB50002628D /* BackupDatabase.m */,
+				EE0036D4199372150002628D /* BackupFile.h */,
+				EE0036D5199372150002628D /* BackupFile.m */,
+				EE0036D119936D1F0002628D /* BackupService.h */,
+				EE0036D219936D1F0002628D /* BackupService.m */,
+			);
+			path = Backup;
+			sourceTree = "<group>";
+		};
+		EE0036C719936C270002628D /* Browsing */ = {
+			isa = PBXGroup;
+			children = (
+				EE0036DD1993766C0002628D /* Browsing.xcdatamodeld */,
+				EE0036E01993767D0002628D /* BrowsingDatabase.h */,
+				EE0036E11993767D0002628D /* BrowsingDatabase.m */,
+				EE0036E3199376900002628D /* BrowsingService.h */,
+				EE0036E4199376900002628D /* BrowsingService.m */,
+			);
+			path = Browsing;
 			sourceTree = "<group>";
 		};
 		EEB54FD419862C0200F8A614 = {
@@ -345,7 +378,8 @@
 				EEB5510E19879A1E00F8A614 /* File.m */,
 				46B49C171987E37600F6E36C /* Types.h */,
 				EEB550371986314C00F8A614 /* API */,
-				EE0036A4198F5A960002628D /* Database */,
+				EE0036C619936C270002628D /* Backup */,
+				EE0036C719936C270002628D /* Browsing */,
 				EEB55095198649E000F8A614 /* References */,
 			);
 			path = Core;
@@ -589,16 +623,20 @@
 				EEB551091987895300F8A614 /* Error.m in Sources */,
 				EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */,
 				EEB550F2198649E000F8A614 /* UIButton+AFNetworking.m in Sources */,
+				EE0036E5199376900002628D /* BrowsingService.m in Sources */,
+				EE0036DF1993766C0002628D /* Browsing.xcdatamodeld in Sources */,
 				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
 				EEB550F0198649E000F8A614 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
 				EEB550E5198649E000F8A614 /* SDWebImageDecoder.m in Sources */,
 				EEB550DE198649E000F8A614 /* AFURLRequestSerialization.m in Sources */,
+				EE0036DB1993731D0002628D /* Database.m in Sources */,
 				EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */,
 				EEB550DA198649E000F8A614 /* AFHTTPSessionManager.m in Sources */,
-				EE0036A7198F5AAB0002628D /* Database.m in Sources */,
 				EEB550F1198649E000F8A614 /* UIAlertView+AFNetworking.m in Sources */,
+				EE0036CA19936C9D0002628D /* Backup.xcdatamodeld in Sources */,
+				EE0036D6199372150002628D /* BackupFile.m in Sources */,
 				EEB550EE198649E000F8A614 /* UIImageView+WebCache.m in Sources */,
 				EEB550E2198649E000F8A614 /* NSData+ImageContentType.m in Sources */,
 				EE0036BA198F68930002628D /* NSBundle+Utils.m in Sources */,
@@ -613,13 +651,13 @@
 				EEB550F3198649E000F8A614 /* UIImageView+AFNetworking.m in Sources */,
 				EEB550E4198649E000F8A614 /* SDWebImageCompat.m in Sources */,
 				EEB550F4198649E000F8A614 /* UIProgressView+AFNetworking.m in Sources */,
+				EE0036D319936D1F0002628D /* BackupService.m in Sources */,
 				EEB550E1198649E000F8A614 /* MKAnnotationView+WebCache.m in Sources */,
 				EEB54FF319862C0200F8A614 /* AppDelegate.m in Sources */,
 				EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */,
 				EEB550E9198649E000F8A614 /* SDWebImagePrefetcher.m in Sources */,
 				EEB54FEF19862C0200F8A614 /* main.m in Sources */,
 				EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */,
-				EE0036C2198F80EA0002628D /* DatabaseScheme.m in Sources */,
 				EEB550E7198649E000F8A614 /* SDWebImageDownloaderOperation.m in Sources */,
 				EEB550DF198649E000F8A614 /* AFURLResponseSerialization.m in Sources */,
 				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
@@ -629,6 +667,8 @@
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,
 				EEB550E3198649E000F8A614 /* SDImageCache.m in Sources */,
+				EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */,
+				EE0036CD19936CB50002628D /* BackupDatabase.m in Sources */,
 				EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -846,6 +886,29 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		EE0036C819936C9D0002628D /* Backup.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				EE0036C919936C9D0002628D /* Backup.xcdatamodel */,
+			);
+			currentVersion = EE0036C919936C9D0002628D /* Backup.xcdatamodel */;
+			path = Backup.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+		EE0036DD1993766C0002628D /* Browsing.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				EE0036DE1993766C0002628D /* Browsing.xcdatamodel */,
+			);
+			currentVersion = EE0036DE1993766C0002628D /* Browsing.xcdatamodel */;
+			path = Browsing.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = EEB54FD519862C0200F8A614 /* Project object */;
 }
