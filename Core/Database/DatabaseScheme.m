@@ -28,7 +28,7 @@
 {
     NSURL *docURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] lastObject];
     NSURL *baseURL = [docURL URLByAppendingPathComponent:@"Database"];
-    NSURL *storeURL = [baseURL URLByAppendingPathComponent:[name stringByAppendingFormat:@".%d", buildNumber]];
+    NSURL *storeURL = [baseURL URLByAppendingPathComponent:[name stringByAppendingFormat:@".%lu", (unsigned long)buildNumber]];
     return [storeURL URLByAppendingPathExtension:@"sqlite"];
 }
 

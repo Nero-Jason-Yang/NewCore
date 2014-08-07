@@ -45,6 +45,7 @@
         return; // finished trying all schemes.
     }
     
+    // get scheme.
     DatabaseScheme *scheme = schemes[index];
     NSParameterAssert([scheme isKindOfClass:DatabaseScheme.class]);
     NSString *path = scheme.storeURL.path;
@@ -57,14 +58,13 @@
     // try to upgrade database to previous scheme.
     [self tryUpgradeDatabaseWithSchemes:schemes at:index+1];
     
-    // upgrade database with current scheme.
+    // upgrade database with scheme.
     NSParameterAssert(scheme.upgrader && scheme.selector);
     NSParameterAssert([scheme.upgrader respondsToSelector:scheme.selector]);
     if ([scheme.upgrader respondsToSelector:scheme.selector]) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+        _PerformSelectorBegin
         [scheme.upgrader performSelector:scheme.selector withObject:scheme];
-#pragma clang diagnostic pop
+        _PerformSelectorEnd
         return;
     }
 }

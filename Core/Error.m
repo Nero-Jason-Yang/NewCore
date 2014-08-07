@@ -13,14 +13,14 @@
 
 - (ErrorCode)code
 {
-    return [super code];
+    return (ErrorCode)[super code];
 }
 
 - (ErrorSubCode)subCode
 {
     NSNumber *value = [self userInfo][SubCodeErrorKey];
     if ([value isKindOfClass:NSNumber.class]) {
-        return value.integerValue;
+        return (ErrorSubCode)value.integerValue;
     }
     return Error_None;
 }
