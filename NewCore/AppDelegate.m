@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "Core.h"
 
 #import "MasterViewController.h"
 
@@ -14,6 +15,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    [Core sharedInstance];
     return YES;
 }
 

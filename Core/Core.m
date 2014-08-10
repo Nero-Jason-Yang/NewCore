@@ -7,6 +7,7 @@
 //
 
 #import "Core.h"
+#import "AFNetworking.h"
 #import "AccountAPI.h"
 #import "PogoplugAPI.h"
 #import "PogoplugResponse.h"
@@ -15,14 +16,14 @@
 @interface Core ()
 // account
 @property (nonatomic) NSURL *accountApiUrl;
-@property (nonatomic) NSString *accountToken;
+@property (nonatomic) NSString *accountAuthorization;
 @property (nonatomic) NSString *accountEmail;
 @property (nonatomic) AccountState accountState;
 // storage
 @property (nonatomic) NSURL *storageApiUrl; // subscription storage api url.
 @property (nonatomic) NSString *storageToken;
 @property (nonatomic) NSObject *storageTokenLocker;
-@property (nonatomic) NSDate *lastStorageAccessDate;
+@property (nonatomic) NSDate *storageTokenRefreshDate;
 @property (nonatomic) NSString *pogoplugDeviceID;
 @property (nonatomic) NSString *pogoplugServiceID;
 @property (nonatomic) NSURL *pogoplugServiceApiUrl; // pogoplug service api url.
@@ -59,8 +60,11 @@
 - (id)init
 {
     if (self = [super init]) {
-        self.accountApiUrl = [NSURL URLWithString:@"https://services.my.nerobackitup.com/api"];
+        [[AFNetworkReachabilityManager sharedManager] startMonitoring];
+        
+        self.accountApiUrl = [NSURL URLWithString:@"https://services.my.nerobackitup.com"];
         self.storageTokenLocker = [[NSObject alloc] init];
+        self.storageTokenRefreshDate = [NSDate dateWithTimeIntervalSince1970:0];
     }
     return self;
 }
@@ -97,7 +101,7 @@
 {
     NSParameterAssert(completion);
     
-    NSString *authorization = self.accountToken;
+    NSString *authorization = self.accountAuthorization;
     if (!authorization) {
         self.accountState = AccountState_Logouted;
         completion(nil);
@@ -117,7 +121,7 @@
     NSParameterAssert(newPassword && oldPassword);
     NSParameterAssert(completion);
     
-    [AccountAPI passwordchange:self.accountApiUrl authorization:self.accountToken email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
+    [AccountAPI passwordchange:self.accountApiUrl authorization:self.accountAuthorization email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
 }
 
 - (void)forgotPassword:(NSString *)email completion:(Completion)completion
@@ -125,7 +129,7 @@
     NSParameterAssert(email);
     NSParameterAssert(completion);
     
-    [AccountAPI passwordrenew:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
+    [AccountAPI passwordrenew:self.accountApiUrl authorization:self.accountAuthorization email:email completion:completion];
 }
 
 - (void)acceptTOS:(NSString *)email completion:(Completion)completion
@@ -133,7 +137,7 @@
     NSParameterAssert(email);
     NSParameterAssert(completion);
     
-    [AccountAPI accepttos:self.accountApiUrl authorization:self.accountToken email:email completion:completion];
+    [AccountAPI accepttos:self.accountApiUrl authorization:self.accountAuthorization email:email completion:completion];
 }
 
 #pragma mark - account results
@@ -142,14 +146,14 @@
 {
     @synchronized(self) {
         if (error) {
-            self.accountToken = nil;
+            self.accountAuthorization = nil;
             self.accountState = AccountState_LoginFailed;
         }
         else {
             //self.username = username;
             //self.lastLoginDate = [NSDate date];
             
-            self.accountToken = authorization;
+            self.accountAuthorization = authorization;
             self.accountState = AccountState_LoginSucceeded;
             
             //[self tryTransferImageCacheFromDatabase];
@@ -165,7 +169,7 @@
             // log or trace.
         }
         else {
-            self.accountToken = nil;
+            self.accountAuthorization = nil;
             self.accountState = AccountState_Logouted;
         }
     }
@@ -174,8 +178,8 @@
 - (void)onUnauthorized
 {
     @synchronized(self) {
-        if (self.accountToken) {
-            self.accountToken = nil;
+        if (self.accountAuthorization) {
+            self.accountAuthorization = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
         }
         self.accountState = AccountState_Unauthorized;
@@ -188,23 +192,24 @@
 {
     NSParameterAssert(filename);
     NSParameterAssert(completion);
-    
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        completion(nil, error);
-        return;
-    }
-    
     NSString *pogoplugFileType = [NSNumber numberWithInteger:type].description;
     
-    [PogoplugAPI createFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
-        File *file = nil;
-        if (!error) {
-            PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
-            error = [File makeFile:&file fromPogoplugResponse:response.file];
+    __weak __typeof(self) wself = self;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(nil, error);
         }
-        completion(file, error);
+        else {
+            __strong __typeof(wself) sself = wself;
+            [PogoplugAPI createFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
+                File *file = nil;
+                if (!error) {
+                    PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
+                    error = [File makeFile:&file fromPogoplugResponse:response.file];
+                }
+                completion(file, error);
+            }];
+        }
     }];
 }
 
@@ -213,17 +218,19 @@
     NSParameterAssert(fileid && newname);
     NSParameterAssert(completion);
     
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        completion(error);
-        return;
-    }
-    
-    [PogoplugAPI moveFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
-        // TODO
-        // to change it in database
-        completion(error);
+    __weak __typeof(self) wself = self;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(error);
+        }
+        else {
+            __strong __typeof(wself) sself = wself;
+            [PogoplugAPI moveFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
+                // TODO
+                // to change it in database
+                completion(error);
+            }];
+        }
     }];
 }
 
@@ -232,17 +239,19 @@
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
     
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        completion(error);
-        return;
-    }
-    
-    [PogoplugAPI removeFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
-        // TODO
-        // to remove it from database
-        completion(error);
+    __weak __typeof(self) wself = self;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(error);
+        }
+        else {
+            __strong __typeof(wself) sself = wself;
+            [PogoplugAPI removeFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
+                // TODO
+                // to remove it from database
+                completion(error);
+            }];
+        }
     }];
 }
 
@@ -251,14 +260,16 @@
     NSParameterAssert(fileid && data);
     NSParameterAssert(completion);
     
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        completion(error);
-        return;
-    }
-    
-    [PogoplugAPI uploadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid data:data completion:completion];
+    __weak __typeof(self) wself = self;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(error);
+        }
+        else {
+            __strong __typeof(wself) sself = wself;
+            [PogoplugAPI uploadFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid data:data completion:completion];
+        }
+    }];
 }
 
 - (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion
@@ -266,14 +277,16 @@
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
     
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        completion(nil, error);
-        return;
-    }
-    
-    [PogoplugAPI downloadFile:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:fileid completion:completion];
+    __weak __typeof(self) wself = self;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(nil, error);
+        }
+        else {
+            __strong __typeof(wself) sself = wself;
+            [PogoplugAPI downloadFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid completion:completion];
+        }
+    }];
 }
 
 - (NSError *)forFile:(File *)file getThumbnailURL:(NSURL **)URL
@@ -434,80 +447,44 @@
     return nil;
 }
 
-#pragma mark -
+#pragma mark - tokens on demand
 
-- (NSError *)getAccountToken:(NSString **)token
+- (NSError *)getAccountAuthorization:(NSString **)authorization
 {
-    NSString *accountToken = self.accountToken;
-    if (!accountToken) {
+    NSParameterAssert(authorization);
+    NSString *accountAuthorization = self.accountAuthorization;
+    if (!accountAuthorization) {
         [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
         return [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
     }
-    *token = accountToken;
+    *authorization = accountAuthorization;
     return nil;
 }
 
-- (NSError *)getStorageToken:(NSString **)token
+- (void)getStorageToken:(void(^)(NSString *token, NSError *error))completion
 {
-    NSParameterAssert(token);
-    @synchronized(_storageTokenLocker) {
-        if (!self.storageToken || !self.lastStorageAccessDate || [[NSDate date] timeIntervalSinceDate:self.lastStorageAccessDate] > 3600) {
-            NSError *error = [self refreshStorageToken];
-            if (error) {
-                return error;
-            }
-        }
-        NSParameterAssert(self.storageToken);
-        *token = self.storageToken;
-        self.lastStorageAccessDate = [NSDate date];
-    }
-    return nil;
-}
-
-- (NSError *)refreshStorageToken
-{
-    return nil;
-    /*
-    NSString *accountToken = nil;
-    NSError *error = [self getAccountToken:&accountToken];
-    if (error) {
-        return error;
-    }
-    
-    NSString *storageApi = nil;
-    NSString *storageToken = nil;
-    error = [AccountAPI subscriptions_pogoplug_login:self.accountApiUrl authorization:accountToken host:&storageApi token:&storageToken];
-    if (error) {
-        return error;
-    }
-    
-    NSParameterAssert([storageApi.lastPathComponent isEqualToString:@"api"]);
-    self.storageApiUrl = [NSURL URLWithString:storageApi];
-    self.storageToken = storageToken;
-    
-    NSDictionary *result = nil;
-    error = [PogoplugAPI listDevices:self.storageApiUrl valtoken:self.storageToken result:&result];
-    if (error) {
-        return error;
-    }
-    
-    PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:result];
-    for (PogoplugResponse_Device *device in response.devices) {
-        NSString *deviceID = device.deviceID;
-        if (deviceID.length > 0) {
-            self.pogoplugDeviceID = deviceID;
-            for (PogoplugResponse_Service *service in device.services) {
-                self.pogoplugDeviceID = service.serviceID;
-                self.pogoplugServiceApiUrl = [NSURL URLWithString:service.apiurl];
-                if (self.pogoplugDeviceID && self.pogoplugServiceApiUrl) {
-                    return nil; // OK.
+    NSParameterAssert(completion);
+    @synchronized(self.storageTokenLocker) {
+        if (!self.storageToken || [[NSDate date] timeIntervalSinceDate:self.storageTokenRefreshDate] > 3600) {
+            __weak __typeof(self) wself = self;
+            [AccountAPI pogopluglogin:self.accountApiUrl authorization:self.accountAuthorization completion:^(NSString *apihost, NSString *token, NSError *error) {
+                if (error) {
+                    completion(nil, error);
                 }
-            }
+                else {
+                    NSParameterAssert(token.length > 0);
+                    __strong __typeof(wself) sself = wself;
+                    sself.storageApiUrl = [NSURL URLWithString:apihost];
+                    sself.storageToken = token;
+                    sself.storageTokenRefreshDate = [NSDate date];
+                    completion(token, nil);
+                }
+            }];
+        }
+        else {
+            completion(self.storageToken, nil);
         }
     }
-    
-    return [PogoplugError error:Error_Pogoplug_InvalidResponseData];
-     */
 }
 
 #pragma mark -

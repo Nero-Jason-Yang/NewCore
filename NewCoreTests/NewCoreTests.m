@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "Database.h"
+#import "Core.h"
 
 @interface NewCoreTests : XCTestCase
 
@@ -29,7 +29,15 @@
 
 - (void)testExample
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    [[Core sharedInstance] login:@"ja2yang@nero.com" password:@"111111" completion:^(NSError *error) {
+        if (error) {
+            NSLog(@"Login failed with error: %@", error);
+        } else {
+            NSLog(@"Login succeeded.");
+        }
+    }];
+    [NSThread sleepForTimeInterval:10];
+    //XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
 }
 
 @end
