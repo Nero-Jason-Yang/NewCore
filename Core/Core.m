@@ -20,13 +20,13 @@
 @property (nonatomic) NSString *accountEmail;
 @property (nonatomic) AccountState accountState;
 // storage
-@property (nonatomic) NSURL *storageApiUrl; // subscription storage api url.
+@property (nonatomic) NSURL    *storageApiUrl; // subscription storage api url.
 @property (nonatomic) NSString *storageToken;
 @property (nonatomic) NSObject *storageTokenLocker;
-@property (nonatomic) NSDate *storageTokenRefreshDate;
+@property (nonatomic) NSDate   *storageTokenRefreshDate;
 @property (nonatomic) NSString *pogoplugDeviceID;
 @property (nonatomic) NSString *pogoplugServiceID;
-@property (nonatomic) NSURL *pogoplugServiceApiUrl; // pogoplug service api url.
+@property (nonatomic) NSURL    *pogoplugServiceApiUrl; // pogoplug service api url.
 // various kinds of root collections.
 @property (nonatomic) File *root;
 @property (nonatomic) File *photoTimelines;
@@ -289,38 +289,39 @@
     }];
 }
 
-- (NSError *)forFile:(File *)file getThumbnailURL:(NSURL **)URL
+- (void)getThumbnailURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
 {
-    return [self forFile:file withFlag:PogoplugFlag_Thumbnail getURL:URL];
+    [self getURLForFile:file withFlag:PogoplugFlag_Thumbnail completion:completion];
 }
 
-- (NSError *)forFile:(File *)file getPreviewURL:(NSURL **)URL
+- (void)getPreviewURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
 {
-    return [self forFile:file withFlag:PogoplugFlag_Preview getURL:URL];
+    [self getURLForFile:file withFlag:PogoplugFlag_Preview completion:completion];
 }
 
-- (NSError *)forFile:(File *)file getStreamURL:(NSURL **)URL
+- (void)getStreamURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
 {
     NSString *flag = [file.streamtype.lowercaseString isEqualToString:@"full"] ? PogoplugFlag_Stream : nil;
-    return [self forFile:file withFlag:flag getURL:URL];
+    [self getURLForFile:file withFlag:flag completion:completion];
 }
 
-- (NSError *)forFile:(File *)file withFlag:(NSString *)flag getURL:(NSURL **)URL
+- (void)getURLForFile:(File *)file withFlag:(NSString *)flag completion:(void(^)(NSURL *url, NSError *))completion
 {
-    NSParameterAssert(file && URL);
-    
-    NSString *valtoken = nil;
-    NSError *error = [self getStorageToken:&valtoken];
-    if (error) {
-        return error;
-    }
-    
-    error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:valtoken deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:URL];
-    if (error) {
-        return error;
-    }
-    
-    return nil;
+    [self getStorageToken:^(NSString *token, NSError *error) {
+        if (error) {
+            completion(nil, error);
+        }
+        else {
+            NSURL *fileurl = nil;
+            error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:token deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:&fileurl];
+            if (error) {
+                completion(nil, error);
+            }
+            else {
+                completion(fileurl, nil);
+            }
+        }
+    }];
 }
 
 - (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key
@@ -421,11 +422,13 @@
 {
     NSParameterAssert(fileid && shareURL);
     
+    /*
     NSString *valtoken = nil;
     NSError *error = [self getStorageToken:&valtoken];
     if (error) {
         return error;
     }
+    */
     
     /*
     NSDictionary *dictionary = nil;
@@ -485,6 +488,74 @@
             completion(self.storageToken, nil);
         }
     }
+}
+
+#pragma mark -
+
+- (void)getAccountApiParameters:(void(^)(NSURL *apiurl, NSString *authorization, NSError *error))completion
+{
+    NSString *authorization = self.accountAuthorization;
+    if (authorization) {
+        completion(self.accountApiUrl, authorization, nil);
+    }
+    else {
+        [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
+        NSError *error = [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
+        completion(nil, nil, error);
+    }
+}
+
+- (void)getPogoplugApiParameters:(void(^)(NSURL *apiurl, NSString *valtoken, NSError *error))completion
+{
+    [self getAccountApiParameters:^(NSURL *apiurl, NSString *authorization, NSError *error) {
+        if (error) {
+            completion(nil, nil, error);
+            return;
+        }
+        
+        NSString *valtoken = self.storageToken;
+        if (valtoken && [[NSDate date] timeIntervalSinceDate:self.storageTokenRefreshDate] < 3600) {
+            completion(apiurl, valtoken, nil);
+            return;
+        }
+        
+        [AccountAPI pogopluglogin:apiurl authorization:authorization completion:^(NSString *apihost, NSString *token, NSError *error) {
+            if (error) {
+                completion(nil, nil, error);
+            }
+            else {
+                NSURL *apiurl = [NSURL URLWithString:apihost];
+                @synchronized(self) {
+                    self.storageApiUrl = apiurl;
+                    self.storageToken = token;
+                    self.storageTokenRefreshDate = [NSDate date];
+                }
+                completion(apiurl, token, nil);
+            }
+        }];
+    }];
+}
+
+- (void)getPogoplugSvcParameters:(void(^)(NSURL *apiurl, NSString *valtoken, NSURL *svcurl, NSString *deviceid, NSString *serviceid, NSError *error))completion
+{
+    [self getPogoplugApiParameters:^(NSURL *apiurl, NSString *valtoken, NSError *error) {
+        if (error) {
+            completion(apiurl, valtoken, nil, nil, nil, error);
+            return;
+        }
+        
+        NSURL *svcurl = self.pogoplugServiceApiUrl;
+        NSString *deviceid = self.pogoplugDeviceID;
+        NSString *serviceid = self.pogoplugServiceID;
+        if (svcurl && deviceid && serviceid) {
+            completion(apiurl, valtoken, svcurl, deviceid, serviceid, nil);
+            return;
+        }
+        
+        // TODO
+        // To list devices and services
+        
+    }];
 }
 
 #pragma mark -

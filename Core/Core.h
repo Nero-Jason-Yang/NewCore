@@ -35,9 +35,9 @@
 - (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion;
 
 // to retrieve file URL.
-- (NSError *)forFile:(File *)file getThumbnailURL:(NSURL **)URL;
-- (NSError *)forFile:(File *)file getPreviewURL:(NSURL **)URL;
-- (NSError *)forFile:(File *)file getStreamURL:(NSURL **)URL;
+- (void)getThumbnailURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
+- (void)getPreviewURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
+- (void)getStreamURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
 
 // to retrieve file cache-key.
 - (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key;
