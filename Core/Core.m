@@ -26,7 +26,7 @@
 @property (nonatomic) NSDate   *storageTokenRefreshDate;
 @property (nonatomic) NSString *pogoplugDeviceID;
 @property (nonatomic) NSString *pogoplugServiceID;
-@property (nonatomic) NSURL    *pogoplugServiceApiUrl; // pogoplug service api url.
+@property (nonatomic) NSURL    *pogoplugSvcUrl; // pogoplug service api url.
 // various kinds of root collections.
 @property (nonatomic) File *root;
 @property (nonatomic) File *photoTimelines;
@@ -201,7 +201,7 @@
         }
         else {
             __strong __typeof(wself) sself = wself;
-            [PogoplugAPI createFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
+            [PogoplugAPI createFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
                 File *file = nil;
                 if (!error) {
                     PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
@@ -225,7 +225,7 @@
         }
         else {
             __strong __typeof(wself) sself = wself;
-            [PogoplugAPI moveFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
+            [PogoplugAPI moveFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
                 // TODO
                 // to change it in database
                 completion(error);
@@ -246,7 +246,7 @@
         }
         else {
             __strong __typeof(wself) sself = wself;
-            [PogoplugAPI removeFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
+            [PogoplugAPI removeFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
                 // TODO
                 // to remove it from database
                 completion(error);
@@ -267,7 +267,7 @@
         }
         else {
             __strong __typeof(wself) sself = wself;
-            [PogoplugAPI uploadFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid data:data completion:completion];
+            [PogoplugAPI uploadFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid data:data completion:completion];
         }
     }];
 }
@@ -284,7 +284,7 @@
         }
         else {
             __strong __typeof(wself) sself = wself;
-            [PogoplugAPI downloadFile:sself.pogoplugServiceApiUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid completion:completion];
+            [PogoplugAPI downloadFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid completion:completion];
         }
     }];
 }
@@ -313,7 +313,7 @@
         }
         else {
             NSURL *fileurl = nil;
-            error = [PogoplugAPI getFileURL:self.pogoplugServiceApiUrl valtoken:token deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:&fileurl];
+            error = [PogoplugAPI getFileURL:self.pogoplugSvcUrl valtoken:token deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:&fileurl];
             if (error) {
                 completion(nil, error);
             }
@@ -505,7 +505,7 @@
     }
 }
 
-- (void)getPogoplugApiParameters:(void(^)(NSURL *apiurl, NSString *valtoken, NSError *error))completion
+- (void)getPogoplugApiParameters:(NSProgress *)parentProgress completion:(void(^)(NSURL *apiurl, NSString *valtoken, NSError *error))completion
 {
     [self getAccountApiParameters:^(NSURL *apiurl, NSString *authorization, NSError *error) {
         if (error) {
@@ -536,24 +536,63 @@
     }];
 }
 
-- (void)getPogoplugSvcParameters:(void(^)(NSURL *apiurl, NSString *valtoken, NSURL *svcurl, NSString *deviceid, NSString *serviceid, NSError *error))completion
+- (void)getPogoplugSvcParameters:(NSProgress *)parentProgress completion:(void(^)(NSURL *apiurl, NSString *valtoken, NSURL *svcurl, NSString *deviceid, NSString *serviceid, NSError *error))completion
 {
-    [self getPogoplugApiParameters:^(NSURL *apiurl, NSString *valtoken, NSError *error) {
+    __weak typeof(self) wself = self;
+    
+    [self getPogoplugApiParameters:parentProgress completion:^(NSURL *apiurl, NSString *valtoken, NSError *error) {
         if (error) {
             completion(apiurl, valtoken, nil, nil, nil, error);
             return;
         }
         
-        NSURL *svcurl = self.pogoplugServiceApiUrl;
-        NSString *deviceid = self.pogoplugDeviceID;
-        NSString *serviceid = self.pogoplugServiceID;
+        NSURL *svcurl = nil;
+        NSString *deviceid = nil;
+        NSString *serviceid = nil;
+        
+        __strong typeof(wself) sself = wself;
+        @synchronized(sself) {
+            svcurl = sself.pogoplugSvcUrl;
+            deviceid = sself.pogoplugDeviceID;
+            serviceid = sself.pogoplugServiceID;
+        }
+        
         if (svcurl && deviceid && serviceid) {
             completion(apiurl, valtoken, svcurl, deviceid, serviceid, nil);
             return;
         }
         
-        // TODO
-        // To list devices and services
+        [PogoplugAPI listDevices:parentProgress baseurl:apiurl valtoken:valtoken completion:^(NSDictionary *response, NSError *error) {
+            if (error) {
+                completion(apiurl, valtoken, nil, nil, nil, error);
+                return;
+            }
+            
+            PogoplugResponse *value = [[PogoplugResponse alloc] initWithDictionary:response];
+            for (PogoplugResponse_Device *device in value.devices) {
+                for (PogoplugResponse_Service *service in device.services) {
+                    NSString *deviceid = device.deviceID;
+                    NSString *serviceid = service.serviceID;
+                    NSString *apiurlstr = service.apiurl;
+                    if (isstring(deviceid) && isstring(serviceid) && isstring(apiurlstr)) {
+                        NSURL *svcurl = [NSURL URLWithString:apiurlstr];
+                        if (svcurl.absoluteString.length > 0) {
+                            __strong typeof(wself) sself = wself;
+                            @synchronized(sself) {
+                                sself.pogoplugSvcUrl = svcurl;
+                                sself.pogoplugDeviceID = deviceid;
+                                sself.pogoplugServiceID = serviceid;
+                            }
+                            completion(apiurl, valtoken, svcurl, deviceid, serviceid, nil);
+                            return;
+                        }
+                    }
+                }
+            }
+            
+            NSError *e = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
+            completion(apiurl, valtoken, nil, nil, nil, e);
+        }];
         
     }];
 }
