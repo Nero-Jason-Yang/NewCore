@@ -13,13 +13,37 @@
 #import "PogoplugResponse.h"
 #import "File+Pogoplug.h"
 
+@interface Operation ()
+- (void)addUnderlyingOperation:(NSOperation *)operation;
+@end
+
+@interface AccountParameters : NSObject
+@property (nonatomic) NSURL    *baseurl;
+@property (nonatomic) NSString *username; // an email
+@property (nonatomic) NSString *authorization;
+@end
+
+@interface PogoplugParameters : NSObject
+@property (nonatomic) NSLock   *locker;
+@property (nonatomic) NSURL    *apiurl;    // api base url.
+@property (nonatomic) NSString *valtoken;  // pogoplug access token.
+@property (nonatomic) NSDate   *tokendate; // last refresh date for valtoken.
+@property (nonatomic) NSURL    *svcurl;    // service base url.
+@property (nonatomic) NSString *deviceid;
+@property (nonatomic) NSString *serviceid;
+- (void)reset:(PogoplugParameters *)params;
+@end
+
 @interface Core ()
 // account
 @property (nonatomic) NSURL *accountApiUrl;
 @property (nonatomic) NSString *accountAuthorization;
 @property (nonatomic) NSString *accountEmail;
 @property (nonatomic) AccountState accountState;
+@property (nonatomic,readonly) AccountParameters *accountParams;
 // storage
+@property (nonatomic,readonly) NSLock *pogoplugLocker;
+@property (nonatomic) PogoplugParameters *pogoplugParams;
 @property (nonatomic) NSURL    *storageApiUrl; // subscription storage api url.
 @property (nonatomic) NSString *storageToken;
 @property (nonatomic) NSObject *storageTokenLocker;
@@ -41,6 +65,9 @@
 @property (nonatomic) File *musicPlaylists;
 @property (nonatomic) File *genericCollections; // a generic collection is a group of files, used for multi-share.
 @end
+
+#pragma mark -
+#pragma mark -
 
 @implementation Core
 {
@@ -562,7 +589,7 @@
             return;
         }
         
-        [PogoplugAPI listDevices:parentProgress baseurl:apiurl valtoken:valtoken completion:^(NSDictionary *response, NSError *error) {
+        [PogoplugAPI listDevices:apiurl valtoken:valtoken completion:^(NSDictionary *response, NSError *error) {
             if (error) {
                 completion(apiurl, valtoken, nil, nil, nil, error);
                 return;
@@ -594,6 +621,153 @@
             completion(apiurl, valtoken, nil, nil, nil, e);
         }];
         
+    }];
+}
+
+#pragma mark -
+
+- (void)operation:(Operation *)operation getAccountParameters:(void(^)(AccountParameters *params, NSError *error))completion
+{
+    if (operation.cancelled) {
+        completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
+        return;
+    }
+    
+    AccountParameters *params = self.accountParams.copy;
+    if (!params.authorization) {
+        [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
+        NSError *error = [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
+        completion(params, error);
+        return;
+    }
+    
+    completion(params, nil);
+}
+
+- (void)operation:(Operation *)operation getPogoplugApiParameters:(void(^)(PogoplugParameters *, NSError *))completion
+{
+    if (operation.cancelled) {
+        completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
+        return;
+    }
+    
+    NSLock *locker = self.pogoplugLocker;
+    __weak typeof(self) wself = self;
+    
+    [self operation:operation getAccountParameters:^(AccountParameters *account, NSError *error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        
+        bool locked = [locker tryLock];
+        void (^unlock)() = ^{
+            if (locked) {
+                [locker unlock];
+            }
+        };
+        
+        PogoplugParameters *pogoplug = wself.pogoplugParams.copy;
+        if (pogoplug.valtoken && [[NSDate date] timeIntervalSinceDate:pogoplug.tokendate] < 3600) {
+            unlock();
+            completion(pogoplug.copy, nil); // ok
+            return;
+        }
+        
+        NSOperation *op = [AccountAPI pogopluglogin:account.baseurl authorization:account.authorization completion:^(NSString *apihost, NSString *token, NSError *error) {
+            if (error) {
+                unlock();
+                completion(nil, error);
+                return;
+            }
+            
+            pogoplug.apiurl = [NSURL URLWithString:apihost];
+            pogoplug.valtoken = token;
+            pogoplug.tokendate = [NSDate date];
+            pogoplug.svcurl = nil;
+            pogoplug.deviceid = nil;
+            pogoplug.serviceid = nil;
+            unlock();
+            completion(pogoplug.copy, nil); // ok
+        }];
+        
+        [operation addUnderlyingOperation:op];
+    }];
+}
+
+- (void)operation:(Operation *)operation getPogoplugSvcParameters:(void(^)(PogoplugParameters *, NSError *))completion
+{
+    if (operation.cancelled) {
+        completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
+        return;
+    }
+    
+    NSLock *locker = self.pogoplugLocker;
+    __weak typeof(self) wself = self;
+    
+    [self operation:operation getPogoplugApiParameters:^(PogoplugParameters *params, NSError *error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        
+        bool locked = [locker tryLock];
+        void (^unlock)() = ^{
+            if (locked) {
+                [locker unlock];
+            }
+        };
+        
+        if (params.svcurl && params.deviceid && params.serviceid) {
+            unlock();
+            completion(params, nil); // ok
+            return;
+        }
+        
+        void (^save)(PogoplugParameters *) = ^(PogoplugParameters *params) {
+            __strong typeof (wself) sself = wself;
+            sself.pogoplugParams = params;
+        };
+        
+        NSOperation *subop = [PogoplugAPI listDevices:params.apiurl valtoken:params.valtoken completion:^(NSDictionary *response, NSError *error) {
+            if (error) {
+                completion(nil, error);
+                return;
+            }
+            
+            PogoplugResponse *value = [[PogoplugResponse alloc] initWithDictionary:response];
+            for (PogoplugResponse_Device *device in value.devices) {
+                for (PogoplugResponse_Service *service in device.services) {
+                    NSString *deviceid = device.deviceID;
+                    NSString *serviceid = service.serviceID;
+                    NSString *apiurlstr = service.apiurl;
+                    if (isstring(deviceid) && isstring(serviceid) && isstring(apiurlstr)) {
+                        NSURL *svcurl = [NSURL URLWithString:apiurlstr];
+                        if (svcurl.absoluteString.length > 0) {
+                            params.svcurl = svcurl;
+                            params.deviceid = deviceid;
+                            params.serviceid = serviceid;
+                            break;
+                        }
+                    }
+                }
+                if (params.svcurl) {
+                    break;
+                }
+            }
+            
+            if (params.svcurl) {
+                save(params);
+                unlock();
+                completion(params, nil); // ok
+                return;
+            }
+            
+            NSError *e = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
+            completion(nil, e);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
 }
 
@@ -655,6 +829,83 @@
 - (void)transferCacheFilesWithProgress:(void(^)(NSUInteger total, NSUInteger finished))progress completion:(void(^)())completion
 {
     // TODO
+}
+
+@end
+
+
+@implementation Operation
+{
+    NSMutableArray *_underlyingOperations;
+}
+
+- (id)init
+{
+    if (self = [super init]) {
+        _underlyingOperations = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)cancel
+{
+    @synchronized(_underlyingOperations) {
+        for (NSOperation *operation in _underlyingOperations) {
+            [operation cancel];
+        }
+        _cancelled = YES;
+    }
+}
+
+- (void)addUnderlyingOperation:(NSOperation *)operation
+{
+    @synchronized(_underlyingOperations) {
+        [_underlyingOperations addObject:operation];
+        if (self.cancelled) {
+            [operation cancel];
+        }
+    }
+}
+
+@end
+
+@implementation AccountParameters
+
+- (id)copy
+{
+    AccountParameters *copy = [[AccountParameters alloc] init];
+    copy.baseurl = self.baseurl;
+    copy.username = self.username;
+    copy.authorization = self.authorization;
+    return copy;
+}
+
+@end
+
+@implementation PogoplugParameters
+
+- (id)copy
+{
+    PogoplugParameters *copy = [[PogoplugParameters alloc] init];
+    copy.locker = self.locker;
+    copy.apiurl = self.apiurl;
+    copy.valtoken = self.valtoken;
+    copy.tokendate = self.tokendate;
+    copy.svcurl = self.svcurl;
+    copy.deviceid = self.deviceid;
+    copy.serviceid = self.serviceid;
+    return copy;
+}
+
+- (void)reset:(PogoplugParameters *)params
+{
+    self.locker = params.locker;
+    self.apiurl = params.apiurl;
+    self.valtoken = params.valtoken;
+    self.tokendate = params.tokendate;
+    self.svcurl = params.svcurl;
+    self.deviceid = params.deviceid;
+    self.serviceid = params.serviceid;
 }
 
 @end

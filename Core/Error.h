@@ -29,6 +29,9 @@ typedef enum : int32_t {
     //         for core, log error with context, and it should be resolved later.
     Error_Unknown,
     
+    // cancelled by user.
+    Error_UserCancelled,
+    
     // network unavailable.
     // reason: wifi, wwan, lan,... not connected, proxy or route unavailable.
     // handle: for backup, will continue automatically when network resume to be available;
@@ -126,6 +129,9 @@ typedef enum : int32_t {
 
 // standard error creation.
 + (Error *)errorWithCode:(ErrorCode)code subCode:(ErrorSubCode)subCode underlyingError:(NSError *)underlyingError debugString:(NSString *)debugString file:(char *)file line:(int)line;
+
+// create cancelled error.
++ (Error *)errorCancelled:(const char *)func file:(char *)file line:(int)line;
 
 // try to create error for response of account apis.
 + (Error *)tryGetErrorWithAccountResponse:(NSHTTPURLResponse *)response JSONObject:(NSDictionary *)json requestPath:(NSString *)path;

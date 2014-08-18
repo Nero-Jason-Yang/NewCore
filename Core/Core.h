@@ -80,3 +80,8 @@
 - (NSError *)shareFile:(NSString *)fileid shareURL:(NSURL **)shareURL;
 
 @end
+
+@interface Operation : NSObject
+@property (nonatomic,readonly) BOOL cancelled;
+- (void)cancel;
+@end

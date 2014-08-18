@@ -14,16 +14,16 @@
 
 @implementation PogoplugAPI
 
-+ (void)listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken completion:(void (^)(NSDictionary *, NSError *))completion
++ (NSOperation *)listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken completion:(void (^)(NSDictionary *, NSError *))completion
 {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     NSError *error = [self checkParameters:apiurl valtoken:valtoken fillRequestParameters:parameters];
     if (error) {
         completion(nil, error);
-        return;
+        return nil;
     }
     
-    [PogoplugNetwork get:apiurl path:PogoplugPath_ListDevices parameters:parameters completion:completion];
+    return [PogoplugNetwork get:apiurl path:PogoplugPath_ListDevices parameters:parameters completion:completion];
 }
 
 + (void)getFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid filename:(NSString *)filename parentid:(NSString *)parentid completion:(void (^)(NSDictionary *, NSError *))completion

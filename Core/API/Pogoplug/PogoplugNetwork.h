@@ -10,7 +10,7 @@
 
 @interface PogoplugNetwork : NSObject
 
-+ (void) get:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
++ (NSOperation *) get:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
 + (void)post:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
 + (void)head:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSError *error))completion;
 + (void) put:(NSURL *)url path:(NSString *)path data:(NSData *)data completion:(void (^)(NSError *error))completion;

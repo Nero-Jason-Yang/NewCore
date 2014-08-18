@@ -122,6 +122,12 @@
     return [[Error alloc] initWithDomain:ErrorDomain code:code userInfo:userInfo];
 }
 
++ (Error *)errorCancelled:(const char *)func file:(char *)file line:(int)line
+{
+    NSString *debugString = [NSString stringWithFormat:@"catch an user-cancelling at %s", func];
+    return [self errorWithCode:Error_UserCancelled subCode:Error_None underlyingError:nil debugString:debugString file:file line:line];
+}
+
 + (NSString *)localizedRecoverySuggestionForCode:(ErrorCode)code
 {
     switch (code) {

@@ -198,12 +198,12 @@
     }];
 }
 
-+ (void)pogopluglogin:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSString *apihost, NSString *token, NSError *error))completion
++ (NSOperation *)pogopluglogin:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSString *apihost, NSString *token, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    [AccountNetwork post:apiurl path:@"/api/v1/subscriptions/pogoplug/login" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
+    return [AccountNetwork post:apiurl path:@"/api/v1/subscriptions/pogoplug/login" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(nil, nil, error);
             return;

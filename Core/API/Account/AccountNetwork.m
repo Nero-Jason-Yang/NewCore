@@ -45,34 +45,34 @@
     return _instance;
 }
 
-+ (void)post:(NSURL *)url path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
++ (NSOperation *)post:(NSURL *)baseurl path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
 {
     NSParameterAssert(path.length > 0);
     
-    if (0 == url.scheme.length || 0 == url.host.length) {
-        NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"invalid base url:%@", url] file:__FILE__ line:__LINE__];
+    if (0 == baseurl.scheme.length || 0 == baseurl.host.length) {
+        NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"invalid base url:%@", baseurl] file:__FILE__ line:__LINE__];
         completion(nil, error);
-        return;
+        return nil;
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
         NSError *error = [Error errorWithCode:Error_NetworkUnavailable subCode:Error_None underlyingError:nil debugString:@"network is not reachable" file:__FILE__ line:__LINE__];
         completion(nil, error);
-        return;
+        return nil;
     }
     
     if (!authorization) {
         NSError *error = [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"authorization is not specified" file:__FILE__ line:__LINE__];
         completion(nil, error);
-        return;
+        return nil;
     }
     
-    [[self sharedInstance] post:url path:path authorization:authorization parameters:parameters completion:completion];
+    return [[self sharedInstance] post:baseurl path:path authorization:authorization parameters:parameters completion:completion];
 }
 
-- (void)post:(NSURL *)url path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
+- (NSOperation *)post:(NSURL *)baseurl path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
 {
-    NSString *URLString = [[NSURL URLWithString:path relativeToURL:url] absoluteString];
+    NSString *URLString = [[NSURL URLWithString:path relativeToURL:baseurl] absoluteString];
     NSMutableURLRequest *request = [_requestSerializer requestWithMethod:@"POST" URLString:URLString parameters:parameters];
     if (_timeoutInterval > 0.0) {
         request.timeoutInterval = _timeoutInterval;
@@ -96,6 +96,7 @@
     }];
     
     [_operationQueue addOperation:operation];
+    return operation;
 }
 
 @end

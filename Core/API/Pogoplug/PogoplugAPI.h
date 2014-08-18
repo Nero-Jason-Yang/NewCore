@@ -43,7 +43,7 @@
 
 @interface PogoplugAPI : NSObject
 
-+ (void) listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken
++ (NSOperation *) listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken
           completion:(void(^)(NSDictionary *response, NSError *error))completion;
 
 + (void)     getFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid

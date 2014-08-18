@@ -44,9 +44,9 @@
     return _instance;
 }
 
-+ (void)get:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
++ (NSOperation *)get:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
 {
-    [[self sharedInstance] send:@"GET" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
+    return [[self sharedInstance] send:@"GET" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
         NSParameterAssert(!object || [object isKindOfClass:NSDictionary.class]);
         completion(object, error);
     }];
@@ -83,7 +83,7 @@
     }];
 }
 
-- (void)send:(NSString *)method url:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters data:(NSData *)data serializer:(AFHTTPResponseSerializer *)serializer completion:(void (^)(id object, NSError *error))completion
+- (NSOperation *)send:(NSString *)method url:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters data:(NSData *)data serializer:(AFHTTPResponseSerializer *)serializer completion:(void (^)(id object, NSError *error))completion
 {
     NSParameterAssert(path.length > 0);
     
@@ -91,13 +91,13 @@
         NSAssert(NO, @"Invalid account base url:(%@).", url);
         NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Pogoplug send request with invalid url." file:__FILE__ line:__LINE__];
         completion(nil, error);
-        return;
+        return nil;
     }
     
     if (![AFNetworkReachabilityManager sharedManager].reachable) {
         NSError *error = [Error errorWithCode:Error_NetworkUnavailable subCode:Error_None underlyingError:nil debugString:@"Network not reachable." file:__FILE__ line:__LINE__];
         completion(nil, error);
-        return;
+        return nil;
     }
     
     NSString *URLString = [[NSURL URLWithString:path relativeToURL:url] absoluteString];
@@ -123,6 +123,7 @@
     }];
     
     [_operationQueue addOperation:operation];
+    return operation;
 }
 
 @end
