@@ -14,7 +14,7 @@
 
 @implementation AccountAPI
 
-+ (void)authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *authorization, NSError *error))completion
++ (NSOperation *)authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSString *authorization, NSError *error))completion
 {
     NSParameterAssert(completion);
     
@@ -55,7 +55,7 @@
     }];
 }
 
-+ (void)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSError *error))completion
++ (NSOperation *)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     

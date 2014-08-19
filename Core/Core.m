@@ -35,12 +35,12 @@
 @end
 
 @interface Core ()
+@property (nonatomic,readonly) dispatch_queue_t completionQueue;
 // account
-@property (nonatomic) NSURL *accountApiUrl;
-@property (nonatomic) NSString *accountAuthorization;
-@property (nonatomic) NSString *accountEmail;
+@property (nonatomic,readonly) AccountParameters *accountParams; // baseurl, username, authorization.
 @property (nonatomic) AccountState accountState;
-@property (nonatomic,readonly) AccountParameters *accountParams;
+@property (nonatomic) Operation   *accountStateOperation; // last login or logout operation.
+@property (nonatomic,readonly) id  accountStateOperationLocker; // locker for account state actions: login and logout.
 // storage
 @property (nonatomic,readonly) NSRecursiveLock *pogoplugLocker;
 @property (nonatomic) PogoplugParameters *pogoplugParams;
@@ -89,7 +89,14 @@
     if (self = [super init]) {
         [[AFNetworkReachabilityManager sharedManager] startMonitoring];
         
-        self.accountApiUrl = [NSURL URLWithString:@"https://services.my.nerobackitup.com"];
+        _completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        
+        _accountParams = [[AccountParameters alloc] init];
+        self.accountParams.baseurl = [NSURL URLWithString:@"https://services.my.nerobackitup.com"];
+        self.accountState = AccountState_Unauthorized;
+        self.accountStateOperation = nil;
+        _accountStateOperationLocker = [[NSCondition alloc] init];
+        
         self.storageTokenLocker = [[NSObject alloc] init];
         self.storageTokenRefreshDate = [NSDate dateWithTimeIntervalSince1970:0];
     }
@@ -98,49 +105,174 @@
 
 #pragma mark - account actions
 
-- (void)login:(NSString *)username password:(NSString *)password completion:(Completion)completion
+- (Operation *)login:(NSString *)username password:(NSString *)password completion:(void (^)(NSError *))completion
 {
-    NSParameterAssert(username && password);
+    NSParameterAssert(username.length > 0 && password.length > 0);
     NSParameterAssert(completion);
     
-    if (0 == username.length || 0 == password.length) {
-        NSError *error = nil;
-        if (0 == username.length) {
-            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_NicknameMissing underlyingError:nil debugString:@"not input username." file:__FILE__ line:__LINE__];
-        } else {
-            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_PasswordMissing underlyingError:nil debugString:@"not input password" file:__FILE__ line:__LINE__];
-        }
-        completion(error);
-        return;
+    Operation *operation = [[Operation alloc] init];
+    @synchronized(self.accountParams) {
+        [self.accountStateOperation cancel];
+        self.accountStateOperation = operation;
     }
     
-    self.accountState = AccountState_Logining;
-    
     __weak typeof(self) wself = self;
-    [AccountAPI authorize:self.accountApiUrl username:username password:password completion:^(NSString *authorization, NSError *error) {
-        __strong typeof(wself) sself = wself;
-        [sself onLogin:error username:username authorization:authorization];
+    
+    dispatch_async(self.completionQueue, ^{
+        NSError *error = nil;
+        if (operation.cancelled) {
+            error = [Error errorCancelled:__func__ file:__FILE__ line:__LINE__];
+        }
+        
+        if (!error)  {
+            error = [wself checkLoginParameters:username password:password];
+        }
+        
+        if (!error) {
+            error = [wself syncLogin:username password:password forOperation:operation];
+        }
+        
         completion(error);
-    }];
+    });
+    
+    return operation;
 }
 
-- (void)logout:(Completion)completion
+- (NSError *)checkLoginParameters:(NSString *)username password:(NSString *)password
+{
+    if (0 == username.length) {
+        return [Error errorWithCode:Error_Failed subCode:Error_Account_Login_NicknameMissing underlyingError:nil debugString:@"not input username." file:__FILE__ line:__LINE__];
+    }
+    
+    if (0 == password.length) {
+        return [Error errorWithCode:Error_Failed subCode:Error_Account_Login_PasswordMissing underlyingError:nil debugString:@"not input password" file:__FILE__ line:__LINE__];
+    }
+    
+    return nil;
+}
+
+- (NSError *)syncLogin:(NSString *)username password:password forOperation:(Operation *)operation
+{
+    @synchronized(self.accountStateOperationLocker) {
+        
+        NSURL *baseurl = nil;
+        __block NSString *authorization = nil;
+        
+        @synchronized(self.accountParams) {
+            baseurl = self.accountParams.baseurl;
+            authorization = self.accountParams.authorization;
+            
+            self.accountState = AccountState_Logining;
+        }
+        
+        NSParameterAssert(baseurl && !authorization);
+        
+        NSCondition *condition = [[NSCondition alloc] init];
+        __block BOOL completed = NO;
+        __block NSError *error = nil;
+        
+        NSOperation *subop = [AccountAPI authorize:baseurl username:username password:password completion:^(NSString *authorization_, NSError *error_) {
+            authorization = authorization_;
+            error = error_;
+            completed = YES;
+        }];
+        
+        [operation addUnderlyingOperation:subop];
+        
+        [condition lock];
+        while (!completed) {
+            [condition wait];
+        }
+        [condition unlock];
+        
+        @synchronized(self.accountParams) {
+            self.accountStateOperation = nil;
+            if (error) {
+                self.accountParams.authorization = nil;
+                self.accountState = AccountState_LoginFailed;
+            }
+            else {
+                self.accountParams.authorization = authorization;
+                self.accountState = AccountState_LoginSucceeded;
+            }
+        }
+        
+        return error;
+    }
+}
+
+- (Operation *)logout:(void (^)(NSError *))completion
 {
     NSParameterAssert(completion);
     
-    NSString *authorization = self.accountAuthorization;
-    if (!authorization) {
-        self.accountState = AccountState_Logouted;
-        completion(nil);
-        return;
+    Operation *operation = [[Operation alloc] init];
+    @synchronized(self.accountParams) {
+        [self.accountStateOperation cancel];
+        self.accountStateOperation = operation;
     }
     
     __weak typeof(self) wself = self;
-    [AccountAPI revoke:self.accountApiUrl authorization:authorization completion:^(NSError *error) {
-        __strong typeof(wself) sself = wself;
-        [sself onLogout:error];
+    
+    dispatch_async(self.completionQueue, ^{
+        NSError *error = nil;
+        if (operation.cancelled) {
+            error = [Error errorCancelled:__func__ file:__FILE__ line:__LINE__];
+        }
+        
+        if (!error) {
+            error = [wself syncLogoutForOperation:operation];
+        }
+        
         completion(error);
-    }];
+    });
+    
+    return operation;
+}
+
+- (NSError *)syncLogoutForOperation:(Operation *)operation
+{
+    @synchronized(self.accountStateOperationLocker) {
+        
+        NSURL *baseurl = nil;
+        NSString *authorization = nil;
+        
+        @synchronized(self.accountParams) {
+            baseurl = self.accountParams.baseurl;
+            authorization = self.accountParams.authorization;
+        }
+        
+        NSParameterAssert(baseurl && authorization);
+        
+        __block NSError *error = nil;
+        
+        if (authorization) {
+            NSCondition *condition = [[NSCondition alloc] init];
+            __block BOOL completed = NO;
+            
+            NSOperation *subop = [AccountAPI revoke:baseurl authorization:authorization completion:^(NSError *error_) {
+                error = error_;
+                completed = YES;
+            }];
+            
+            [operation addUnderlyingOperation:subop];
+            
+            [condition lock];
+            while (!completed) {
+                [condition wait];
+            }
+            [condition unlock];
+        }
+        
+        @synchronized(self.accountParams) {
+            self.accountStateOperation = nil;
+            if (!error) {
+                self.accountParams.authorization = nil;
+                self.accountState = AccountState_Logouted;
+            }
+        }
+        
+        return error;
+    }
 }
 
 - (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion
@@ -479,153 +611,6 @@
 
 #pragma mark - tokens on demand
 
-- (NSError *)getAccountAuthorization:(NSString **)authorization
-{
-    NSParameterAssert(authorization);
-    NSString *accountAuthorization = self.accountAuthorization;
-    if (!accountAuthorization) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
-        return [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
-    }
-    *authorization = accountAuthorization;
-    return nil;
-}
-
-- (void)getStorageToken:(void(^)(NSString *token, NSError *error))completion
-{
-    NSParameterAssert(completion);
-    @synchronized(self.storageTokenLocker) {
-        if (!self.storageToken || [[NSDate date] timeIntervalSinceDate:self.storageTokenRefreshDate] > 3600) {
-            __weak __typeof(self) wself = self;
-            [AccountAPI pogopluglogin:self.accountApiUrl authorization:self.accountAuthorization completion:^(NSString *apihost, NSString *token, NSError *error) {
-                if (error) {
-                    completion(nil, error);
-                }
-                else {
-                    NSParameterAssert(token.length > 0);
-                    __strong __typeof(wself) sself = wself;
-                    sself.storageApiUrl = [NSURL URLWithString:apihost];
-                    sself.storageToken = token;
-                    sself.storageTokenRefreshDate = [NSDate date];
-                    completion(token, nil);
-                }
-            }];
-        }
-        else {
-            completion(self.storageToken, nil);
-        }
-    }
-}
-
-#pragma mark -
-
-- (void)getAccountApiParameters:(void(^)(NSURL *apiurl, NSString *authorization, NSError *error))completion
-{
-    NSString *authorization = self.accountAuthorization;
-    if (authorization) {
-        completion(self.accountApiUrl, authorization, nil);
-    }
-    else {
-        [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
-        NSError *error = [Error errorWithCode:Error_Unauthorized subCode:Error_None underlyingError:nil debugString:@"no authorization stored." file:__FILE__ line:__LINE__];
-        completion(nil, nil, error);
-    }
-}
-
-- (void)getPogoplugApiParameters:(NSProgress *)parentProgress completion:(void(^)(NSURL *apiurl, NSString *valtoken, NSError *error))completion
-{
-    [self getAccountApiParameters:^(NSURL *apiurl, NSString *authorization, NSError *error) {
-        if (error) {
-            completion(nil, nil, error);
-            return;
-        }
-        
-        NSString *valtoken = self.storageToken;
-        if (valtoken && [[NSDate date] timeIntervalSinceDate:self.storageTokenRefreshDate] < 3600) {
-            completion(apiurl, valtoken, nil);
-            return;
-        }
-        
-        [AccountAPI pogopluglogin:apiurl authorization:authorization completion:^(NSString *apihost, NSString *token, NSError *error) {
-            if (error) {
-                completion(nil, nil, error);
-            }
-            else {
-                NSURL *apiurl = [NSURL URLWithString:apihost];
-                @synchronized(self) {
-                    self.storageApiUrl = apiurl;
-                    self.storageToken = token;
-                    self.storageTokenRefreshDate = [NSDate date];
-                }
-                completion(apiurl, token, nil);
-            }
-        }];
-    }];
-}
-
-- (void)getPogoplugSvcParameters:(NSProgress *)parentProgress completion:(void(^)(NSURL *apiurl, NSString *valtoken, NSURL *svcurl, NSString *deviceid, NSString *serviceid, NSError *error))completion
-{
-    __weak typeof(self) wself = self;
-    
-    [self getPogoplugApiParameters:parentProgress completion:^(NSURL *apiurl, NSString *valtoken, NSError *error) {
-        if (error) {
-            completion(apiurl, valtoken, nil, nil, nil, error);
-            return;
-        }
-        
-        NSURL *svcurl = nil;
-        NSString *deviceid = nil;
-        NSString *serviceid = nil;
-        
-        __strong typeof(wself) sself = wself;
-        @synchronized(sself) {
-            svcurl = sself.pogoplugSvcUrl;
-            deviceid = sself.pogoplugDeviceID;
-            serviceid = sself.pogoplugServiceID;
-        }
-        
-        if (svcurl && deviceid && serviceid) {
-            completion(apiurl, valtoken, svcurl, deviceid, serviceid, nil);
-            return;
-        }
-        
-        [PogoplugAPI listDevices:apiurl valtoken:valtoken completion:^(NSDictionary *response, NSError *error) {
-            if (error) {
-                completion(apiurl, valtoken, nil, nil, nil, error);
-                return;
-            }
-            
-            PogoplugResponse *value = [[PogoplugResponse alloc] initWithDictionary:response];
-            for (PogoplugResponse_Device *device in value.devices) {
-                for (PogoplugResponse_Service *service in device.services) {
-                    NSString *deviceid = device.deviceID;
-                    NSString *serviceid = service.serviceID;
-                    NSString *apiurlstr = service.apiurl;
-                    if (isstring(deviceid) && isstring(serviceid) && isstring(apiurlstr)) {
-                        NSURL *svcurl = [NSURL URLWithString:apiurlstr];
-                        if (svcurl.absoluteString.length > 0) {
-                            __strong typeof(wself) sself = wself;
-                            @synchronized(sself) {
-                                sself.pogoplugSvcUrl = svcurl;
-                                sself.pogoplugDeviceID = deviceid;
-                                sself.pogoplugServiceID = serviceid;
-                            }
-                            completion(apiurl, valtoken, svcurl, deviceid, serviceid, nil);
-                            return;
-                        }
-                    }
-                }
-            }
-            
-            NSError *e = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
-            completion(apiurl, valtoken, nil, nil, nil, e);
-        }];
-        
-    }];
-}
-
-#pragma mark -
-
 - (void)operation:(Operation *)operation getAccountParameters:(void(^)(AccountParameters *, NSError *))completion
 {
     __weak typeof(self) wself = self;
@@ -636,8 +621,9 @@
             return;
         }
         
-        __strong typeof(wself) sself = wself;
         AccountParameters *params = nil;
+        __strong typeof(wself) sself = wself;
+        
         @synchronized(sself.accountParams) {
             params = sself.accountParams.copy;
         }
@@ -663,19 +649,27 @@
             return;
         }
         
-        PogoplugParameters *params = nil;
+        if (operation.cancelled) {
+            completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
+            return;
+        }
         
+        PogoplugParameters *params = nil;
         __strong typeof(wself) sself = wself;
+        
         @synchronized(sself.pogoplugParams) {
             params = sself.pogoplugParams;
             
+            // for base api.
             if (params.valtoken && [[NSDate date] timeIntervalSinceDate:params.tokendate] < 3600) {
-                params = params.copy;
+                // ok.
             }
             else {
-                error = [self syncDownloadPogoplugApiParameters:params withAccountParameters:account forOperation:operation];
-                params = error ? nil : params.copy;
+                error = [self syncDownloadPogoplugApiParameters:params forOperation:operation withAccountParameters:account];
             }
+            
+            // make a copy.
+            params = error ? nil : params.copy;
         }
         
         completion(params, error);
@@ -684,11 +678,6 @@
 
 - (void)operation:(Operation *)operation getPogoplugSvcParameters:(void(^)(PogoplugParameters *, NSError *))completion
 {
-    if (operation.cancelled) {
-        completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
-        return;
-    }
-    
     __weak typeof(self) wself = self;
     
     [self operation:operation getAccountParameters:^(AccountParameters *account, NSError *error) {
@@ -697,32 +686,39 @@
             return;
         }
         
-        PogoplugParameters *params = nil;
+        if (operation.cancelled) {
+            completion(nil, [Error errorCancelled:__func__ file:__FILE__ line:__LINE__]);
+            return;
+        }
         
+        PogoplugParameters *params = nil;
         __strong typeof(wself) sself = wself;
+        
         @synchronized(sself.pogoplugParams) {
             params = sself.pogoplugParams;
             
+            // for base api.
             if (params.valtoken && [[NSDate date] timeIntervalSinceDate:params.tokendate] < 3600) {
                 // ok
             }
             else {
-                error = [self syncDownloadPogoplugApiParameters:params withAccountParameters:account forOperation:operation];
-                if (error) {
-                    params = nil;
-                }
+                error = [self syncDownloadPogoplugApiParameters:params forOperation:operation withAccountParameters:account];
             }
             
-            if (params && !params.deviceid) {
-                [self syncDownloadPogoplugSvcParameters:params forOperation:operation];
+            // for service api.
+            if (!error && !params.deviceid) {
+                error = [self syncDownloadPogoplugSvcParameters:params forOperation:operation];
             }
+            
+            // make a copy.
+            params = error ? nil : params.copy;
         }
         
         completion(params, error);
     }];
 }
 
-- (NSError *)syncDownloadPogoplugApiParameters:(PogoplugParameters *)params withAccountParameters:(AccountParameters *)account forOperation:(Operation *)operation
+- (NSError *)syncDownloadPogoplugApiParameters:(PogoplugParameters *)params forOperation:(Operation *)operation withAccountParameters:(AccountParameters *)account
 {
     NSCondition *condition = [[NSCondition alloc] init];
     __block BOOL completed = NO;
@@ -764,7 +760,7 @@
         if (e) {
             error = e;
         }
-        else if (![self setPogoplugSvcParameters:params withListDeviceResponse:response]) {
+        else if (![self syncFillPogoplugSvcParameters:params withListDeviceResponse:response]) {
             error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         }
         completed = YES;
@@ -782,7 +778,7 @@
 
 }
 
-- (BOOL)setPogoplugSvcParameters:(PogoplugParameters *)params withListDeviceResponse:(NSDictionary *)response
+- (BOOL)syncFillPogoplugSvcParameters:(PogoplugParameters *)params withListDeviceResponse:(NSDictionary *)response
 {
     PogoplugResponse *value = [[PogoplugResponse alloc] initWithDictionary:response];
     for (PogoplugResponse_Device *device in value.devices) {

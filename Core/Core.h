@@ -10,6 +10,8 @@
 #import "Types.h"
 #import "Error.h"
 #import "File.h"
+@class Operation;
+
 
 @interface Core : NSObject
 
@@ -19,8 +21,8 @@
 
 #pragma mark - account actions
 
-- (void)login:(NSString *)username password:(NSString *)password completion:(Completion)completion;
-- (void)logout:(Completion)completion;
+- (Operation *)login:(NSString *)username password:(NSString *)password completion:(void(^)(NSError *error))completion;
+- (Operation *)logout:(void(^)(NSError *error))completion;
 - (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion;
 - (void)forgotPassword:(NSString *)email completion:(Completion)completion;
 - (void)acceptTOS:(NSString *)email completion:(Completion)completion;
@@ -80,6 +82,7 @@
 - (NSError *)shareFile:(NSString *)fileid shareURL:(NSURL **)shareURL;
 
 @end
+
 
 @interface Operation : NSObject
 @property (nonatomic,readonly) BOOL cancelled;
