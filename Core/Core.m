@@ -9,38 +9,18 @@
 #import "Core.h"
 #import "AFNetworking.h"
 #import "AccountAPI.h"
+#import "AccountParameters.h"
 #import "PogoplugAPI.h"
+#import "PogoplugParameters.h"
 #import "PogoplugResponse.h"
 #import "File+Pogoplug.h"
-
-@interface Operation ()
-- (void)addUnderlyingOperation:(NSOperation *)operation;
-@end
-
-@interface AccountParameters : NSObject
-@property (nonatomic) NSURL    *baseurl;
-@property (nonatomic) NSString *username; // an email
-@property (nonatomic) NSString *authorization;
-@end
-
-@interface PogoplugParameters : NSObject
-@property (nonatomic) NSLock   *locker;
-@property (nonatomic) NSURL    *apiurl;    // api base url.
-@property (nonatomic) NSString *valtoken;  // pogoplug access token.
-@property (nonatomic) NSDate   *tokendate; // last refresh date for valtoken.
-@property (nonatomic) NSURL    *svcurl;    // service base url.
-@property (nonatomic) NSString *deviceid;
-@property (nonatomic) NSString *serviceid;
-- (void)reset:(PogoplugParameters *)params;
-@end
 
 @interface Core ()
 @property (nonatomic,readonly) dispatch_queue_t completionQueue;
 // account
 @property (nonatomic,readonly) AccountParameters *accountParams; // baseurl, username, authorization.
 @property (nonatomic) AccountState accountState;
-@property (nonatomic) Operation   *accountStateOperation; // last login or logout operation.
-@property (nonatomic,readonly) id  accountStateOperationLocker; // locker for account state actions: login and logout.
+@property (nonatomic) id accountStateLocker;
 // storage
 @property (nonatomic,readonly) NSRecursiveLock *pogoplugLocker;
 @property (nonatomic) PogoplugParameters *pogoplugParams;
@@ -94,8 +74,7 @@
         _accountParams = [[AccountParameters alloc] init];
         self.accountParams.baseurl = [NSURL URLWithString:@"https://services.my.nerobackitup.com"];
         self.accountState = AccountState_Unauthorized;
-        self.accountStateOperation = nil;
-        _accountStateOperationLocker = [[NSCondition alloc] init];
+        self.accountStateLocker = [[NSObject alloc] init];
         
         self.storageTokenLocker = [[NSObject alloc] init];
         self.storageTokenRefreshDate = [NSDate dateWithTimeIntervalSince1970:0];
@@ -107,72 +86,143 @@
 
 - (Operation *)login:(NSString *)username password:(NSString *)password completion:(void (^)(NSError *))completion
 {
-    NSParameterAssert(username.length > 0 && password.length > 0);
     NSParameterAssert(completion);
+    NSParameterAssert(username.length > 0 && password.length > 0);
     
     Operation *operation = [[Operation alloc] init];
-    @synchronized(self.accountParams) {
-        [self.accountStateOperation cancel];
-        self.accountStateOperation = operation;
-    }
-    
     __weak typeof(self) wself = self;
     
     dispatch_async(self.completionQueue, ^{
         NSError *error = nil;
+        
         if (operation.cancelled) {
             error = [Error errorCancelled:__func__ file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
-        if (!error)  {
-            error = [wself checkLoginParameters:username password:password];
+        if (0 == username.length) {
+            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_NicknameMissing underlyingError:nil debugString:@"not input username." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
+        }
+        if (0 == password.length) {
+            error = [Error errorWithCode:Error_Failed subCode:Error_Account_Login_PasswordMissing underlyingError:nil debugString:@"not input password" file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
-        if (!error) {
-            error = [wself syncLogin:username password:password forOperation:operation];
+        __strong typeof(wself) sself = wself;
+        if (!sself) {
+            NSParameterAssert(sself);
+            error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Core instance released while login-ing." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
+        @synchronized(sself.accountStateLocker) {
+            error = [sself syncLogin:username password:password forOperation:operation];
+        }
         completion(error);
     });
     
     return operation;
 }
 
-- (NSError *)checkLoginParameters:(NSString *)username password:(NSString *)password
-{
-    if (0 == username.length) {
-        return [Error errorWithCode:Error_Failed subCode:Error_Account_Login_NicknameMissing underlyingError:nil debugString:@"not input username." file:__FILE__ line:__LINE__];
-    }
-    
-    if (0 == password.length) {
-        return [Error errorWithCode:Error_Failed subCode:Error_Account_Login_PasswordMissing underlyingError:nil debugString:@"not input password" file:__FILE__ line:__LINE__];
-    }
-    
-    return nil;
-}
-
 - (NSError *)syncLogin:(NSString *)username password:password forOperation:(Operation *)operation
 {
-    @synchronized(self.accountStateOperationLocker) {
+    NSURL *baseurl = nil;
+    @synchronized(self.accountParams) {
+        baseurl = self.accountParams.baseurl;
+        NSParameterAssert(!self.accountParams.authorization);
+        self.accountState = AccountState_Logining;
+    }
+    NSParameterAssert(baseurl.absoluteString.length > 0);
+    
+    NSCondition *condition = [[NSCondition alloc] init];
+    __block BOOL completed = NO;
+    __block NSString *authorization = nil;
+    __block NSError *error = nil;
+    
+    NSOperation *subop = [AccountAPI authorize:baseurl username:username password:password completion:^(NSString *authorization_, NSError *error_) {
+        authorization = authorization_;
+        error = error_;
+        completed = YES;
+    }];
+    
+    [operation addUnderlyingOperation:subop];
+    
+    [condition lock];
+    while (!completed) {
+        [condition wait];
+    }
+    [condition unlock];
+    
+    @synchronized(self.accountParams) {
+        self.accountParams.baseurl = baseurl;
+        if (error) {
+            self.accountParams.authorization = nil;
+            self.accountState = AccountState_LoginFailed;
+        }
+        else {
+            self.accountParams.authorization = authorization;
+            self.accountState = AccountState_LoginSucceeded;
+        }
+    }
+    
+    return error;
+}
+
+- (Operation *)logout:(void (^)(NSError *))completion
+{
+    NSParameterAssert(completion);
+    
+    Operation *operation = [[Operation alloc] init];
+    __weak typeof(self) wself = self;
+    
+    dispatch_async(self.completionQueue, ^{
+        NSError *error = nil;
         
-        NSURL *baseurl = nil;
-        __block NSString *authorization = nil;
-        
-        @synchronized(self.accountParams) {
-            baseurl = self.accountParams.baseurl;
-            authorization = self.accountParams.authorization;
-            
-            self.accountState = AccountState_Logining;
+        if (operation.cancelled) {
+            error = [Error errorCancelled:__func__ file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
-        NSParameterAssert(baseurl && !authorization);
+        __strong typeof(wself) sself = wself;
+        if (!sself) {
+            NSParameterAssert(sself);
+            error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Core instance released while logout-ing." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
+        }
         
+        @synchronized(sself.accountStateLocker) {
+            error = [sself syncLogoutForOperation:operation];
+        }
+        completion(error);
+    });
+    
+    return operation;
+}
+
+- (NSError *)syncLogoutForOperation:(Operation *)operation
+{
+    NSURL *baseurl = nil;
+    NSString *authorization = nil;
+    @synchronized(self.accountParams) {
+        baseurl = self.accountParams.baseurl;
+        authorization = self.accountParams.authorization;
+    }
+    NSParameterAssert(baseurl && authorization);
+    
+    __block NSError *error = nil;
+    
+    if (authorization) {
         NSCondition *condition = [[NSCondition alloc] init];
         __block BOOL completed = NO;
-        __block NSError *error = nil;
         
-        NSOperation *subop = [AccountAPI authorize:baseurl username:username password:password completion:^(NSString *authorization_, NSError *error_) {
-            authorization = authorization_;
+        NSOperation *subop = [AccountAPI revoke:baseurl authorization:authorization completion:^(NSError *error_) {
             error = error_;
             completed = YES;
         }];
@@ -184,135 +234,126 @@
             [condition wait];
         }
         [condition unlock];
-        
-        @synchronized(self.accountParams) {
-            self.accountStateOperation = nil;
-            if (error) {
-                self.accountParams.authorization = nil;
-                self.accountState = AccountState_LoginFailed;
-            }
-            else {
-                self.accountParams.authorization = authorization;
-                self.accountState = AccountState_LoginSucceeded;
-            }
-        }
-        
-        return error;
     }
+    
+    if (!error) {
+        @synchronized(self.accountParams) {
+            self.accountParams.authorization = nil;
+            self.accountState = AccountState_Logouted;
+        }
+    }
+    
+    return error;
 }
 
-- (Operation *)logout:(void (^)(NSError *))completion
+- (void)logout
+{
+    // TODO
+}
+
+- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion
 {
     NSParameterAssert(completion);
+    NSParameterAssert(newPassword && oldPassword);
     
     Operation *operation = [[Operation alloc] init];
-    @synchronized(self.accountParams) {
-        [self.accountStateOperation cancel];
-        self.accountStateOperation = operation;
-    }
-    
     __weak typeof(self) wself = self;
     
     dispatch_async(self.completionQueue, ^{
-        NSError *error = nil;
-        if (operation.cancelled) {
-            error = [Error errorCancelled:__func__ file:__FILE__ line:__LINE__];
+        __strong typeof(wself) sself = wself;
+        if (!self) {
+            NSParameterAssert(sself);
+            NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Core instance released while logout-ing." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
-        if (!error) {
-            error = [wself syncLogoutForOperation:operation];
-        }
-        
-        completion(error);
+        [sself operation:operation getAccountParameters:^(AccountParameters *params, NSError *error) {
+            if (error) {
+                completion(error);
+                return;
+            }
+            
+            NSOperation *subop = [AccountAPI passwordchange:params.baseurl authorization:params.authorization email:params.username passwordold:oldPassword passwordnew:newPassword completion:completion];
+            [operation addUnderlyingOperation:subop];
+        }];
     });
     
     return operation;
 }
 
-- (NSError *)syncLogoutForOperation:(Operation *)operation
+- (Operation *)forgotPassword:(NSString *)email completion:(Completion)completion
 {
-    @synchronized(self.accountStateOperationLocker) {
-        
-        NSURL *baseurl = nil;
-        NSString *authorization = nil;
-        
-        @synchronized(self.accountParams) {
-            baseurl = self.accountParams.baseurl;
-            authorization = self.accountParams.authorization;
+    NSParameterAssert(completion);
+    NSParameterAssert(email);
+    
+    Operation *operation = [[Operation alloc] init];
+    __weak typeof(self) wself = self;
+    
+    dispatch_async(self.completionQueue, ^{
+        __strong typeof(wself) sself = wself;
+        if (!self) {
+            NSParameterAssert(sself);
+            NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Core instance released while logout-ing." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
         }
         
-        NSParameterAssert(baseurl && authorization);
+        NSURL *baseurl = sself.accountParams.baseurl;
+        NSParameterAssert(baseurl);
         
-        __block NSError *error = nil;
+        NSOperation *subop = [AccountAPI passwordrenew:baseurl email:email completion:completion];
+        [operation addUnderlyingOperation:subop];
+    });
+    
+    return operation;
+}
+
+- (Operation *)acceptTOS:(NSString *)email completion:(Completion)completion
+{
+    NSParameterAssert(completion);
+    NSParameterAssert(email);
+    
+    Operation *operation = [[Operation alloc] init];
+    __weak typeof(self) wself = self;
+    
+    dispatch_async(self.completionQueue, ^{
+        __strong typeof(wself) sself = wself;
+        if (!self) {
+            NSParameterAssert(sself);
+            NSError *error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:@"Core instance released while logout-ing." file:__FILE__ line:__LINE__];
+            completion(error);
+            return;
+        }
         
-        if (authorization) {
-            NSCondition *condition = [[NSCondition alloc] init];
-            __block BOOL completed = NO;
+        [sself operation:operation getAccountParameters:^(AccountParameters *params, NSError *error) {
+            if (error) {
+                completion(error);
+                return;
+            }
             
-            NSOperation *subop = [AccountAPI revoke:baseurl authorization:authorization completion:^(NSError *error_) {
-                error = error_;
-                completed = YES;
-            }];
-            
+            NSOperation *subop = [AccountAPI accepttos:params.baseurl authorization:params.authorization email:email completion:completion];
             [operation addUnderlyingOperation:subop];
-            
-            [condition lock];
-            while (!completed) {
-                [condition wait];
-            }
-            [condition unlock];
-        }
-        
-        @synchronized(self.accountParams) {
-            self.accountStateOperation = nil;
-            if (!error) {
-                self.accountParams.authorization = nil;
-                self.accountState = AccountState_Logouted;
-            }
-        }
-        
-        return error;
-    }
-}
-
-- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion
-{
-    NSParameterAssert(newPassword && oldPassword);
-    NSParameterAssert(completion);
+        }];
+    });
     
-    [AccountAPI passwordchange:self.accountApiUrl authorization:self.accountAuthorization email:self.accountEmail passwordold:oldPassword passwordnew:newPassword completion:completion];
-}
-
-- (void)forgotPassword:(NSString *)email completion:(Completion)completion
-{
-    NSParameterAssert(email);
-    NSParameterAssert(completion);
-    
-    [AccountAPI passwordrenew:self.accountApiUrl authorization:self.accountAuthorization email:email completion:completion];
-}
-
-- (void)acceptTOS:(NSString *)email completion:(Completion)completion
-{
-    NSParameterAssert(email);
-    NSParameterAssert(completion);
-    
-    [AccountAPI accepttos:self.accountApiUrl authorization:self.accountAuthorization email:email completion:completion];
+    return operation;
 }
 
 #pragma mark - account results
 
 - (void)onLogin:(NSError *)error username:(NSString *)username authorization:(NSString *)authorization
 {
-    @synchronized(self) {
+    @synchronized(self.accountParams) {
         if (error) {
-            self.accountAuthorization = nil;
+            self.accountParams.authorization = nil;
             self.accountState = AccountState_LoginFailed;
         }
         else {
             //self.username = username;
             //self.lastLoginDate = [NSDate date];
             
-            self.accountAuthorization = authorization;
+            self.accountParams.authorization = authorization;
             self.accountState = AccountState_LoginSucceeded;
             
             //[self tryTransferImageCacheFromDatabase];
@@ -322,13 +363,13 @@
 
 - (void)onLogout:(NSError *)error
 {
-    @synchronized(self) {
+    @synchronized(self.accountParams) {
         if (error) {
             // TODO
             // log or trace.
         }
         else {
-            self.accountAuthorization = nil;
+            self.accountParams.authorization = nil;
             self.accountState = AccountState_Logouted;
         }
     }
@@ -336,9 +377,9 @@
 
 - (void)onUnauthorized
 {
-    @synchronized(self) {
-        if (self.accountAuthorization) {
-            self.accountAuthorization = nil;
+    @synchronized(self.accountParams) {
+        if (self.accountParams.authorization) {
+            self.accountParams.authorization = nil;
             [[NSNotificationCenter defaultCenter] postNotificationName:Notification_LoginRequired object:self];
         }
         self.accountState = AccountState_Unauthorized;
@@ -858,83 +899,6 @@
 - (void)transferCacheFilesWithProgress:(void(^)(NSUInteger total, NSUInteger finished))progress completion:(void(^)())completion
 {
     // TODO
-}
-
-@end
-
-
-@implementation Operation
-{
-    NSMutableArray *_underlyingOperations;
-}
-
-- (id)init
-{
-    if (self = [super init]) {
-        _underlyingOperations = [NSMutableArray array];
-    }
-    return self;
-}
-
-- (void)cancel
-{
-    @synchronized(_underlyingOperations) {
-        for (NSOperation *operation in _underlyingOperations) {
-            [operation cancel];
-        }
-        _cancelled = YES;
-    }
-}
-
-- (void)addUnderlyingOperation:(NSOperation *)operation
-{
-    @synchronized(_underlyingOperations) {
-        [_underlyingOperations addObject:operation];
-        if (self.cancelled) {
-            [operation cancel];
-        }
-    }
-}
-
-@end
-
-@implementation AccountParameters
-
-- (id)copy
-{
-    AccountParameters *copy = [[AccountParameters alloc] init];
-    copy.baseurl = self.baseurl;
-    copy.username = self.username;
-    copy.authorization = self.authorization;
-    return copy;
-}
-
-@end
-
-@implementation PogoplugParameters
-
-- (id)copy
-{
-    PogoplugParameters *copy = [[PogoplugParameters alloc] init];
-    copy.locker = self.locker;
-    copy.apiurl = self.apiurl;
-    copy.valtoken = self.valtoken;
-    copy.tokendate = self.tokendate;
-    copy.svcurl = self.svcurl;
-    copy.deviceid = self.deviceid;
-    copy.serviceid = self.serviceid;
-    return copy;
-}
-
-- (void)reset:(PogoplugParameters *)params
-{
-    self.locker = params.locker;
-    self.apiurl = params.apiurl;
-    self.valtoken = params.valtoken;
-    self.tokendate = params.tokendate;
-    self.svcurl = params.svcurl;
-    self.deviceid = params.deviceid;
-    self.serviceid = params.serviceid;
 }
 
 @end

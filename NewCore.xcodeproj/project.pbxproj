@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715C719A8C4D500A9FCD4 /* AccountParameters.m */; };
+		46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */; };
+		46A715CE19A8C5BF00A9FCD4 /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715CD19A8C5BF00A9FCD4 /* Operation.m */; };
 		EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */; };
 		EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B0198F64E00002628D /* NSURL+Utils.m */; };
 		EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036B3198F652D0002628D /* NSDate+Pogoplug.m */; };
@@ -89,6 +92,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		46A715C619A8C4D500A9FCD4 /* AccountParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountParameters.h; sourceTree = "<group>"; };
+		46A715C719A8C4D500A9FCD4 /* AccountParameters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountParameters.m; sourceTree = "<group>"; };
+		46A715C919A8C55100A9FCD4 /* PogoplugParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugParameters.h; sourceTree = "<group>"; };
+		46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugParameters.m; sourceTree = "<group>"; };
+		46A715CC19A8C5BF00A9FCD4 /* Operation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Operation.h; sourceTree = "<group>"; };
+		46A715CD19A8C5BF00A9FCD4 /* Operation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Operation.m; sourceTree = "<group>"; };
+		46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cancellable.h; sourceTree = "<group>"; };
 		46B49C171987E37600F6E36C /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		EE0036A9198F635E0002628D /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		EE0036AC198F63720002628D /* NSManagedObjectContext+Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+Utils.h"; sourceTree = "<group>"; };
@@ -260,6 +270,7 @@
 				EE0036B0198F64E00002628D /* NSURL+Utils.m */,
 				EE0036D71993731D0002628D /* Database.h */,
 				EE0036D81993731D0002628D /* Database.m */,
+				46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -376,6 +387,8 @@
 				EEB551081987895300F8A614 /* Error.m */,
 				EEB5510D19879A1E00F8A614 /* File.h */,
 				EEB5510E19879A1E00F8A614 /* File.m */,
+				46A715CC19A8C5BF00A9FCD4 /* Operation.h */,
+				46A715CD19A8C5BF00A9FCD4 /* Operation.m */,
 				46B49C171987E37600F6E36C /* Types.h */,
 				EEB550371986314C00F8A614 /* API */,
 				EE0036C619936C270002628D /* Backup */,
@@ -399,6 +412,8 @@
 			children = (
 				EEB55113198B6AAD00F8A614 /* PogoplugAPI.h */,
 				EEB55119198B737F00F8A614 /* PogoplugAPI.m */,
+				46A715C919A8C55100A9FCD4 /* PogoplugParameters.h */,
+				46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */,
 				EEB55114198B6AAD00F8A614 /* PogoplugNetwork.h */,
 				EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */,
 				EEB5508A1986448300F8A614 /* PogoplugResponse.h */,
@@ -511,6 +526,8 @@
 			children = (
 				EEB550F7198649FB00F8A614 /* AccountAPI.h */,
 				EEB55115198B706F00F8A614 /* AccountAPI.m */,
+				46A715C619A8C4D500A9FCD4 /* AccountParameters.h */,
+				46A715C719A8C4D500A9FCD4 /* AccountParameters.m */,
 				EEB5510419864C5200F8A614 /* AccountNetwork.h */,
 				EEB55117198B71E100F8A614 /* AccountNetwork.m */,
 			);
@@ -618,6 +635,7 @@
 				EEB54FFF19862C0200F8A614 /* DetailViewController.m in Sources */,
 				EEB550D9198649E000F8A614 /* AFHTTPRequestOperationManager.m in Sources */,
 				EEB54FFC19862C0200F8A614 /* MasterViewController.m in Sources */,
+				46A715CE19A8C5BF00A9FCD4 /* Operation.m in Sources */,
 				EEB550DD198649E000F8A614 /* AFURLConnectionOperation.m in Sources */,
 				EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */,
 				EEB551091987895300F8A614 /* Error.m in Sources */,
@@ -626,6 +644,7 @@
 				EE0036E5199376900002628D /* BrowsingService.m in Sources */,
 				EE0036DF1993766C0002628D /* Browsing.xcdatamodeld in Sources */,
 				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
+				46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
 				EEB550F0198649E000F8A614 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
@@ -663,6 +682,7 @@
 				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
 				EEB550E8198649E000F8A614 /* SDWebImageManager.m in Sources */,
 				EEB550EF198649E000F8A614 /* AFNetworkActivityIndicatorManager.m in Sources */,
+				46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */,
 				EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */,
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,

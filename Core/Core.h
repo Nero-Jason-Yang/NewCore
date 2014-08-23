@@ -10,8 +10,7 @@
 #import "Types.h"
 #import "Error.h"
 #import "File.h"
-@class Operation;
-
+#import "Operation.h"
 
 @interface Core : NSObject
 
@@ -23,9 +22,10 @@
 
 - (Operation *)login:(NSString *)username password:(NSString *)password completion:(void(^)(NSError *error))completion;
 - (Operation *)logout:(void(^)(NSError *error))completion;
-- (void)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion;
-- (void)forgotPassword:(NSString *)email completion:(Completion)completion;
-- (void)acceptTOS:(NSString *)email completion:(Completion)completion;
+- (void)logout;
+- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion;
+- (Operation *)forgotPassword:(NSString *)email completion:(Completion)completion;
+- (Operation *)acceptTOS:(NSString *)email completion:(Completion)completion;
 
 #pragma mark - file actions
 
@@ -84,7 +84,3 @@
 @end
 
 
-@interface Operation : NSObject
-@property (nonatomic,readonly) BOOL cancelled;
-- (void)cancel;
-@end

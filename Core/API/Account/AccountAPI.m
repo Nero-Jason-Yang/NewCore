@@ -18,6 +18,7 @@
 {
     NSParameterAssert(completion);
     
+    NSParameterAssert(apiurl.absoluteString.length > 0);
     NSParameterAssert(username.length >= 5 && password.length >= 6);
     
     NSString *client_name = UIDevice.currentDevice.name;
@@ -33,39 +34,47 @@
         @"client_secret":@"12d950b3c8d447f2ca6c83960fdf371d",
         @"grant_type"   :@"password"};
     
-    [AccountNetwork post:apiurl path:@"/api/v1/auth/ncs/authorize" authorization:@"" parameters:parameters completion:^(NSDictionary *response, NSError *error) {
-        if (!error) {
-            if ([response isKindOfClass:NSDictionary.class]) {
-                NSString *code = [response objectForKey:@"code"];
-                NSDictionary *data = [response objectForKey:@"data"];
-                if (200 == code.integerValue && [data isKindOfClass:NSDictionary.class]) {
-                    NSString *token = [data objectForKey:@"access_token"];
-                    NSString *type = [data objectForKey:@"token_type"];
-                    if ([token isKindOfClass:NSString.class] && [type isKindOfClass:NSString.class]) {
-                        NSString *authorization = [NSString stringWithFormat:@"%@ %@", type, token];
-                        completion(authorization, nil);
-                        return;
-                    }
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_Authorize authorization:@"" parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+        if (error) {
+            completion(nil, error);
+            return;
+        }
+        
+        if ([response isKindOfClass:NSDictionary.class]) {
+            NSString *code = [response objectForKey:@"code"];
+            NSDictionary *data = [response objectForKey:@"data"];
+            if (200 == code.integerValue && [data isKindOfClass:NSDictionary.class]) {
+                NSString *token = [data objectForKey:@"access_token"];
+                NSString *type = [data objectForKey:@"token_type"];
+                if ([token isKindOfClass:NSString.class] && [type isKindOfClass:NSString.class]) {
+                    NSString *authorization = [NSString stringWithFormat:@"%@ %@", type, token];
+                    completion(authorization, nil); // ok.
+                    return;
                 }
             }
-            
-            error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         }
+        
+        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(nil, error);
     }];
+    
+    return operation;
 }
 
 + (NSOperation *)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     
+    NSParameterAssert(apiurl.absoluteString.length > 0);
+    NSParameterAssert(authorization.length > 0);
+    
     if (0 == authorization.length) {
         NSParameterAssert(apiurl);
         completion(nil); // already revoked.
-        return;
+        return nil;
     }
     
-    [AccountNetwork post:apiurl path:@"/api/v1/auth/ncs/revoke" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_Revoke authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(error);
             return;
@@ -74,17 +83,19 @@
         if ([response isKindOfClass:NSDictionary.class]) {
             NSString *code = [response objectForKey:@"code"];
             if (code.integerValue == 200) {
-                completion(nil);
-                return; // OK.
+                completion(nil); // ok.
+                return;
             }
         }
         
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
+    
+    return operation;
 }
 
-+ (void)passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSError *error))completion
++ (NSOperation *)passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -96,7 +107,7 @@
     
     NSDictionary *parameters = @{ @"email":email, @"passwordold":passwordold, @"passwordnew":passwordnew };
     
-    [AccountNetwork post:apiurl path:@"/api/v1/auth/ncs/passwordchange" authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PasswordChange authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(error);
             return;
@@ -105,26 +116,28 @@
         if ([response isKindOfClass:NSDictionary.class]) {
             NSString *code = [response objectForKey:@"code"];
             if (code.integerValue == 200) {
-                completion(nil);
-                return; // OK.
+                completion(nil); // ok.
+                return;
             }
         }
         
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
+    
+    return operation;
 }
 
-+ (void)passwordrenew:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
++ (NSOperation *)passwordrenew:(NSURL *)apiurl email:(NSString *)email completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
-    NSParameterAssert(authorization.length > 0);
     
     NSParameterAssert(email);
     if (nil == email) email = @"";
     
-    NSDictionary *parameters = @{@"email":email};
-    [AccountNetwork post:apiurl path:@"/api/v1/auth/ncs/passwordrenew" authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+    NSDictionary *parameters = @{ @"email":email };
+    
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PasswordRenew authorization:@"" parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(error);
             return;
@@ -133,22 +146,26 @@
         if ([response isKindOfClass:NSDictionary.class]) {
             NSString *code = [response objectForKey:@"code"];
             if (code.integerValue == 200) {
-                completion(nil);
-                return; // OK.
+                completion(nil); // ok.
+                return;
             }
         }
         
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
+    
+    return operation;
 }
 
-+ (void)user:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *user, NSError *error))completion
++ (NSOperation *)user:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *user, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    [AccountNetwork post:apiurl path:@"/api/v1/user" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
+    NSDictionary *parameters = nil;
+
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_GetUserInfo authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(nil, error);
             return;
@@ -157,7 +174,7 @@
         if ([response isKindOfClass:NSDictionary.class]) {
             NSDictionary *data = [response objectForKey:@"data"];
             if ([data isKindOfClass:NSDictionary.class]) {
-                completion(data, nil);
+                completion(data, nil); // ok.
                 return;
             }
         }
@@ -165,9 +182,11 @@
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(nil, error);
     }];
+    
+    return operation;
 }
 
-+ (void)accepttos:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
++ (NSOperation *)accepttos:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
@@ -177,9 +196,9 @@
     
     NSString *date = [self RFC3339DateTimeStringForDate:[NSDate date]];
     NSParameterAssert(date.length > 0);
+    NSDictionary *parameters = @{ @"email":email, @"tos":date };
     
-    NSDictionary *parameters = @{@"email":email, @"tos":date};
-    [AccountNetwork post:apiurl path:@"/api/v1/user/accepttos" authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_AcceptTOS authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(error);
             return;
@@ -188,14 +207,16 @@
         if ([response isKindOfClass:NSDictionary.class]) {
             NSString *code = [response objectForKey:@"code"];
             if (code.integerValue == 200) {
-                completion(nil);
-                return; // OK.
+                completion(nil); // ok.
+                return;
             }
         }
         
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(error);
     }];
+    
+    return operation;
 }
 
 + (NSOperation *)pogopluglogin:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSString *apihost, NSString *token, NSError *error))completion
@@ -203,7 +224,9 @@
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    return [AccountNetwork post:apiurl path:@"/api/v1/subscriptions/pogoplug/login" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
+    NSDictionary *parameters = nil;
+    
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PogoplugLogin authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(nil, nil, error);
             return;
@@ -216,8 +239,8 @@
                 NSString *apihost = [data objectForKey:@"api_host"];
                 NSString *token = [data objectForKey:@"token"];
                 if ([apihost isKindOfClass:NSString.class] && [token isKindOfClass:NSString.class]) {
-                    completion(apihost, token, nil);
-                    return; // OK.
+                    completion(apihost, token, nil); // ok.
+                    return;
                 }
             }
         }
@@ -225,14 +248,18 @@
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(nil, nil, error);
     }];
+    
+    return operation;
 }
 
-+ (void)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(int64_t freeSpace, NSError *error))completion
++ (NSOperation *)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(int64_t freeSpace, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    [AccountNetwork post:apiurl path:@"/api/v1/subscriptions/storage/auth" authorization:authorization parameters:nil completion:^(NSDictionary *response, NSError *error) {
+    NSDictionary *parameters = nil;
+    
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_StorageAuth authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
         if (error) {
             completion(0, error);
             return;
@@ -280,6 +307,8 @@
         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
         completion(0, error);
     }];
+    
+    return operation;
 }
 
 + (NSString *)RFC3339DateTimeStringForDate:(NSDate *)date
