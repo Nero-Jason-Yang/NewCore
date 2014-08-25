@@ -251,7 +251,7 @@
     // TODO
 }
 
-- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion
+- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(newPassword && oldPassword);
@@ -282,7 +282,7 @@
     return operation;
 }
 
-- (Operation *)forgotPassword:(NSString *)email completion:(Completion)completion
+- (Operation *)forgotPassword:(NSString *)email completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(email);
@@ -309,7 +309,7 @@
     return operation;
 }
 
-- (Operation *)acceptTOS:(NSString *)email completion:(Completion)completion
+- (Operation *)acceptTOS:(NSString *)email completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(email);
@@ -340,7 +340,7 @@
     return operation;
 }
 
-#pragma mark - account results
+#pragma mark account results
 
 - (void)onLogin:(NSError *)error username:(NSString *)username authorization:(NSString *)authorization
 {
@@ -388,7 +388,7 @@
 
 #pragma mark - storage actions
 
-- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(FileCompletion)completion
+- (Operation *)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void (^)(File *, NSError *))completion
 {
     NSParameterAssert(filename);
     NSParameterAssert(completion);

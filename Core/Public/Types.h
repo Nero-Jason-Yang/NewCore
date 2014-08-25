@@ -24,9 +24,3 @@ typedef enum : uint8_t {
     AccountState_LoginFailed,
     AccountState_LoginSucceeded,
 } AccountState;
-
-#pragma mark - completions
-
-typedef void(^Completion)(NSError *error);
-typedef void(^FileCompletion)(File *file, NSError *error);
-typedef void(^DataCompletion)(NSData *data, NSError *error);

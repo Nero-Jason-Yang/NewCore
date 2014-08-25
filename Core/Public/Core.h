@@ -23,14 +23,14 @@
 - (Operation *)login:(NSString *)username password:(NSString *)password completion:(void(^)(NSError *error))completion;
 - (Operation *)logout:(void(^)(NSError *error))completion;
 - (void)logout;
-- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(Completion)completion;
-- (Operation *)forgotPassword:(NSString *)email completion:(Completion)completion;
-- (Operation *)acceptTOS:(NSString *)email completion:(Completion)completion;
+- (Operation *)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword completion:(void(^)(NSError *error))completion;
+- (Operation *)forgotPassword:(NSString *)email completion:(void(^)(NSError *error))completion;
+- (Operation *)acceptTOS:(NSString *)email completion:(void(^)(NSError *error))completion;
 
 #pragma mark - file actions
 
 // open a file with name, if not found then create it.
-- (void)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(FileCompletion)completion;
+- (Operation *)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(File *file, NSError *error))completion;
 - (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(Completion)completion;
 - (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(Completion)completion;
 - (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(Completion)completion;
