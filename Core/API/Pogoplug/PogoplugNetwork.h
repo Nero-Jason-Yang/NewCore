@@ -11,9 +11,9 @@
 @interface PogoplugNetwork : NSObject
 
 + (NSOperation *) get:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
-+ (void)post:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
-+ (void)head:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSError *error))completion;
-+ (void) put:(NSURL *)url path:(NSString *)path data:(NSData *)data completion:(void (^)(NSError *error))completion;
-+ (void)down:(NSURL *)url path:(NSString *)path completion:(void (^)(NSData *data, NSError *error))completion;
++ (NSOperation *)post:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion;
++ (NSOperation *)head:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSError *error))completion;
++ (NSOperation *) put:(NSURL *)url path:(NSString *)path data:(NSData *)data completion:(void (^)(NSError *error))completion;
++ (NSOperation *)down:(NSURL *)url path:(NSString *)path completion:(void (^)(NSData *data, NSError *error))completion;
 
 @end

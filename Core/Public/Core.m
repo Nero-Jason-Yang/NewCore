@@ -392,136 +392,164 @@
 {
     NSParameterAssert(filename);
     NSParameterAssert(completion);
-    NSString *pogoplugFileType = [NSNumber numberWithInteger:type].description;
     
-    __weak __typeof(self) wself = self;
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    NSString *strtype = [NSNumber numberWithInteger:type].description;
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(nil, error);
+            return;
         }
-        else {
-            __strong __typeof(wself) sself = wself;
-            [PogoplugAPI createFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID filename:filename parentid:parentid type:pogoplugFileType mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
-                File *file = nil;
-                if (!error) {
-                    PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
-                    error = [File makeFile:&file fromPogoplugResponse:response.file];
-                }
-                completion(file, error);
-            }];
-        }
+        
+        NSOperation *subop = [PogoplugAPI createFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid filename:filename parentid:parentid type:strtype mtime:mtime ctime:ctime completion:^(NSDictionary *dictionary, NSError *error) {
+            if (error) {
+                completion(nil, error);
+                return;
+            }
+            
+            File *file = nil;
+            PogoplugResponse *response = [[PogoplugResponse alloc] initWithDictionary:dictionary];
+            error = [File makeFile:&file fromPogoplugResponse:response.file];
+            completion(file, error);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
+    
+    return  operation;
 }
 
-- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(Completion)completion
+- (Operation *)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(fileid && newname);
     NSParameterAssert(completion);
     
-    __weak __typeof(self) wself = self;
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(error);
+            return;
         }
-        else {
-            __strong __typeof(wself) sself = wself;
-            [PogoplugAPI moveFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid newname:newname completion:^(NSError *error) {
-                // TODO
-                // to change it in database
-                completion(error);
-            }];
-        }
+        
+        NSOperation *subop = [PogoplugAPI moveFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid fileid:fileid newname:newname completion:^(NSError *error) {
+            // TODO
+            // to change it in database
+            completion(error);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
+    
+    return operation;
 }
 
-- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(Completion)completion
+- (Operation *)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
     
-    __weak __typeof(self) wself = self;
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(error);
+            return;
         }
-        else {
-            __strong __typeof(wself) sself = wself;
-            [PogoplugAPI removeFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid recurse:recurse completion:^(NSError *error) {
-                // TODO
-                // to remove it from database
-                completion(error);
-            }];
-        }
+        
+        NSOperation *subop = [PogoplugAPI removeFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid fileid:fileid recurse:recurse completion:^(NSError *error) {
+            // TODO
+            // to remove it from database
+            completion(error);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
+    
+    return operation;
 }
 
-- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(Completion)completion
+- (Operation *)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void(^)(NSError *))completion
 {
     NSParameterAssert(fileid && data);
     NSParameterAssert(completion);
     
-    __weak __typeof(self) wself = self;
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(error);
+            return;
         }
-        else {
-            __strong __typeof(wself) sself = wself;
-            [PogoplugAPI uploadFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid data:data completion:completion];
-        }
+        
+        NSOperation *subop = [PogoplugAPI uploadFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid fileid:fileid data:data completion:^(NSError *error) {
+            completion(error);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
+    
+    return operation;
 }
 
-- (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion
+- (Operation *)downloadFile:(NSString *)fileid completion:(void(^)(NSData *, NSError *))completion
 {
     NSParameterAssert(fileid);
     NSParameterAssert(completion);
     
-    __weak __typeof(self) wself = self;
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(nil, error);
+            return;
         }
-        else {
-            __strong __typeof(wself) sself = wself;
-            [PogoplugAPI downloadFile:sself.pogoplugSvcUrl valtoken:token deviceid:sself.pogoplugDeviceID serviceid:sself.pogoplugServiceID fileid:fileid completion:completion];
-        }
+        
+        NSOperation *subop = [PogoplugAPI downloadFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid fileid:fileid completion:^(NSData *data, NSError *error) {
+            completion(data, error);
+        }];
+        
+        [operation addUnderlyingOperation:subop];
     }];
+    
+    return operation;
 }
 
-- (void)getThumbnailURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
+- (Operation *)getThumbnailURL:(File *)file completion:(void (^)(NSURL *, NSError *))completion
 {
-    [self getURLForFile:file withFlag:PogoplugFlag_Thumbnail completion:completion];
+    return [self getURLForFile:file withFlag:PogoplugFlag_Thumbnail completion:completion];
 }
 
-- (void)getPreviewURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
+- (Operation *)getPreviewURL:(File *)file completion:(void (^)(NSURL *, NSError *))completion
 {
-    [self getURLForFile:file withFlag:PogoplugFlag_Preview completion:completion];
+    return [self getURLForFile:file withFlag:PogoplugFlag_Preview completion:completion];
 }
 
-- (void)getStreamURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion
+- (Operation *)getStreamURL:(File *)file completion:(void (^)(NSURL *, NSError *))completion
 {
     NSString *flag = [file.streamtype.lowercaseString isEqualToString:@"full"] ? PogoplugFlag_Stream : nil;
-    [self getURLForFile:file withFlag:flag completion:completion];
+    return [self getURLForFile:file withFlag:flag completion:completion];
 }
 
-- (void)getURLForFile:(File *)file withFlag:(NSString *)flag completion:(void(^)(NSURL *url, NSError *))completion
+- (Operation *)getURLForFile:(File *)file withFlag:(NSString *)flag completion:(void(^)(NSURL *url, NSError *))completion
 {
-    [self getStorageToken:^(NSString *token, NSError *error) {
+    NSParameterAssert(completion);
+    NSParameterAssert(file);
+    
+    Operation *operation = [[Operation alloc] init];
+    
+    [self operation:operation getPogoplugSvcParameters:^(PogoplugParameters *params, NSError *error) {
         if (error) {
             completion(nil, error);
+            return;
         }
-        else {
-            NSURL *fileurl = nil;
-            error = [PogoplugAPI getFileURL:self.pogoplugSvcUrl valtoken:token deviceid:self.pogoplugDeviceID serviceid:self.pogoplugServiceID fileid:file.fileid flag:flag name:nil fileurl:&fileurl];
-            if (error) {
-                completion(nil, error);
-            }
-            else {
-                completion(fileurl, nil);
-            }
-        }
+        
+        NSURL *fileurl = [PogoplugAPI URLForFile:params.apiurl valtoken:params.valtoken deviceid:params.deviceid serviceid:params.serviceid fileid:file.fileid flag:flag name:nil];
+        completion(fileurl, nil);
     }];
+    
+    return operation;
 }
 
 - (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key
@@ -717,7 +745,7 @@
     }];
 }
 
-- (void)operation:(Operation *)operation getPogoplugSvcParameters:(void(^)(PogoplugParameters *, NSError *))completion
+- (void)operation:(Operation *)operation getPogoplugSvcParameters:(void(^)(PogoplugParameters *params, NSError *error))completion
 {
     __weak typeof(self) wself = self;
     

@@ -31,15 +31,15 @@
 
 // open a file with name, if not found then create it.
 - (Operation *)openFile:(NSString *)filename parentid:(NSString *)parentid type:(FileType)type ctime:(NSDate *)ctime mtime:(NSDate *)mtime completion:(void(^)(File *file, NSError *error))completion;
-- (void)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(Completion)completion;
-- (void)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(Completion)completion;
-- (void)uploadFile:(NSString *)fileid data:(NSData *)data completion:(Completion)completion;
-- (void)downloadFile:(NSString *)fileid completion:(DataCompletion)completion;
+- (Operation *)renameFile:(NSString *)fileid newname:(NSString *)newname completion:(void(^)(NSError *error))completion;
+- (Operation *)deleteFile:(NSString *)fileid recurse:(BOOL)recurse completion:(void(^)(NSError *error))completion;
+- (Operation *)uploadFile:(NSString *)fileid data:(NSData *)data completion:(void(^)(NSError *error))completion;
+- (Operation *)downloadFile:(NSString *)fileid completion:(void(^)(NSData *data, NSError *error))completion;
 
 // to retrieve file URL.
-- (void)getThumbnailURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
-- (void)getPreviewURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
-- (void)getStreamURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
+- (Operation *)getThumbnailURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
+- (Operation *)getPreviewURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
+- (Operation *)getStreamURL:(File *)file completion:(void(^)(NSURL *url, NSError *error))completion;
 
 // to retrieve file cache-key.
 - (NSError *)forFile:(File *)file getThumbnailCacheKey:(NSString **)key;

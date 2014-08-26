@@ -52,32 +52,32 @@
     }];
 }
 
-+ (void)post:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
++ (NSOperation *)post:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
 {
-    [[self sharedInstance] send:@"POST" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
+    return [[self sharedInstance] send:@"POST" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
         NSParameterAssert(!object || [object isKindOfClass:NSDictionary.class]);
         completion(object, error);
     }];
 }
 
-+ (void)head:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSError *))completion
++ (NSOperation *)head:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters completion:(void (^)(NSError *))completion
 {
-    [[self sharedInstance] send:@"HEAD" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
+    return [[self sharedInstance] send:@"HEAD" url:url path:path parameters:parameters data:nil serializer:nil completion:^(id object, NSError *error) {
         completion(error);
     }];
 }
 
-+ (void) put:(NSURL *)url path:(NSString *)path data:(NSData *)data completion:(void (^)(NSError *))completion
++ (NSOperation *) put:(NSURL *)url path:(NSString *)path data:(NSData *)data completion:(void (^)(NSError *))completion
 {
-    [[self sharedInstance] send:@"PUT" url:url path:path parameters:nil data:data serializer:nil completion:^(id object, NSError *error) {
+    return [[self sharedInstance] send:@"PUT" url:url path:path parameters:nil data:data serializer:nil completion:^(id object, NSError *error) {
         completion(error);
     }];
 }
 
-+ (void)down:(NSURL *)url path:(NSString *)path completion:(void (^)(NSData *data, NSError *error))completion
++ (NSOperation *)down:(NSURL *)url path:(NSString *)path completion:(void (^)(NSData *data, NSError *error))completion
 {
     AFHTTPResponseSerializer *serializer = [AFHTTPResponseSerializer serializer];
-    [[self sharedInstance] send:@"GET" url:url path:path parameters:nil data:nil serializer:serializer completion:^(id object, NSError *error) {
+    return [[self sharedInstance] send:@"GET" url:url path:path parameters:nil data:nil serializer:serializer completion:^(id object, NSError *error) {
         NSParameterAssert(!object || [object isKindOfClass:NSData.class]);
         completion(object, error);
     }];
