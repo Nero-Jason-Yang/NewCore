@@ -44,63 +44,63 @@
 @interface PogoplugAPI : NSObject
 
 + (NSOperation *) listDevices:(NSURL *)apiurl valtoken:(NSString *)valtoken
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)     getFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(opt NSString *)fileid filename:(opt NSString *)filename parentid:(opt NSString *)parentid
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
+                       fileid:(opt NSString *)fileid filename:(opt NSString *)filename parentid:(opt NSString *)parentid
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)   listFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-            parentid:(NSString *)parentid offset:(opt NSUInteger)offset maxcount:(opt NSUInteger)maxcount
-          showhidden:(opt BOOL)showhidden sortcrit:(opt NSString *)sortcrit filtercrit:(opt NSString *)filtercrit
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
+                     parentid:(NSString *)parentid offset:(opt NSUInteger)offset maxcount:(opt NSUInteger)maxcount
+                   showhidden:(opt BOOL)showhidden sortcrit:(opt NSString *)sortcrit filtercrit:(opt NSString *)filtercrit
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *) searchFiles:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-          searchcrit:(NSString *)searchcrit offset:(opt NSUInteger)offset maxcount:(opt NSUInteger)maxcount
-          showhidden:(opt BOOL)showhidden sortcrit:(opt NSString *)sortcrit
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
+                   searchcrit:(NSString *)searchcrit offset:(opt NSUInteger)offset maxcount:(opt NSUInteger)maxcount
+                   showhidden:(opt BOOL)showhidden sortcrit:(opt NSString *)sortcrit
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)  createFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-            filename:(NSString *)filename parentid:(opt NSString *)parentid type:(opt NSString *)type
-               mtime:(opt NSDate *)mtime ctime:(opt NSDate *)ctime
-          completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
+                     filename:(NSString *)filename parentid:(opt NSString *)parentid type:(opt NSString *)type
+                        mtime:(opt NSDate *)mtime ctime:(opt NSDate *)ctime
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)  removeFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid recurse:(opt BOOL)recurse
-          completion:(void(^)(NSError *error))completion;
+                       fileid:(NSString *)fileid recurse:(opt BOOL)recurse
+                   completion:(void(^)(NSError *error))completion;
 
 + (NSOperation *)    moveFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid newname:(opt NSString *)newname
-          completion:(void(^)(NSError *error))completion;
+                       fileid:(NSString *)fileid newname:(opt NSString *)newname
+                   completion:(void(^)(NSError *error))completion;
 
 + (NSOperation *) enableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid name:(opt NSString *)name password:(opt NSString *)password permissions:(opt NSString *)permissions
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
+                       fileid:(NSString *)fileid name:(opt NSString *)name password:(opt NSString *)password permissions:(opt NSString *)permissions
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)disableShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid
-          completion:(void(^)(NSError *error))completion;
+                       fileid:(NSString *)fileid
+                   completion:(void(^)(NSError *error))completion;
 
 + (NSOperation *)   sendShare:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid emails:(NSArray *)emails
-          completion:(void(^)(NSError *error))completion;
+                       fileid:(NSString *)fileid emails:(NSArray *)emails
+                   completion:(void(^)(NSError *error))completion;
 
 + (NSOperation *)  listShares:(NSURL *)apiurl valtoken:(NSString *)valtoken
-            deviceid:(opt NSString *)deviceid serviceid:(opt NSString *)serviceid
-          completion:(void(^)(NSDictionary *response, NSError *error))completion;
-
-#pragma mark utils
+                     deviceid:(opt NSString *)deviceid serviceid:(opt NSString *)serviceid
+                   completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 
 + (NSOperation *)  uploadFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid data:(NSData *)data
-          completion:(void(^)(NSError *error))completion;
+                       fileid:(NSString *)fileid data:(NSData *)data
+                   completion:(void(^)(NSError *error))completion;
 
 + (NSOperation *)downloadFile:(NSURL *)apiurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
-              fileid:(NSString *)fileid
-          completion:(void(^)(NSData *data, NSError *error))completion;
+                       fileid:(NSString *)fileid
+                   completion:(void(^)(NSData *data, NSError *error))completion;
 
-+ (NSURL *)URLForFile:(NSURL *)svcurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid fileid:(NSString *)fileid flag:(opt NSString *)flag name:(opt NSString *)name;
++ (NSURL *)        URLForFile:(NSURL *)svcurl valtoken:(NSString *)valtoken deviceid:(NSString *)deviceid serviceid:(NSString *)serviceid
+                       fileid:(NSString *)fileid flag:(opt NSString *)flag name:(opt NSString *)name;
 
-+ (NSDate *)dateWithString:(NSString *)string;
++ (NSDate *)   dateWithString:(NSString *)string;
++ (NSString *) stringWithDate:(NSDate *)date;
 
 @end
