@@ -26,6 +26,7 @@
 		EE58989919AB23520093C7C0 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989219AB23520093C7C0 /* Error.m */; };
 		EE58989A19AB23520093C7C0 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989419AB23520093C7C0 /* File.m */; };
 		EE58989B19AB23520093C7C0 /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989619AB23520093C7C0 /* Operation.m */; };
+		EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FBC19B58437005D4F14 /* AccountResponse.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -131,6 +132,8 @@
 		EE58989519AB23520093C7C0 /* Operation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Operation.h; sourceTree = "<group>"; };
 		EE58989619AB23520093C7C0 /* Operation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Operation.m; sourceTree = "<group>"; };
 		EE58989719AB23520093C7C0 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
+		EE724FBB19B58437005D4F14 /* AccountResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountResponse.h; sourceTree = "<group>"; };
+		EE724FBC19B58437005D4F14 /* AccountResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountResponse.m; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -538,6 +541,8 @@
 				46A715C719A8C4D500A9FCD4 /* AccountParameters.m */,
 				EEB5510419864C5200F8A614 /* AccountNetwork.h */,
 				EEB55117198B71E100F8A614 /* AccountNetwork.m */,
+				EE724FBB19B58437005D4F14 /* AccountResponse.h */,
+				EE724FBC19B58437005D4F14 /* AccountResponse.m */,
 			);
 			path = Account;
 			sourceTree = "<group>";
@@ -647,6 +652,7 @@
 				EEB54FFC19862C0200F8A614 /* MasterViewController.m in Sources */,
 				EEB550DD198649E000F8A614 /* AFURLConnectionOperation.m in Sources */,
 				EEB550F5198649E000F8A614 /* UIWebView+AFNetworking.m in Sources */,
+				EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */,
 				EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */,
 				EEB550F2198649E000F8A614 /* UIButton+AFNetworking.m in Sources */,
 				EE0036E5199376900002628D /* BrowsingService.m in Sources */,
