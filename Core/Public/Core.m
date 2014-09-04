@@ -836,38 +836,18 @@
     NSOperation *op = [AccountAPI pogopluglogin:account.baseurl authorization:account.authorization completion:^(NSDictionary *dictionary, NSError *error_) {
         error = error_;
         if (!error) {
-            
-        }
-        if (e) {
-            error = e;
-        }
-        else {
-            params.apiurl = [NSURL URLWithString:apihost];
-            params.valtoken = token;
-            params.tokendate = [NSDate date];
-            params.svcurl = nil;
-            params.deviceid = nil;
-            params.serviceid = nil;
-        }
-        completed = YES;
-        
-        
-        
-        
-        if ([response isKindOfClass:NSDictionary.class]) {
-            NSString *code = [response objectForKey:@"code"];
-            NSDictionary *data = [response objectForKey:@"data"];
-            if (200 == code.integerValue && [data isKindOfClass:NSDictionary.class]) {
-                NSString *apihost = [data objectForKey:@"api_host"];
-                NSString *token = [data objectForKey:@"token"];
-                if ([apihost isKindOfClass:NSString.class] && [token isKindOfClass:NSString.class]) {
-                    completion(apihost, token, nil); // ok.
-                    return;
-                }
+            AccountResponse_PogoplugLogin *response = [[AccountResponse_PogoplugLogin alloc] initWithDictionary:dictionary];
+            NSString *api_host = response.api_host;
+            NSString *token = response.token;
+            if (200 != response.code || !api_host || !token) {
+                error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
+            } else {
+                params.apiurl = [NSURL URLWithString:api_host];
+                params.valtoken = token;
+                params.tokendate = [NSDate date];
             }
         }
-        
-        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
+        completed = YES;
     }];
     
     [operation addUnderlyingOperation:op];

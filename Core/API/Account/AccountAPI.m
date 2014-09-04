@@ -128,61 +128,14 @@
     return operation;
 }
 
-+ (NSOperation *)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(int64_t freeSpace, NSError *error))completion
++ (NSOperation *)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
     NSDictionary *parameters = nil;
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_StorageAuth authorization:authorization parameters:parameters completion:^(NSDictionary *response, NSError *error) {
-        if (error) {
-            completion(0, error);
-            return;
-        }
-        
-        if ([response isKindOfClass:NSDictionary.class]) {
-            NSString *code = [response objectForKey:@"code"];
-            NSParameterAssert(code.integerValue == 200);
-            NSDictionary *data = [response objectForKey:@"data"];
-            if ([data isKindOfClass:NSDictionary.class]) {
-                NSString *apiHost = [data objectForKey:@"api_host"];
-                NSParameterAssert([apiHost isKindOfClass:NSString.class]);
-                NSString *token = [data objectForKey:@"access_token"];
-                NSParameterAssert([token isKindOfClass:NSString.class]);
-                NSArray *subscriptions = [data objectForKey:@"subscriptions"];
-                if ([subscriptions isKindOfClass:NSArray.class] && subscriptions.count > 0) {
-                    NSDictionary *storageSubscription = subscriptions[0];
-                    if ([storageSubscription isKindOfClass:NSDictionary.class]) {
-                        NSDictionary *storageSpace = [storageSubscription objectForKey:@"space"];
-                        if ([storageSpace isKindOfClass:NSDictionary.class]) {
-                            id freeValue = [storageSpace objectForKey:@"free"];
-                            int64_t freeSpace = 0;
-                            if ([freeValue isKindOfClass:NSString.class]) {
-                                freeSpace = ((NSString *)freeValue).longLongValue;
-                                completion(freeSpace, nil);
-                                return;
-                            }
-                            else if ([freeValue isKindOfClass:NSNumber.class]) {
-                                freeSpace = ((NSNumber *)freeValue).longLongValue;
-                                completion(freeSpace, nil);
-                                return;
-                            }
-                            else if( [freeValue isKindOfClass:NSNull.class]) {
-                                // null indicates unlimited subscprition
-                                freeSpace = INT64_MAX;
-                                completion(freeSpace, nil);
-                                return;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response] file:__FILE__ line:__LINE__];
-        completion(0, error);
-    }];
+    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_StorageAuth authorization:authorization parameters:parameters completion:completion];
     
     return operation;
 }
