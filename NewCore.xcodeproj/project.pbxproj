@@ -27,6 +27,7 @@
 		EE58989A19AB23520093C7C0 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989419AB23520093C7C0 /* File.m */; };
 		EE58989B19AB23520093C7C0 /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989619AB23520093C7C0 /* Operation.m */; };
 		EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FBC19B58437005D4F14 /* AccountResponse.m */; };
+		EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FC119B95C21005D4F14 /* DictionaryReader.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -134,6 +135,8 @@
 		EE58989719AB23520093C7C0 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		EE724FBB19B58437005D4F14 /* AccountResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountResponse.h; sourceTree = "<group>"; };
 		EE724FBC19B58437005D4F14 /* AccountResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountResponse.m; sourceTree = "<group>"; };
+		EE724FC019B95C21005D4F14 /* DictionaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DictionaryReader.h; sourceTree = "<group>"; };
+		EE724FC119B95C21005D4F14 /* DictionaryReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DictionaryReader.m; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -274,6 +277,8 @@
 				EE0036D71993731D0002628D /* Database.h */,
 				EE0036D81993731D0002628D /* Database.m */,
 				46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */,
+				EE724FC019B95C21005D4F14 /* DictionaryReader.h */,
+				EE724FC119B95C21005D4F14 /* DictionaryReader.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -664,6 +669,7 @@
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
 				EEB550E5198649E000F8A614 /* SDWebImageDecoder.m in Sources */,
 				EEB550DE198649E000F8A614 /* AFURLRequestSerialization.m in Sources */,
+				EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */,
 				EE0036DB1993731D0002628D /* Database.m in Sources */,
 				EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */,
 				EEB550DA198649E000F8A614 /* AFHTTPSessionManager.m in Sources */,

@@ -233,7 +233,7 @@
             error = error_;
             if (!error && dictionary) {
                 AccountResponse *response = [[AccountResponse alloc] initWithDictionary:dictionary];
-                if (200 != response.code) {
+                if (200 != response.code.integerValue) {
                     error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
                 }
             }
@@ -290,7 +290,7 @@
             NSOperation *subop = [AccountAPI passwordchange:params.baseurl authorization:params.authorization email:params.username passwordold:oldPassword passwordnew:newPassword completion:^(NSDictionary *dictionary, NSError *error) {
                 if (!error && dictionary) {
                     AccountResponse *response = [[AccountResponse alloc] initWithDictionary:dictionary];
-                    if (200 != response.code) {
+                    if (200 != response.code.integerValue) {
                         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
                     }
                 }
@@ -327,7 +327,7 @@
         NSOperation *subop = [AccountAPI passwordrenew:baseurl email:email completion:^(NSDictionary *dictionary, NSError *error) {
             if (!error && dictionary) {
                 AccountResponse *response = [[AccountResponse alloc] initWithDictionary:dictionary];
-                if (200 != response.code) {
+                if (200 != response.code.integerValue) {
                     error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
                 }
             }
@@ -366,7 +366,7 @@
             NSOperation *subop = [AccountAPI accepttos:params.baseurl authorization:params.authorization email:email completion:^(NSDictionary *dictionary, NSError *error) {
                 if (!error && dictionary) {
                     AccountResponse *response = [[AccountResponse alloc] initWithDictionary:dictionary];
-                    if (200 != response.code) {
+                    if (200 != response.code.integerValue) {
                         error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
                     }
                 }
@@ -839,7 +839,7 @@
             AccountResponse_PogoplugLogin *response = [[AccountResponse_PogoplugLogin alloc] initWithDictionary:dictionary];
             NSString *api_host = response.api_host;
             NSString *token = response.token;
-            if (200 != response.code || !api_host || !token) {
+            if (200 != response.code.integerValue || !api_host || !token) {
                 error = [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:nil debugString:[NSString stringWithFormat:@"response data: %@", response.dictionary] file:__FILE__ line:__LINE__];
             } else {
                 params.apiurl = [NSURL URLWithString:api_host];

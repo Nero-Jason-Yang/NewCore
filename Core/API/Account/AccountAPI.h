@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+#define AccountPath_Register        @"/api/v1/auth/ncs/register"
 #define AccountPath_Authorize       @"/api/v1/auth/ncs/authorize"
 #define AccountPath_Revoke          @"/api/v1/auth/ncs/revoke"
 #define AccountPath_PasswordChange  @"/api/v1/auth/ncs/passwordchange"
@@ -19,6 +20,7 @@
 
 @interface AccountAPI : NSObject
 
++ (NSOperation *)signup:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password details:(NSDictionary *)details completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 + (NSOperation *)authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 + (NSOperation *)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;
 + (NSOperation *)passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSDictionary *dictionary, NSError *error))completion;

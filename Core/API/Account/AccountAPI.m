@@ -14,35 +14,44 @@
 
 @implementation AccountAPI
 
++ (NSOperation *)signup:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password details:(NSDictionary *)details completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
+{
+    NSParameterAssert(completion);
+    NSParameterAssert(username.length >= 5 && password.length >= 6);
+    
+    NSDictionary *parameters =
+    @{  @"email"    :(username ? username : @""),
+        @"password" :(password ? password : @"")};
+    
+    if (details.count > 0) {
+        NSMutableDictionary *mdic = details.mutableCopy;
+        [mdic addEntriesFromDictionary:parameters];
+        parameters = mdic;
+    }
+    
+    return [AccountNetwork post:apiurl path:AccountPath_Register authorization:@"" parameters:parameters completion:completion];
+}
+
 + (NSOperation *)authorize:(NSURL *)apiurl username:(NSString *)username password:(NSString *)password completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
-    NSParameterAssert(apiurl.absoluteString.length > 0);
     NSParameterAssert(username.length >= 5 && password.length >= 6);
-    
-    NSString *client_name = UIDevice.currentDevice.name;
-    if (0 == client_name.length) {
-        client_name = @"iOS";
-    }
+    NSString *devicename = UIDevice.currentDevice.name;
     
     NSDictionary *parameters =
-    @{  @"email"        :username,
-        @"password"     :password,
-        @"client_name"  :client_name,
-        @"client_id"    :@"7C4B5AC96435EFA0",
-        @"client_secret":@"12d950b3c8d447f2ca6c83960fdf371d",
-        @"grant_type"   :@"password"};
+    @{  @"email"         :(username ? username : @""),
+        @"password"      :(password ? password : @""),
+        @"client_name"   :(devicename ? devicename : @"iOS"),
+        @"client_id"     :@"7C4B5AC96435EFA0",
+        @"client_secret" :@"12d950b3c8d447f2ca6c83960fdf371d",
+        @"grant_type"    :@"password"};
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_Authorize authorization:@"" parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_Authorize authorization:@"" parameters:parameters completion:completion];
 }
 
 + (NSOperation *)revoke:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
-    
-    NSParameterAssert(apiurl.absoluteString.length > 0);
     NSParameterAssert(authorization.length > 0);
     
     if (0 == authorization.length) {
@@ -51,40 +60,32 @@
         return nil;
     }
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_Revoke authorization:authorization parameters:nil completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_Revoke authorization:authorization parameters:nil completion:completion];
 }
 
 + (NSOperation *)passwordchange:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email passwordold:(NSString *)passwordold passwordnew:(NSString *)passwordnew completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
-    
     NSParameterAssert(email && passwordold && passwordnew);
-    if (nil == email) email = @"";
-    if (nil == passwordold) passwordold = @"";
-    if (nil == passwordnew) passwordnew = @"";
     
-    NSDictionary *parameters = @{ @"email":email, @"passwordold":passwordold, @"passwordnew":passwordnew };
+    NSDictionary *parameters =
+    @{  @"email"       :(email ? email : @""),
+        @"passwordold" :(passwordold ? passwordold : @""),
+        @"passwordnew" :(passwordnew ? passwordnew : @"")};
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PasswordChange authorization:authorization parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_PasswordChange authorization:authorization parameters:parameters completion:completion];
 }
 
 + (NSOperation *)passwordrenew:(NSURL *)apiurl email:(NSString *)email completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
-    
     NSParameterAssert(email);
-    if (nil == email) email = @"";
     
-    NSDictionary *parameters = @{ @"email":email };
+    NSDictionary *parameters =
+    @{  @"email" :(email ? email : @"")};
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PasswordRenew authorization:@"" parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_PasswordRenew authorization:@"" parameters:parameters completion:completion];
 }
 
 + (NSOperation *)getuser:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *, NSError *))completion
@@ -92,28 +93,20 @@
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    NSDictionary *parameters = nil;
-
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_GetUserInfo authorization:authorization parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_GetUserInfo authorization:authorization parameters:nil completion:completion];
 }
 
 + (NSOperation *)accepttos:(NSURL *)apiurl authorization:(NSString *)authorization email:(NSString *)email completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
 {
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
-    
-    NSParameterAssert(email);
-    if (email == nil) email = @"";
-    
     NSString *date = [self RFC3339DateTimeStringForDate:[NSDate date]];
-    NSParameterAssert(date.length > 0);
-    NSDictionary *parameters = @{ @"email":email, @"tos":date };
     
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_AcceptTOS authorization:authorization parameters:parameters completion:completion];
+    NSDictionary *parameters =
+    @{  @"email" :(email ? email : @""),
+        @"tos"   :date};
     
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_AcceptTOS authorization:authorization parameters:parameters completion:completion];
 }
 
 + (NSOperation *)pogopluglogin:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void (^)(NSDictionary *, NSError *))completion
@@ -121,11 +114,7 @@
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    NSDictionary *parameters = nil;
-    
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_PogoplugLogin authorization:authorization parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_PogoplugLogin authorization:authorization parameters:nil completion:completion];
 }
 
 + (NSOperation *)storageauth:(NSURL *)apiurl authorization:(NSString *)authorization completion:(void(^)(NSDictionary *dictionary, NSError *error))completion
@@ -133,11 +122,7 @@
     NSParameterAssert(completion);
     NSParameterAssert(authorization.length > 0);
     
-    NSDictionary *parameters = nil;
-    
-    NSOperation *operation = [AccountNetwork post:apiurl path:AccountPath_StorageAuth authorization:authorization parameters:parameters completion:completion];
-    
-    return operation;
+    return [AccountNetwork post:apiurl path:AccountPath_StorageAuth authorization:authorization parameters:nil completion:completion];
 }
 
 + (NSString *)RFC3339DateTimeStringForDate:(NSDate *)date

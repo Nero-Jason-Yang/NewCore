@@ -19,3 +19,4 @@
 #import "NSManagedObjectContext+Utils.h"
 #import "NSURL+Utils.h"
 #import "Database.h"
+#import "DictionaryReader.h"
