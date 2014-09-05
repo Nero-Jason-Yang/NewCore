@@ -306,7 +306,7 @@
         return [Error errorWithCode:Error_Failed subCode:Error_None underlyingError:error debugString:makeDebugString() file:__FILE__ line:__LINE__];
     }
     
-    if (![json isKindOfClass:NSDictionary.class] && ![path isEqualToString:AccountPath_Revoke]) {
+    if (![json isKindOfClass:NSDictionary.class] && ![path isEqualToString:ACCOUNT_APIPATH_REVOKE]) {
         return [Error errorWithCode:Error_Unexpected subCode:Error_None underlyingError:error debugString:makeDebugString() file:__FILE__ line:__LINE__];
     }
     
@@ -357,7 +357,7 @@
 
 + (ErrorSubCode)subCodeWithAccountException:(NSString *)exception message:(NSString *)message requestPath:(NSString *)path
 {
-    if ([path isEqualToString:AccountPath_Authorize]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_AUTHORIZE]) {
         if ([exception isEqualToString:@"data:1"]) {
             return Error_Account_Login_DataMissing;
         }
@@ -382,11 +382,11 @@
         return Error_None;
     }
     
-    if ([path isEqualToString:AccountPath_Revoke]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_REVOKE]) {
         return Error_None;
     }
     
-    if ([path isEqualToString:AccountPath_PasswordChange]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_PASSWORDCHANGE]) {
         if ([exception isEqualToString:@"password:1"]) {
             return Error_Account_PasswordChange_OldPasswordMissing;
         }
@@ -411,7 +411,7 @@
         return Error_None;
     }
     
-    if ([path isEqualToString:AccountPath_PasswordRenew]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_PASSWORDRENEW]) {
         if ([exception isEqualToString:@"invalid:email:String:1"]) {
             return Error_Account_PasswordRenew_EmailMissing;
         }
@@ -424,7 +424,7 @@
         return Error_None;
     }
     
-    if ([path isEqualToString:AccountPath_AcceptTOS]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_ACCEPTTOS]) {
         if ([exception isEqualToString:@"email:missing"]) {
             return Error_Account_AcceptTOS_EmailMissing;
         }
@@ -442,7 +442,7 @@
 
 + (ErrorSubCode)subCodeWithAccountHTTPStatusCode:(NSInteger)code requestPath:(NSString *)path
 {
-    if ([path isEqualToString:AccountPath_AcceptTOS]) {
+    if ([path isEqualToString:ACCOUNT_APIPATH_ACCEPTTOS]) {
         switch (code) {
             case HTTPErrorForbidden: // 403
                 return Error_Account_AcceptTOS_TOSDateOld;
