@@ -14,7 +14,7 @@
 @end
 
 @interface AccountResponse : DictionaryReader
-@property (readonly) NSInteger code;
+@property (readonly) NSNumber *code; // NSInteger
 @property (readonly) NSString *message;
 @property (readonly) id details;
 @property (readonly) id data;

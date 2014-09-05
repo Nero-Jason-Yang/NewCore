@@ -32,6 +32,22 @@
     return nil;
 }
 
+- (NSArray *)readerArrayValueForKey:(NSString *)key class:(Class)class
+{
+    NSParameterAssert(key);
+    NSArray *value = self.dictionary[key];
+    if ([value isKindOfClass:[NSArray class]]) {
+        NSMutableArray *array = [NSMutableArray array];
+        for (NSDictionary *dictionary in value) {
+            if ([dictionary isKindOfClass:[NSDictionary class]]) {
+                [array addObject:[[class alloc] initWithDictionary:dictionary]];
+            }
+        }
+        return array;
+    }
+    return nil;
+}
+
 - (NSString *)stringValueForKey:(NSString *)key
 {
     NSParameterAssert(key);
@@ -97,22 +113,14 @@
 
 @implementation AccountResponse
 
-- (NSInteger)code
+- (NSNumber *)code
 {
-    NSString *value = self.dictionary[@"code"];
-    if ([value isKindOfClass:[NSString class]]) {
-        return value.integerValue;
-    }
-    return 0;
+    return [self integerValueForKey:@"code"];
 }
 
 - (NSString *)message
 {
-    NSString *value = self.dictionary[@"message"];
-    if ([value isKindOfClass:[NSString class]]) {
-        return value;
-    }
-    return nil;
+    return [self stringValueForKey:@"message"];
 }
 
 - (id)details
@@ -129,36 +137,25 @@
 
 @implementation AccountResponse_Authorize
 {
-    NSDictionary *_data;
+    DictionaryReader *_data;
 }
 
 - (id)initWithDictionary:(NSDictionary *)dictionary
 {
     if (self = [super initWithDictionary:dictionary]) {
-        NSDictionary *data = self.data;
-        if ([data isKindOfClass:[NSDictionary class]]) {
-            _data = data;
-        }
+        _data = [self readerValueForKey:@"data" class:[DictionaryReader class]];
     }
     return self;
 }
 
 - (NSString *)access_token
 {
-    NSString *value = _data[@"access_token"];
-    if ([value isKindOfClass:[NSString class]]) {
-        return value;
-    }
-    return nil;
+    return [_data stringValueForKey:@"access_token"];
 }
 
 - (NSString *)token_type
 {
-    NSString *value = _data[@"token_type"];
-    if ([value isKindOfClass:[NSString class]]) {
-        return value;
-    }
-    return nil;
+    return [_data stringValueForKey:@"token_type"];
 }
 
 @end
@@ -185,10 +182,7 @@
 - (id)initWithDictionary:(NSDictionary *)dictionary
 {
     if (self = [super initWithDictionary:dictionary]) {
-        NSDictionary *data = self.data;
-        if ([data isKindOfClass:[NSDictionary class]]) {
-            _data = [[DictionaryReader alloc] initWithDictionary:data];
-        }
+        _data = [self readerValueForKey:@"data" class:[DictionaryReader class]];
     }
     return self;
 }
@@ -210,17 +204,7 @@
 
 - (NSArray *)subscriptions
 {
-    NSArray *subscriptions = _data.dictionary[@"subscriptions"];
-    if (![subscriptions isKindOfClass:[NSArray class]]) {
-        return nil;
-    }
-    NSMutableArray *array = [NSMutableArray array];
-    for (NSDictionary *dictionary in subscriptions) {
-        if ([dictionary isKindOfClass:[NSDictionary class]]) {
-            [array addObject:[[AccountResponseData_Subscription alloc] initWithDictionary:dictionary]];
-        }
-    }
-    return array;
+    return [_data readerArrayValueForKey:@"subscriptions" class:[AccountResponseData_Subscription class]];
 }
 
 @end
@@ -233,11 +217,7 @@
 - (id)initWithDictionary:(NSDictionary *)dictionary
 {
     if (self = [super initWithDictionary:dictionary]) {
-        
-        NSDictionary *data = self.data;
-        if ([data isKindOfClass:[NSDictionary class]]) {
-            _data = [[DictionaryReader alloc] initWithDictionary:data];
-        }
+        _data = [self readerValueForKey:@"data" class:[DictionaryReader class]];
     }
     return self;
 }
@@ -264,17 +244,7 @@
 
 - (NSArray *)subscriptions
 {
-    NSArray *subscriptions = _data.dictionary[@"subscriptions"];
-    if ([subscriptions isKindOfClass:[NSArray class]]) {
-        NSMutableArray *array = [NSMutableArray array];
-        for (NSDictionary *dictionary in subscriptions) {
-            if ([dictionary isKindOfClass:[NSDictionary class]]) {
-                [array addObject:[[AccountResponseData_Subscription alloc] initWithDictionary:dictionary]];
-            }
-        }
-        return array;
-    }
-    return nil;
+    return [_data readerArrayValueForKey:@"subscriptions" class:[AccountResponseData_Subscription class]];
 }
 
 @end
