@@ -18,3 +18,5 @@ DerivedData
 3rdparty
 *.xccheckout
 *.xcworkspacedata
+Podfile.lock
+Pods/*
