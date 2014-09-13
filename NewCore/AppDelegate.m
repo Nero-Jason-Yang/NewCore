@@ -8,14 +8,20 @@
 
 #import "AppDelegate.h"
 #import "Core.h"
-
-#import "MasterViewController.h"
+#import "NavigationController.h"
+#import "BackupViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     [Core sharedInstance];
+    BackupViewController *bac = [[BackupViewController alloc] init];
+    NavigationController *nav = [[NavigationController alloc] initWithRootViewController:bac];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = nav;
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
