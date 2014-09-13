@@ -70,10 +70,16 @@
     return [[self sharedInstance] post:baseurl path:path authorization:authorization parameters:parameters completion:completion];
 }
 
-- (NSOperation *)post:(NSURL *)baseurl path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *response, NSError *error))completion
+- (NSOperation *)post:(NSURL *)baseurl path:(NSString *)path authorization:(NSString *)authorization parameters:(NSDictionary *)parameters completion:(void (^)(NSDictionary *, NSError *))completion
 {
+    NSError *error = nil;
     NSString *URLString = [[NSURL URLWithString:path relativeToURL:baseurl] absoluteString];
-    NSMutableURLRequest *request = [_requestSerializer requestWithMethod:@"POST" URLString:URLString parameters:parameters];
+    NSMutableURLRequest *request = [_requestSerializer requestWithMethod:@"POST" URLString:URLString parameters:parameters error:&error];
+    if (error) {
+        completion(nil, error);
+        return nil;
+    }
+    
     if (_timeoutInterval > 0.0) {
         request.timeoutInterval = _timeoutInterval;
     }

@@ -83,7 +83,7 @@
     }];
 }
 
-- (NSOperation *)send:(NSString *)method url:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters data:(NSData *)data serializer:(AFHTTPResponseSerializer *)serializer completion:(void (^)(id object, NSError *error))completion
+- (NSOperation *)send:(NSString *)method url:(NSURL *)url path:(NSString *)path parameters:(NSDictionary *)parameters data:(NSData *)data serializer:(AFHTTPResponseSerializer *)serializer completion:(void (^)(id object, NSError *))completion
 {
     NSParameterAssert(path.length > 0);
     
@@ -100,8 +100,14 @@
         return nil;
     }
     
+    NSError *error = nil;
     NSString *URLString = [[NSURL URLWithString:path relativeToURL:url] absoluteString];
-    NSMutableURLRequest *request = [_requestSerializer requestWithMethod:method URLString:URLString parameters:parameters];
+    NSMutableURLRequest *request = [_requestSerializer requestWithMethod:method URLString:URLString parameters:parameters error:&error];
+    if (error) {
+        completion(nil, error);
+        return nil;
+    }
+    
     if (_timeoutInterval > 0.0) {
         request.timeoutInterval = _timeoutInterval;
     }
