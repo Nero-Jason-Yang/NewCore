@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BackupSwitch : UIView
+typedef NS_ENUM(NSInteger, BackupSwitchState) {
+    BackupSwitchStateOff,
+    BackupSwitchStateDone,
+    BackupSwitchStateRunning,
+    BackupSwitchStatePending,
+};
 
+@interface BackupSwitch : UIView
+@property (nonatomic) BOOL on;
+@property (nonatomic) BackupSwitchState state;
 @end

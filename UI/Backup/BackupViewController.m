@@ -84,8 +84,7 @@
     UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
     if (indexPath.row == 0) {
         cell.textLabel.text = @"Hello";
-        BackupSwitch *view = [[BackupSwitch alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
-        view.backgroundColor = [UIColor lightGrayColor];
+        BackupSwitch *view = [[BackupSwitch alloc] initWithFrame:CGRectMake(0, 0, 120, 120)];
         [cell addSubview:view];
     }
     else {
