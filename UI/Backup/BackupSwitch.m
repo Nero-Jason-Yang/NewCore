@@ -7,6 +7,7 @@
 //
 
 #import "BackupSwitch.h"
+#import "UIColor+Skin.h"
 
 CGPoint CGPointMakeWithAngleRadius(CGFloat angle, CGFloat radius)
 {
@@ -25,63 +26,62 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
 
 @implementation BackupSwitch
 {
-    float _angle;
+    float _rotatedAngle;
 }
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor clearColor];
+        self.edgeColor = [UIColor skinWhiteColor];
+        self.buttonColor = [UIColor skinGreenColor];
+        self.arrowColor = [UIColor skinLightGreenColor];
         
-        [self setBackgroundColor:[UIColor clearColor]];
-        [self setBackgroundColor:[UIColor lightGrayColor]];
-        
-        [NSTimer scheduledTimerWithTimeInterval:0.01 target:self selector:@selector(animateWave) userInfo:nil repeats:YES];
-        
+        [NSTimer scheduledTimerWithTimeInterval:0.03 target:self selector:@selector(animateWave) userInfo:nil repeats:YES];
     }
     return self;
 }
 
-#define PI 3.1415926535898
 -(void)animateWave
 {
-    _angle -= PI / 180 * 1;
-    if (_angle <= 0) {
-        _angle = PI * 2;
+    _rotatedAngle -= M_PI / 180 * 2;
+    if (_rotatedAngle <= 0) {
+        _rotatedAngle = M_PI * 2;
     }
-    
     [self setNeedsDisplay];
 }
 
-
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-    CGFloat maxRadius = MIN(rect.size.width, rect.size.height) / 2.0, radius = 0;
+    CGFloat maxRadius = MIN(rect.size.width, rect.size.height) / 2.0;
     CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 1);
     
-    // edge (white)
-    CGContextSetFillColorWithColor(context, [UIColor whiteColor].CGColor);
-    radius = maxRadius;
-    CGContextAddArc(context, center.x, center.y, radius, 0, PI * 2, 0);
-    CGContextFillPath(context);
+    // edge
+    if (self.edgeColor) {
+        CGContextSetFillColorWithColor(context, self.edgeColor.CGColor);
+        CGContextAddArc(context, center.x, center.y, maxRadius, 0, M_PI * 2, 0);
+        CGContextFillPath(context);
+    }
     
-    // background (dark green)
-    CGContextSetFillColorWithColor(context, [UIColor blueColor].CGColor);
-    radius = maxRadius * 0.9;
-    CGContextAddArc(context, center.x, center.y, radius, 0, PI * 2, 0);
-    CGContextFillPath(context);
+    // button
+    if (self.buttonColor) {
+        CGContextSetFillColorWithColor(context, self.buttonColor.CGColor);
+        CGContextAddArc(context, center.x, center.y, maxRadius * 0.92, 0, M_PI * 2, 0);
+        CGContextFillPath(context);
+    }
     
-    // arrows (light green)
-    CGContextSetFillColorWithColor(context, [UIColor greenColor].CGColor);
-    [self addArrowPath:context center:center angle:(PI*0.9) outerRadius:(maxRadius*0.8) innerRadius:(maxRadius*0.6) tipRadius:(maxRadius*0.7) tipOffsetAngle:(PI*0.05) rotatedAngle:_angle];
-    CGContextFillPath(context);
-    [self addArrowPath:context center:center angle:(PI*0.9) outerRadius:(maxRadius*0.8) innerRadius:(maxRadius*0.6) tipRadius:(maxRadius*0.7) tipOffsetAngle:(PI*0.05) rotatedAngle:_angle + PI];
-    CGContextFillPath(context);
+    // arrows
+    if (self.arrowColor) {
+        CGContextSetFillColorWithColor(context, self.arrowColor.CGColor);
+        [self addArrowPath:context center:center angle:(M_PI*0.9) outerRadius:(maxRadius*0.84) innerRadius:(maxRadius*0.72) tipRadius:(maxRadius*0.78) tipOffsetAngle:(M_PI*0.02) rotatedAngle:_rotatedAngle];
+        CGContextFillPath(context);
+        [self addArrowPath:context center:center angle:(M_PI*0.9) outerRadius:(maxRadius*0.84) innerRadius:(maxRadius*0.72) tipRadius:(maxRadius*0.78) tipOffsetAngle:(M_PI*0.02) rotatedAngle:_rotatedAngle + M_PI];
+        CGContextFillPath(context);
+    }
 }
 
 - (void)addArrowPath:(CGContextRef)context center:(CGPoint)center angle:(CGFloat)angle outerRadius:(CGFloat)outerRadius innerRadius:(CGFloat)innerRadius tipRadius:(CGFloat)tipRadius tipOffsetAngle:(CGFloat)tipOffsetAngle rotatedAngle:(CGFloat)rotatedAngle
@@ -91,11 +91,11 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     CGPoint outerStartPoint   = CGPointMakeWithAngleRadius(angle / 2 + rotatedAngle, outerRadius);
     CGPoint outerAnchorPoint1 = CGPointMakeWithAngleRadius(angle / 4 + rotatedAngle, outerAnchorRadius);
     CGPoint outerMiddlePoint  = CGPointMakeWithAngleRadius(rotatedAngle, outerRadius);
-    CGPoint outerAnchorPoint2 = CGPointMakeWithAngleRadius(PI * 2 - angle / 4 + rotatedAngle, outerAnchorRadius);
-    CGPoint outerEndPoint     = CGPointMakeWithAngleRadius(PI * 2 - angle / 2 + rotatedAngle, outerRadius);
+    CGPoint outerAnchorPoint2 = CGPointMakeWithAngleRadius(M_PI * 2 - angle / 4 + rotatedAngle, outerAnchorRadius);
+    CGPoint outerEndPoint     = CGPointMakeWithAngleRadius(M_PI * 2 - angle / 2 + rotatedAngle, outerRadius);
     
     CGPoint tipStartPoint     = CGPointMakeWithAngleRadius(angle / 2 - tipOffsetAngle + rotatedAngle, tipRadius);
-    CGPoint tipEndPoint       = CGPointMakeWithAngleRadius(PI * 2 - angle / 2 - tipOffsetAngle + rotatedAngle , tipRadius);
+    CGPoint tipEndPoint       = CGPointMakeWithAngleRadius(M_PI * 2 - angle / 2 - tipOffsetAngle + rotatedAngle , tipRadius);
     
     CGFloat scale = innerRadius / outerRadius;
     CGPoint innerStartPoint   = CGPointMakeWithScale(scale, outerStartPoint);
@@ -104,7 +104,7 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     CGPoint innerAnchorPoint2 = CGPointMakeWithScale(scale, outerAnchorPoint2);
     CGPoint innerEndPoint     = CGPointMakeWithScale(scale, outerEndPoint);
     
-    //
+    // flip by x-axis
     outerStartPoint.y *= -1;
     outerAnchorPoint1.y *= -1;
     outerMiddlePoint.y *= -1;
@@ -135,19 +135,11 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     CGContextMoveToPoint(context, outerStartPoint.x, outerStartPoint.y);
     CGContextAddLineToPoint(context, tipStartPoint.x, tipStartPoint.y);
     CGContextAddLineToPoint(context, innerStartPoint.x, innerStartPoint.y);
-    //  CGContextAddLineToPoint(context, innerAnchorPoint1.x, innerAnchorPoint1.y);
-    //  CGContextAddLineToPoint(context, innerMiddlePoint.x, innerMiddlePoint.y);
     CGContextAddArcToPoint(context, innerAnchorPoint1.x, innerAnchorPoint1.y, innerMiddlePoint.x, innerMiddlePoint.y, innerRadius);
-    //  CGContextAddLineToPoint(context, innerAnchorPoint2.x, innerAnchorPoint2.y);
-    //  CGContextAddLineToPoint(context, innerEndPoint.x, innerEndPoint.y);
     CGContextAddArcToPoint(context, innerAnchorPoint2.x, innerAnchorPoint2.y, innerEndPoint.x, innerEndPoint.y, innerRadius);
     CGContextAddLineToPoint(context, tipEndPoint.x, tipEndPoint.y);
     CGContextAddLineToPoint(context, outerEndPoint.x, outerEndPoint.y);
-    //  CGContextAddLineToPoint(context, outerAnchorPoint2.x, outerAnchorPoint2.y);
-    //  CGContextAddLineToPoint(context, outerMiddlePoint.x, outerMiddlePoint.y);
     CGContextAddArcToPoint(context, outerAnchorPoint2.x, outerAnchorPoint2.y, outerMiddlePoint.x, outerMiddlePoint.y, outerRadius);
-    //  CGContextAddLineToPoint(context, outerAnchorPoint1.x, outerAnchorPoint1.y);
-    //  CGContextAddLineToPoint(context, outerStartPoint.x, outerStartPoint.y);
     CGContextAddArcToPoint(context, outerAnchorPoint1.x, outerAnchorPoint1.y, outerStartPoint.x, outerStartPoint.y, outerRadius);
 }
 

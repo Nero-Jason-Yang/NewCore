@@ -77,6 +77,7 @@
 		EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55117198B71E100F8A614 /* AccountNetwork.m */; };
 		EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB55119198B737F00F8A614 /* PogoplugAPI.m */; };
 		EEB5511C198B73FC00F8A614 /* PogoplugNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */; };
+		EED85C5719C6C9330031FB89 /* UIColor+Skin.m in Sources */ = {isa = PBXBuildFile; fileRef = EED85C5619C6C9330031FB89 /* UIColor+Skin.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +211,8 @@
 		EEB55117198B71E100F8A614 /* AccountNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountNetwork.m; sourceTree = "<group>"; };
 		EEB55119198B737F00F8A614 /* PogoplugAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugAPI.m; sourceTree = "<group>"; };
 		EEB5511B198B73FC00F8A614 /* PogoplugNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugNetwork.m; sourceTree = "<group>"; };
+		EED85C5519C6C9330031FB89 /* UIColor+Skin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+Skin.h"; sourceTree = "<group>"; };
+		EED85C5619C6C9330031FB89 /* UIColor+Skin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+Skin.m"; sourceTree = "<group>"; };
 		FA3410A7858B4F69BB9B5A01 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -300,6 +303,8 @@
 				46FD21C419C46C8E00DB34A8 /* UIView+Common.m */,
 				46FD21C919C470DB00DB34A8 /* SkinScheme.h */,
 				46FD21CA19C470DB00DB34A8 /* SkinScheme.m */,
+				EED85C5519C6C9330031FB89 /* UIColor+Skin.h */,
+				EED85C5619C6C9330031FB89 /* UIColor+Skin.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -683,6 +688,7 @@
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
 				EEB550EB198649E000F8A614 /* UIImage+GIF.m in Sources */,
+				EED85C5719C6C9330031FB89 /* UIColor+Skin.m in Sources */,
 				EE58989B19AB23520093C7C0 /* Operation.m in Sources */,
 				46FD21CB19C470DB00DB34A8 /* SkinScheme.m in Sources */,
 				EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */,

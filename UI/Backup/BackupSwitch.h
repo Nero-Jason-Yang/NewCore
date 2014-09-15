@@ -18,4 +18,7 @@ typedef NS_ENUM(NSInteger, BackupSwitchState) {
 @interface BackupSwitch : UIView
 @property (nonatomic) BOOL on;
 @property (nonatomic) BackupSwitchState state;
+@property (nonatomic) UIColor *edgeColor;
+@property (nonatomic) UIColor *buttonColor;
+@property (nonatomic) UIColor *arrowColor;
 @end

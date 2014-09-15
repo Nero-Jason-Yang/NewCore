@@ -81,10 +81,15 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
+    UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:CGRectZero];
     if (indexPath.row == 0) {
-        cell.textLabel.text = @"Hello";
-        BackupSwitch *view = [[BackupSwitch alloc] initWithFrame:CGRectMake(0, 0, 120, 120)];
+        cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
+        CGFloat width = tableView.bounds.size.width;
+        CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
+        CGFloat minlen = MIN(width, height) * 0.9;
+        CGFloat maxlen = MAX(width, height) * 0.8;
+        CGFloat diameter = MIN(minlen, maxlen);
+        BackupSwitch *view = [[BackupSwitch alloc] initWithFrame:CGRectMake(0, (height - diameter) / 2, width, diameter)];
         [cell addSubview:view];
     }
     else {
@@ -98,7 +103,8 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.row == 0) {
-        return 120;
+        //return [UIScreen mainScreen].bounds.size.height / 2;
+        return tableView.bounds.size.height * 0.6;
     }
     else {
         return tableView.rowHeight;
