@@ -1,12 +1,12 @@
 //
-//  BackupSwitch.m
+//  BackupButtonView.m
 //  NewCore
 //
 //  Created by Yang Jason on 14-9-13.
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "BackupSwitch.h"
+#import "BackupButtonView.h"
 #import "UIColor+Skin.h"
 
 CGPoint CGPointMakeWithAngleRadius(CGFloat angle, CGFloat radius)
@@ -24,7 +24,7 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     return CGPointMake(point.x + origin.x, point.y + origin.y);
 }
 
-@implementation BackupSwitch
+@implementation BackupButtonView
 {
     float _rotatedAngle;
 }
@@ -54,11 +54,21 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
 
 - (void)drawRect:(CGRect)rect
 {
-    CGFloat maxRadius = MIN(rect.size.width, rect.size.height) / 2.0;
-    CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
-    
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextSetLineWidth(context, 1);
+    
+    CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
+    CGFloat maxRadius = MIN(rect.size.width, rect.size.height) / 2.0;
+    
+    // apply margin
+    CGFloat margin = (self.margin > -1 && self.margin < 1) ? maxRadius * self.margin : self.margin;
+    if (margin >= maxRadius) {
+        CGContextClearRect(context, rect);
+        return;
+    }
+    else {
+        maxRadius -= margin;
+    }
     
     // edge
     if (self.edgeColor) {

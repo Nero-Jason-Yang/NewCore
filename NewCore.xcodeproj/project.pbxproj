@@ -14,9 +14,9 @@
 		46FD21A419C4342000DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
 		46FD21A519C4342000DB34A8 /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A019C4342000DB34A8 /* TabBarController.m */; };
 		46FD21A619C4342000DB34A8 /* BackupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A319C4342000DB34A8 /* BackupViewController.m */; };
-		46FD21A919C434D900DB34A8 /* BackupSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupSwitch.m */; };
+		46FD21A919C434D900DB34A8 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupButtonView.m */; };
 		46FD21AA19C4374300DB34A8 /* BackupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A319C4342000DB34A8 /* BackupViewController.m */; };
-		46FD21AB19C4374300DB34A8 /* BackupSwitch.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupSwitch.m */; };
+		46FD21AB19C4374300DB34A8 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupButtonView.m */; };
 		46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
 		46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A019C4342000DB34A8 /* TabBarController.m */; };
 		46FD21BD19C469D100DB34A8 /* top-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46FD21BB19C469D100DB34A8 /* top-logo.png */; };
@@ -106,8 +106,8 @@
 		46FD21A019C4342000DB34A8 /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		46FD21A219C4342000DB34A8 /* BackupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupViewController.h; sourceTree = "<group>"; };
 		46FD21A319C4342000DB34A8 /* BackupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupViewController.m; sourceTree = "<group>"; };
-		46FD21A719C434D900DB34A8 /* BackupSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupSwitch.h; sourceTree = "<group>"; };
-		46FD21A819C434D900DB34A8 /* BackupSwitch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupSwitch.m; sourceTree = "<group>"; };
+		46FD21A719C434D900DB34A8 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
+		46FD21A819C434D900DB34A8 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
 		46FD21BB19C469D100DB34A8 /* top-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top-logo.png"; sourceTree = "<group>"; };
 		46FD21BC19C469D100DB34A8 /* top-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top-logo@2x.png"; sourceTree = "<group>"; };
 		46FD21C319C46C8E00DB34A8 /* UIView+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Common.h"; sourceTree = "<group>"; };
@@ -272,8 +272,8 @@
 			children = (
 				46FD21A219C4342000DB34A8 /* BackupViewController.h */,
 				46FD21A319C4342000DB34A8 /* BackupViewController.m */,
-				46FD21A719C434D900DB34A8 /* BackupSwitch.h */,
-				46FD21A819C434D900DB34A8 /* BackupSwitch.m */,
+				46FD21A719C434D900DB34A8 /* BackupButtonView.h */,
+				46FD21A819C434D900DB34A8 /* BackupButtonView.m */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -683,7 +683,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46FD21AA19C4374300DB34A8 /* BackupViewController.m in Sources */,
-				46FD21AB19C4374300DB34A8 /* BackupSwitch.m in Sources */,
+				46FD21AB19C4374300DB34A8 /* BackupButtonView.m in Sources */,
 				46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */,
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
@@ -742,7 +742,7 @@
 			files = (
 				46FD21A519C4342000DB34A8 /* TabBarController.m in Sources */,
 				46FD21A419C4342000DB34A8 /* FilesViewController.m in Sources */,
-				46FD21A919C434D900DB34A8 /* BackupSwitch.m in Sources */,
+				46FD21A919C434D900DB34A8 /* BackupButtonView.m in Sources */,
 				46FD21A619C4342000DB34A8 /* BackupViewController.m in Sources */,
 				EEB5501519862C0200F8A614 /* NewCoreTests.m in Sources */,
 			);

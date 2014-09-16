@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BackupViewController : UITableViewController
-
+@interface BackupViewController : UIViewController
+@property (nonatomic) CGFloat heightOfMessageView;
+@property (nonatomic) CGFloat heightOfCounterView;
 @end

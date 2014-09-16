@@ -8,11 +8,25 @@
 
 #import "BackupViewController.h"
 #import "TabBarController.h"
-#import "BackupSwitch.h"
+#import "BackupButtonView.h"
 #import "Common.h"
 
-@interface BackupViewController ()
+CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
+{
+    if (rect.size.height >= height) {
+        rect.origin.y = rect.origin.y + rect.size.height - height;
+        rect.size.height = height;
+        return rect;
+    }
+    else {
+        return CGRectZero;
+    }
+}
 
+@interface BackupViewController ()
+@property (nonatomic) BackupButtonView *buttonView;
+@property (nonatomic) UILabel *messageView;
+@property (nonatomic) UIView *counterView;
 @end
 
 @implementation BackupViewController
@@ -36,12 +50,39 @@
     self.navigationController.navigationBar.barTintColor = [SkinScheme currentSkinScheme].navBarBackgroundColor;
     self.navigationController.navigationBar.tintColor = [SkinScheme currentSkinScheme].navBarForegroundColor;
     
-    self.tableView.allowsSelection = NO;
+    self.heightOfMessageView = 40;
+    self.heightOfCounterView = 60;
+    self.buttonView = [[BackupButtonView alloc] init];
+    self.buttonView.margin = 0.2;
+    [self.view addSubview:self.buttonView];
+    self.messageView = [[UILabel alloc] init];
+    [self.view addSubview:self.messageView];
+    self.counterView = [[UIView alloc] init];
+    [self.view addSubview:self.counterView];
+}
+
+- (void)viewWillLayoutSubviews
+{
+    [super viewWillLayoutSubviews];
     
-    // separator line
-    UIEdgeInsets edgeInsets = self.tableView.separatorInset;
-    edgeInsets.right = edgeInsets.left;
-    self.tableView.separatorInset = edgeInsets;
+    // calculate frames
+    CGRect remainFrame = self.view.frame;
+    remainFrame.origin = CGPointZero;
+    CGRect counterViewFrame = CGRectMakeAtBottomWithHeight(remainFrame, self.heightOfCounterView);
+    remainFrame.size.height -= self.heightOfCounterView;
+    CGRect messageViewFrame = CGRectMakeAtBottomWithHeight(remainFrame, self.heightOfMessageView);
+    remainFrame.size.height -= self.heightOfMessageView;
+    CGRect buttonViewFrame = remainFrame;
+    
+    // set frames
+    self.buttonView.frame = buttonViewFrame;
+    self.messageView.frame = messageViewFrame;
+    self.counterView.frame = counterViewFrame;
+    
+    // set background colors
+    self.buttonView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.messageView.backgroundColor = [UIColor lightGrayColor];
+    self.counterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 - (void)didReceiveMemoryWarning
@@ -54,69 +95,6 @@
 {
     TabBarController *vc = [[TabBarController alloc] init];
     [self.navigationController pushViewController:vc animated:YES];
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-#pragma mark <UITableViewDataSource>
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 1;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 2;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [[UITableViewCell alloc] initWithFrame:CGRectZero];
-    if (indexPath.row == 0) {
-        cell.backgroundColor = [UIColor groupTableViewBackgroundColor];
-        CGFloat width = tableView.bounds.size.width;
-        CGFloat height = [self tableView:tableView heightForRowAtIndexPath:indexPath];
-        CGFloat minlen = MIN(width, height) * 0.9;
-        CGFloat maxlen = MAX(width, height) * 0.8;
-        CGFloat diameter = MIN(minlen, maxlen);
-        BackupSwitch *view = [[BackupSwitch alloc] initWithFrame:CGRectMake(0, (height - diameter) / 2, width, diameter)];
-        [cell addSubview:view];
-    }
-    else {
-        cell.textLabel.text = @(indexPath.row).description;
-    }
-    return cell;
-}
-
-#pragma mark <UITableViewDelegate>
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (indexPath.row == 0) {
-        //return [UIScreen mainScreen].bounds.size.height / 2;
-        return tableView.bounds.size.height * 0.6;
-    }
-    else {
-        return tableView.rowHeight;
-    }
-}
-
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    if (0 == section) {
-        return [[UIView alloc] initWithFrame:CGRectZero];
-    }
-    return nil;
 }
 
 @end
