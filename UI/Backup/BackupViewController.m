@@ -8,7 +8,9 @@
 
 #import "BackupViewController.h"
 #import "TabBarController.h"
+#import "BackupLogoView.h"
 #import "BackupButtonView.h"
+#import "BackupCounterView.h"
 #import "Common.h"
 
 CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
@@ -26,7 +28,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
 @interface BackupViewController ()
 @property (nonatomic) BackupButtonView *buttonView;
 @property (nonatomic) UILabel *messageView;
-@property (nonatomic) UIView *counterView;
+@property (nonatomic) BackupCounterView *counterView;
 @end
 
 @implementation BackupViewController
@@ -46,7 +48,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(onRightButtonPress:)];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[UIView topLogoView]];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:[BackupLogoView view]];
     self.navigationController.navigationBar.barTintColor = [SkinScheme currentSkinScheme].navBarBackgroundColor;
     self.navigationController.navigationBar.tintColor = [SkinScheme currentSkinScheme].navBarForegroundColor;
     
@@ -57,7 +59,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     [self.view addSubview:self.buttonView];
     self.messageView = [[UILabel alloc] init];
     [self.view addSubview:self.messageView];
-    self.counterView = [[UIView alloc] init];
+    self.counterView = [[BackupCounterView alloc] init];
     [self.view addSubview:self.counterView];
 }
 
@@ -81,7 +83,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     
     // set background colors
     self.buttonView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.messageView.backgroundColor = [UIColor lightGrayColor];
+    self.messageView.backgroundColor = [UIColor groupTableViewBackgroundColor];[UIColor lightGrayColor];
     self.counterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 

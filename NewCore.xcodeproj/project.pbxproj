@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715C719A8C4D500A9FCD4 /* AccountParameters.m */; };
 		46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */; };
+		46BB54E919CD970000EF43F9 /* BackupLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E519CD970000EF43F9 /* BackupLogo.png */; };
+		46BB54EA19CD970000EF43F9 /* BackupLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */; };
+		46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54E819CD970000EF43F9 /* BackupLogoView.m */; };
+		46BB54EE19CD979200EF43F9 /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54ED19CD979200EF43F9 /* BackupCounterView.m */; };
 		46FD218C19C4149100DB34A8 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD218B19C4149100DB34A8 /* NavigationController.m */; };
 		46FD219319C4301900DB34A8 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46FD219219C4301900DB34A8 /* Storyboard.storyboard */; };
 		46FD21A419C4342000DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
@@ -19,9 +23,6 @@
 		46FD21AB19C4374300DB34A8 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupButtonView.m */; };
 		46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
 		46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A019C4342000DB34A8 /* TabBarController.m */; };
-		46FD21BD19C469D100DB34A8 /* top-logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46FD21BB19C469D100DB34A8 /* top-logo.png */; };
-		46FD21BE19C469D100DB34A8 /* top-logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46FD21BC19C469D100DB34A8 /* top-logo@2x.png */; };
-		46FD21C519C46C8E00DB34A8 /* UIView+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21C419C46C8E00DB34A8 /* UIView+Common.m */; };
 		46FD21CB19C470DB00DB34A8 /* SkinScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21CA19C470DB00DB34A8 /* SkinScheme.m */; };
 		ABF664615B4E472EB203EEEE /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 37988E49F4D940339135B730 /* libPods.a */; };
 		EE0036AE198F63720002628D /* NSManagedObjectContext+Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036AD198F63720002628D /* NSManagedObjectContext+Utils.m */; };
@@ -97,6 +98,12 @@
 		46A715C919A8C55100A9FCD4 /* PogoplugParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugParameters.h; sourceTree = "<group>"; };
 		46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugParameters.m; sourceTree = "<group>"; };
 		46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cancellable.h; sourceTree = "<group>"; };
+		46BB54E519CD970000EF43F9 /* BackupLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackupLogo.png; sourceTree = "<group>"; };
+		46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BackupLogo@2x.png"; sourceTree = "<group>"; };
+		46BB54E719CD970000EF43F9 /* BackupLogoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupLogoView.h; sourceTree = "<group>"; };
+		46BB54E819CD970000EF43F9 /* BackupLogoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupLogoView.m; sourceTree = "<group>"; };
+		46BB54EC19CD979200EF43F9 /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
+		46BB54ED19CD979200EF43F9 /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
 		46FD218A19C4149100DB34A8 /* NavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationController.h; sourceTree = "<group>"; };
 		46FD218B19C4149100DB34A8 /* NavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationController.m; sourceTree = "<group>"; };
 		46FD219219C4301900DB34A8 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
@@ -108,10 +115,6 @@
 		46FD21A319C4342000DB34A8 /* BackupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupViewController.m; sourceTree = "<group>"; };
 		46FD21A719C434D900DB34A8 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
 		46FD21A819C434D900DB34A8 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
-		46FD21BB19C469D100DB34A8 /* top-logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top-logo.png"; sourceTree = "<group>"; };
-		46FD21BC19C469D100DB34A8 /* top-logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "top-logo@2x.png"; sourceTree = "<group>"; };
-		46FD21C319C46C8E00DB34A8 /* UIView+Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Common.h"; sourceTree = "<group>"; };
-		46FD21C419C46C8E00DB34A8 /* UIView+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Common.m"; sourceTree = "<group>"; };
 		46FD21C619C46CCC00DB34A8 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		46FD21C919C470DB00DB34A8 /* SkinScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkinScheme.h; sourceTree = "<group>"; };
 		46FD21CA19C470DB00DB34A8 /* SkinScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkinScheme.m; sourceTree = "<group>"; };
@@ -243,6 +246,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		46BB54E419CD970000EF43F9 /* BackupLogoView */ = {
+			isa = PBXGroup;
+			children = (
+				46BB54E719CD970000EF43F9 /* BackupLogoView.h */,
+				46BB54E819CD970000EF43F9 /* BackupLogoView.m */,
+				46BB54E519CD970000EF43F9 /* BackupLogo.png */,
+				46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */,
+			);
+			path = BackupLogoView;
+			sourceTree = "<group>";
+		};
 		46FD218919C4142700DB34A8 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,7 +265,6 @@
 				46FD21A119C4342000DB34A8 /* Backup */,
 				46FD219C19C4342000DB34A8 /* Browse */,
 				46FD21BF19C46BE200DB34A8 /* Common */,
-				46FD21AE19C43D1C00DB34A8 /* Resources */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -272,35 +285,19 @@
 			children = (
 				46FD21A219C4342000DB34A8 /* BackupViewController.h */,
 				46FD21A319C4342000DB34A8 /* BackupViewController.m */,
+				46BB54E419CD970000EF43F9 /* BackupLogoView */,
 				46FD21A719C434D900DB34A8 /* BackupButtonView.h */,
 				46FD21A819C434D900DB34A8 /* BackupButtonView.m */,
+				46BB54EC19CD979200EF43F9 /* BackupCounterView.h */,
+				46BB54ED19CD979200EF43F9 /* BackupCounterView.m */,
 			);
 			path = Backup;
-			sourceTree = "<group>";
-		};
-		46FD21AE19C43D1C00DB34A8 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				46FD21AF19C43D1C00DB34A8 /* Images */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		46FD21AF19C43D1C00DB34A8 /* Images */ = {
-			isa = PBXGroup;
-			children = (
-				46FD21BB19C469D100DB34A8 /* top-logo.png */,
-				46FD21BC19C469D100DB34A8 /* top-logo@2x.png */,
-			);
-			path = Images;
 			sourceTree = "<group>";
 		};
 		46FD21BF19C46BE200DB34A8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
 				46FD21C619C46CCC00DB34A8 /* Common.h */,
-				46FD21C319C46C8E00DB34A8 /* UIView+Common.h */,
-				46FD21C419C46C8E00DB34A8 /* UIView+Common.m */,
 				46FD21C919C470DB00DB34A8 /* SkinScheme.h */,
 				46FD21CA19C470DB00DB34A8 /* SkinScheme.m */,
 				EED85C5519C6C9330031FB89 /* UIColor+Skin.h */,
@@ -626,8 +623,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				46FD21BD19C469D100DB34A8 /* top-logo.png in Resources */,
-				46FD21BE19C469D100DB34A8 /* top-logo@2x.png in Resources */,
+				46BB54E919CD970000EF43F9 /* BackupLogo.png in Resources */,
+				46BB54EA19CD970000EF43F9 /* BackupLogo@2x.png in Resources */,
 				EEB5500119862C0200F8A614 /* Images.xcassets in Resources */,
 				EEB54FED19862C0200F8A614 /* InfoPlist.strings in Resources */,
 			);
@@ -687,6 +684,7 @@
 				46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */,
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
+				46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */,
 				EEB550EB198649E000F8A614 /* UIImage+GIF.m in Sources */,
 				EED85C5719C6C9330031FB89 /* UIColor+Skin.m in Sources */,
 				EE58989B19AB23520093C7C0 /* Operation.m in Sources */,
@@ -724,8 +722,8 @@
 				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
 				EEB550E8198649E000F8A614 /* SDWebImageManager.m in Sources */,
 				46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */,
+				46BB54EE19CD979200EF43F9 /* BackupCounterView.m in Sources */,
 				EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */,
-				46FD21C519C46C8E00DB34A8 /* UIView+Common.m in Sources */,
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,
 				EEB550E3198649E000F8A614 /* SDImageCache.m in Sources */,

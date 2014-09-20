@@ -6,5 +6,4 @@
 //  Copyright (c) 2014年 nero. All rights reserved.
 //
 
-#import "UIView+Common.h"
 #import "SkinScheme.h"
