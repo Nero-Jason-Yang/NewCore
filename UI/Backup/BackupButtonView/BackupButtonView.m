@@ -34,7 +34,7 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
-        self.edgeColor = [UIColor skinWhiteColor];
+        self.borderColor = [UIColor skinWhiteColor];
         self.buttonColor = [UIColor skinGreenColor];
         self.arrowColor = [UIColor skinLightGreenColor];
         
@@ -71,8 +71,8 @@ CGPoint CGPointMakeWithOrigin(CGPoint origin, CGPoint point)
     }
     
     // edge
-    if (self.edgeColor) {
-        CGContextSetFillColorWithColor(context, self.edgeColor.CGColor);
+    if (self.borderColor) {
+        CGContextSetFillColorWithColor(context, self.borderColor.CGColor);
         CGContextAddArc(context, center.x, center.y, maxRadius, 0, M_PI * 2, 0);
         CGContextFillPath(context);
     }

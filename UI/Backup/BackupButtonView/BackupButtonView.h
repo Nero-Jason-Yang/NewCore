@@ -8,17 +8,17 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, BackupSwitchState) {
-    BackupSwitchStateOff,
-    BackupSwitchStateDone,
-    BackupSwitchStateRunning,
-    BackupSwitchStatePending,
+typedef NS_ENUM(NSInteger, BackupButtonState) {
+    BackupButtonStateOff,
+    BackupButtonStateDone,
+    BackupButtonStateRunning,
+    BackupButtonStatePending,
 };
 
 @interface BackupButtonView : UIView
 @property (nonatomic) BOOL on;
-@property (nonatomic) BackupSwitchState state;
-@property (nonatomic) UIColor *edgeColor;
+@property (nonatomic) BackupButtonState state;
+@property (nonatomic) UIColor *borderColor;
 @property (nonatomic) UIColor *buttonColor;
 @property (nonatomic) UIColor *arrowColor;
 @property (nonatomic) CGFloat margin; // >= 1 means points, < 1 means percentage.

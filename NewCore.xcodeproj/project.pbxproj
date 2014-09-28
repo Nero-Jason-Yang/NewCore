@@ -12,15 +12,12 @@
 		46BB54E919CD970000EF43F9 /* BackupLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E519CD970000EF43F9 /* BackupLogo.png */; };
 		46BB54EA19CD970000EF43F9 /* BackupLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */; };
 		46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54E819CD970000EF43F9 /* BackupLogoView.m */; };
-		46BB54EE19CD979200EF43F9 /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54ED19CD979200EF43F9 /* BackupCounterView.m */; };
 		46FD218C19C4149100DB34A8 /* NavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD218B19C4149100DB34A8 /* NavigationController.m */; };
 		46FD219319C4301900DB34A8 /* Storyboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 46FD219219C4301900DB34A8 /* Storyboard.storyboard */; };
 		46FD21A419C4342000DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
 		46FD21A519C4342000DB34A8 /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A019C4342000DB34A8 /* TabBarController.m */; };
 		46FD21A619C4342000DB34A8 /* BackupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A319C4342000DB34A8 /* BackupViewController.m */; };
-		46FD21A919C434D900DB34A8 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupButtonView.m */; };
 		46FD21AA19C4374300DB34A8 /* BackupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A319C4342000DB34A8 /* BackupViewController.m */; };
-		46FD21AB19C4374300DB34A8 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A819C434D900DB34A8 /* BackupButtonView.m */; };
 		46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD219E19C4342000DB34A8 /* FilesViewController.m */; };
 		46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21A019C4342000DB34A8 /* TabBarController.m */; };
 		46FD21CB19C470DB00DB34A8 /* SkinScheme.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FD21CA19C470DB00DB34A8 /* SkinScheme.m */; };
@@ -38,6 +35,8 @@
 		EE0036DF1993766C0002628D /* Browsing.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EE0036DD1993766C0002628D /* Browsing.xcdatamodeld */; };
 		EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E11993767D0002628D /* BrowsingDatabase.m */; };
 		EE0036E5199376900002628D /* BrowsingService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E4199376900002628D /* BrowsingService.m */; };
+		EE0FDB5C19D7F4AF0018F221 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */; };
+		EE0FDB5D19D7F4AF0018F221 /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */; };
 		EE58989819AB23520093C7C0 /* Core.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989019AB23520093C7C0 /* Core.m */; };
 		EE58989919AB23520093C7C0 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989219AB23520093C7C0 /* Error.m */; };
 		EE58989A19AB23520093C7C0 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989419AB23520093C7C0 /* File.m */; };
@@ -102,8 +101,6 @@
 		46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BackupLogo@2x.png"; sourceTree = "<group>"; };
 		46BB54E719CD970000EF43F9 /* BackupLogoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupLogoView.h; sourceTree = "<group>"; };
 		46BB54E819CD970000EF43F9 /* BackupLogoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupLogoView.m; sourceTree = "<group>"; };
-		46BB54EC19CD979200EF43F9 /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
-		46BB54ED19CD979200EF43F9 /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
 		46FD218A19C4149100DB34A8 /* NavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationController.h; sourceTree = "<group>"; };
 		46FD218B19C4149100DB34A8 /* NavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationController.m; sourceTree = "<group>"; };
 		46FD219219C4301900DB34A8 /* Storyboard.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Storyboard.storyboard; sourceTree = "<group>"; };
@@ -113,8 +110,6 @@
 		46FD21A019C4342000DB34A8 /* TabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TabBarController.m; sourceTree = "<group>"; };
 		46FD21A219C4342000DB34A8 /* BackupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupViewController.h; sourceTree = "<group>"; };
 		46FD21A319C4342000DB34A8 /* BackupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupViewController.m; sourceTree = "<group>"; };
-		46FD21A719C434D900DB34A8 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
-		46FD21A819C434D900DB34A8 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
 		46FD21C619C46CCC00DB34A8 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
 		46FD21C919C470DB00DB34A8 /* SkinScheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkinScheme.h; sourceTree = "<group>"; };
 		46FD21CA19C470DB00DB34A8 /* SkinScheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkinScheme.m; sourceTree = "<group>"; };
@@ -143,6 +138,10 @@
 		EE0036E11993767D0002628D /* BrowsingDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingDatabase.m; sourceTree = "<group>"; };
 		EE0036E3199376900002628D /* BrowsingService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrowsingService.h; sourceTree = "<group>"; };
 		EE0036E4199376900002628D /* BrowsingService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingService.m; sourceTree = "<group>"; };
+		EE0FDB5719D7F4AF0018F221 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
+		EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
+		EE0FDB5A19D7F4AF0018F221 /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
+		EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
 		EE58988F19AB23520093C7C0 /* Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		EE58989019AB23520093C7C0 /* Core.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Core.m; sourceTree = "<group>"; };
 		EE58989119AB23520093C7C0 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
@@ -286,10 +285,9 @@
 				46FD21A219C4342000DB34A8 /* BackupViewController.h */,
 				46FD21A319C4342000DB34A8 /* BackupViewController.m */,
 				46BB54E419CD970000EF43F9 /* BackupLogoView */,
-				46FD21A719C434D900DB34A8 /* BackupButtonView.h */,
-				46FD21A819C434D900DB34A8 /* BackupButtonView.m */,
-				46BB54EC19CD979200EF43F9 /* BackupCounterView.h */,
-				46BB54ED19CD979200EF43F9 /* BackupCounterView.m */,
+				EE0FDB5619D7F4AF0018F221 /* BackupButtonView */,
+				EE0FDB5E19D7F4E50018F221 /* BackupMessageView */,
+				EE0FDB5919D7F4AF0018F221 /* BackupCounterView */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -351,6 +349,31 @@
 				EE0036E4199376900002628D /* BrowsingService.m */,
 			);
 			path = Browsing;
+			sourceTree = "<group>";
+		};
+		EE0FDB5619D7F4AF0018F221 /* BackupButtonView */ = {
+			isa = PBXGroup;
+			children = (
+				EE0FDB5719D7F4AF0018F221 /* BackupButtonView.h */,
+				EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */,
+			);
+			path = BackupButtonView;
+			sourceTree = "<group>";
+		};
+		EE0FDB5919D7F4AF0018F221 /* BackupCounterView */ = {
+			isa = PBXGroup;
+			children = (
+				EE0FDB5A19D7F4AF0018F221 /* BackupCounterView.h */,
+				EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */,
+			);
+			path = BackupCounterView;
+			sourceTree = "<group>";
+		};
+		EE0FDB5E19D7F4E50018F221 /* BackupMessageView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = BackupMessageView;
 			sourceTree = "<group>";
 		};
 		EE58988E19AB232E0093C7C0 /* Public */ = {
@@ -680,7 +703,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46FD21AA19C4374300DB34A8 /* BackupViewController.m in Sources */,
-				46FD21AB19C4374300DB34A8 /* BackupButtonView.m in Sources */,
+				EE0FDB5D19D7F4AF0018F221 /* BackupCounterView.m in Sources */,
 				46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */,
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
@@ -716,13 +739,13 @@
 				EEB54FF319862C0200F8A614 /* AppDelegate.m in Sources */,
 				EE0036B4198F652D0002628D /* NSDate+Pogoplug.m in Sources */,
 				EEB550E9198649E000F8A614 /* SDWebImagePrefetcher.m in Sources */,
+				EE0FDB5C19D7F4AF0018F221 /* BackupButtonView.m in Sources */,
 				EEB54FEF19862C0200F8A614 /* main.m in Sources */,
 				EEB5511A198B737F00F8A614 /* PogoplugAPI.m in Sources */,
 				EEB550E7198649E000F8A614 /* SDWebImageDownloaderOperation.m in Sources */,
 				EEB55116198B706F00F8A614 /* AccountAPI.m in Sources */,
 				EEB550E8198649E000F8A614 /* SDWebImageManager.m in Sources */,
 				46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */,
-				46BB54EE19CD979200EF43F9 /* BackupCounterView.m in Sources */,
 				EE0036B7198F659F0002628D /* NSError+HTTP.m in Sources */,
 				EEB550ED198649E000F8A614 /* UIImage+WebP.m in Sources */,
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,
@@ -740,7 +763,6 @@
 			files = (
 				46FD21A519C4342000DB34A8 /* TabBarController.m in Sources */,
 				46FD21A419C4342000DB34A8 /* FilesViewController.m in Sources */,
-				46FD21A919C434D900DB34A8 /* BackupButtonView.m in Sources */,
 				46FD21A619C4342000DB34A8 /* BackupViewController.m in Sources */,
 				EEB5501519862C0200F8A614 /* NewCoreTests.m in Sources */,
 			);
