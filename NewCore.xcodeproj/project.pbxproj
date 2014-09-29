@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715C719A8C4D500A9FCD4 /* AccountParameters.m */; };
 		46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */; };
+		46B5424619D96BE000ECBAAA /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B5424519D96BE000ECBAAA /* BackupCounterView.m */; };
+		46B5424919D9AF7C00ECBAAA /* HorizontalTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */; };
 		46BB54E919CD970000EF43F9 /* BackupLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E519CD970000EF43F9 /* BackupLogo.png */; };
 		46BB54EA19CD970000EF43F9 /* BackupLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */; };
 		46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54E819CD970000EF43F9 /* BackupLogoView.m */; };
@@ -36,7 +38,6 @@
 		EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E11993767D0002628D /* BrowsingDatabase.m */; };
 		EE0036E5199376900002628D /* BrowsingService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E4199376900002628D /* BrowsingService.m */; };
 		EE0FDB5C19D7F4AF0018F221 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */; };
-		EE0FDB5D19D7F4AF0018F221 /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */; };
 		EE58989819AB23520093C7C0 /* Core.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989019AB23520093C7C0 /* Core.m */; };
 		EE58989919AB23520093C7C0 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989219AB23520093C7C0 /* Error.m */; };
 		EE58989A19AB23520093C7C0 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989419AB23520093C7C0 /* File.m */; };
@@ -97,6 +98,10 @@
 		46A715C919A8C55100A9FCD4 /* PogoplugParameters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PogoplugParameters.h; sourceTree = "<group>"; };
 		46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PogoplugParameters.m; sourceTree = "<group>"; };
 		46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cancellable.h; sourceTree = "<group>"; };
+		46B5424419D96BE000ECBAAA /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
+		46B5424519D96BE000ECBAAA /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
+		46B5424719D9AF7B00ECBAAA /* HorizontalTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalTableView.h; sourceTree = "<group>"; };
+		46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HorizontalTableView.m; sourceTree = "<group>"; };
 		46BB54E519CD970000EF43F9 /* BackupLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackupLogo.png; sourceTree = "<group>"; };
 		46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BackupLogo@2x.png"; sourceTree = "<group>"; };
 		46BB54E719CD970000EF43F9 /* BackupLogoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupLogoView.h; sourceTree = "<group>"; };
@@ -140,8 +145,6 @@
 		EE0036E4199376900002628D /* BrowsingService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingService.m; sourceTree = "<group>"; };
 		EE0FDB5719D7F4AF0018F221 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
 		EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
-		EE0FDB5A19D7F4AF0018F221 /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
-		EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
 		EE58988F19AB23520093C7C0 /* Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		EE58989019AB23520093C7C0 /* Core.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Core.m; sourceTree = "<group>"; };
 		EE58989119AB23520093C7C0 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
@@ -363,8 +366,10 @@
 		EE0FDB5919D7F4AF0018F221 /* BackupCounterView */ = {
 			isa = PBXGroup;
 			children = (
-				EE0FDB5A19D7F4AF0018F221 /* BackupCounterView.h */,
-				EE0FDB5B19D7F4AF0018F221 /* BackupCounterView.m */,
+				46B5424419D96BE000ECBAAA /* BackupCounterView.h */,
+				46B5424519D96BE000ECBAAA /* BackupCounterView.m */,
+				46B5424719D9AF7B00ECBAAA /* HorizontalTableView.h */,
+				46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */,
 			);
 			path = BackupCounterView;
 			sourceTree = "<group>";
@@ -703,7 +708,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				46FD21AA19C4374300DB34A8 /* BackupViewController.m in Sources */,
-				EE0FDB5D19D7F4AF0018F221 /* BackupCounterView.m in Sources */,
+				46B5424619D96BE000ECBAAA /* BackupCounterView.m in Sources */,
 				46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */,
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
@@ -719,6 +724,7 @@
 				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
 				46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
+				46B5424919D9AF7C00ECBAAA /* HorizontalTableView.m in Sources */,
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
 				EEB550E5198649E000F8A614 /* SDWebImageDecoder.m in Sources */,
 				EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */,

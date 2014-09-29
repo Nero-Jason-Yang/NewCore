@@ -28,7 +28,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
 @interface BackupViewController ()
 @property (nonatomic) BackupButtonView *buttonView;
 @property (nonatomic) UILabel *messageView;
-@property (nonatomic) BackupCounterView *counterView;
+@property (nonatomic) UIView *counterView;
 @end
 
 @implementation BackupViewController
@@ -59,7 +59,8 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     [self.view addSubview:self.buttonView];
     self.messageView = [[UILabel alloc] init];
     [self.view addSubview:self.messageView];
-    self.counterView = [[BackupCounterView alloc] init];
+    
+    self.counterView = [[BackupCounterView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 60)];
     [self.view addSubview:self.counterView];
 }
 
@@ -84,7 +85,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     // set background colors
     self.buttonView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.messageView.backgroundColor = [UIColor groupTableViewBackgroundColor];[UIColor lightGrayColor];
-    self.counterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    //self.counterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
 }
 
 - (void)didReceiveMemoryWarning

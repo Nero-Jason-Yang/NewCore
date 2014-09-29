@@ -132,6 +132,11 @@
 			isa = PBXProject;
 			attributes = {
 				ORGANIZATIONNAME = "Jun Tanaka";
+				TargetAttributes = {
+					BF60EB881374000600B0603C = {
+						DevelopmentTeam = 74G5LGJ29X;
+					};
+				};
 			};
 			buildConfigurationList = BF60EB831374000600B0603C /* Build configuration list for PBXProject "JTListView" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -236,12 +241,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JTListView/JTListView-Prefix.pch";
 				INFOPLIST_FILE = "JTListView/JTListView-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -252,11 +258,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "JTListView/JTListView-Prefix.pch";
 				INFOPLIST_FILE = "JTListView/JTListView-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;

@@ -1,5 +1,5 @@
 //
-//  BackupCounterView.h
+//  HorizontalTableView.h
 //  NewCore
 //
 //  Created by Yang Jason on 14-9-29.
@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface BackupCounterView : UIView
+@interface HorizontalTableView : UITableView
+
+@end
+
+@interface HorizontalTableViewCell : UITableViewCell
 
 @end
