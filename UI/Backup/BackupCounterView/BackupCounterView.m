@@ -7,7 +7,7 @@
 //
 
 #import "BackupCounterView.h"
-#import "HorizontalTableView.h"
+#import "BackupCounterCell.h"
 
 @interface BackupCounterView () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) UITableView *tableView;
@@ -21,6 +21,8 @@
         UITableView *tableView = [[HorizontalTableView alloc] initWithFrame:self.frame];
         tableView.dataSource = self;
         tableView.delegate = self;
+        tableView.separatorInset = UIEdgeInsetsMake(0, 12, 0, 12);
+        //tableView.allowsSelection = NO;
         tableView.rowHeight = 120;
         [self addSubview:tableView];
         self.tableView = tableView;
@@ -39,26 +41,54 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    BackupCounterCell *cell = (BackupCounterCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
-        cell = [[HorizontalTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell = [[BackupCounterCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.selectionStyle = UITableViewCellSelectionStyleGray;
-        
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
-        cell.textLabel.backgroundColor = [UIColor redColor];
-        
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 40, 20)];
-        label.text = @"ABC";
-        [cell addSubview:label];
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"%ld", (long)indexPath.row];
+    
+    cell.title = @(indexPath.row).description;
+    switch (indexPath.row) {
+        case 0:
+            cell.subtitle = @"ALL PHOTOS";
+            break;
+            
+        case 1:
+            cell.subtitle = @"ALL VIDEOS";
+            break;
+            
+        default:
+            cell.subtitle = @"HELLO";
+            break;
+    }
+    
+    if (indexPath.row == [self tableView:tableView numberOfRowsInSection:0] - 1) {
+        cell.separatorHidden = YES;
+        //cell.separatorInset = UIEdgeInsetsMake(0, CGFLOAT_MAX, 0, 0); // another way to hide separator
+    } else {
+        cell.separatorHidden = NO;
+    }
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return tableView.rowHeight;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    // TODO
+    // ...
+    // to perform some action.
 }
 
 @end

@@ -13,5 +13,5 @@
 @end
 
 @interface HorizontalTableViewCell : UITableViewCell
-
+@property (nonatomic) BOOL separatorHidden;
 @end

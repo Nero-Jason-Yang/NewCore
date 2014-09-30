@@ -38,6 +38,7 @@
 		EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E11993767D0002628D /* BrowsingDatabase.m */; };
 		EE0036E5199376900002628D /* BrowsingService.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0036E4199376900002628D /* BrowsingService.m */; };
 		EE0FDB5C19D7F4AF0018F221 /* BackupButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */; };
+		EE0FDB6D19DA885F0018F221 /* BackupCounterCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE0FDB6C19DA885F0018F221 /* BackupCounterCell.m */; };
 		EE58989819AB23520093C7C0 /* Core.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989019AB23520093C7C0 /* Core.m */; };
 		EE58989919AB23520093C7C0 /* Error.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989219AB23520093C7C0 /* Error.m */; };
 		EE58989A19AB23520093C7C0 /* File.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989419AB23520093C7C0 /* File.m */; };
@@ -145,6 +146,8 @@
 		EE0036E4199376900002628D /* BrowsingService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BrowsingService.m; sourceTree = "<group>"; };
 		EE0FDB5719D7F4AF0018F221 /* BackupButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupButtonView.h; sourceTree = "<group>"; };
 		EE0FDB5819D7F4AF0018F221 /* BackupButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupButtonView.m; sourceTree = "<group>"; };
+		EE0FDB6B19DA885F0018F221 /* BackupCounterCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterCell.h; sourceTree = "<group>"; };
+		EE0FDB6C19DA885F0018F221 /* BackupCounterCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterCell.m; sourceTree = "<group>"; };
 		EE58988F19AB23520093C7C0 /* Core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Core.h; sourceTree = "<group>"; };
 		EE58989019AB23520093C7C0 /* Core.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Core.m; sourceTree = "<group>"; };
 		EE58989119AB23520093C7C0 /* Error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Error.h; sourceTree = "<group>"; };
@@ -368,6 +371,8 @@
 			children = (
 				46B5424419D96BE000ECBAAA /* BackupCounterView.h */,
 				46B5424519D96BE000ECBAAA /* BackupCounterView.m */,
+				EE0FDB6B19DA885F0018F221 /* BackupCounterCell.h */,
+				EE0FDB6C19DA885F0018F221 /* BackupCounterCell.m */,
 				46B5424719D9AF7B00ECBAAA /* HorizontalTableView.h */,
 				46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */,
 			);
@@ -757,6 +762,7 @@
 				EEB550911986448300F8A614 /* File+Pogoplug.m in Sources */,
 				EEB550E3198649E000F8A614 /* SDImageCache.m in Sources */,
 				EE0036E21993767D0002628D /* BrowsingDatabase.m in Sources */,
+				EE0FDB6D19DA885F0018F221 /* BackupCounterCell.m in Sources */,
 				EE0036CD19936CB50002628D /* BackupDatabase.m in Sources */,
 				EE0036B1198F64E00002628D /* NSURL+Utils.m in Sources */,
 				46FD218C19C4149100DB34A8 /* NavigationController.m in Sources */,

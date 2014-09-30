@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "HorizontalTableView.h"
 
 @interface BackupCounterView : UIView
 
