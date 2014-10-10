@@ -118,7 +118,6 @@
     // for separator view.
     for (UIView *separatorView in self.subviews) {
         if ([NSStringFromClass(separatorView.class) isEqualToString:@"_UITableViewCellSeparatorView"]) {
-            //view.transform = CGAffineTransformMakeRotation(M_PI/2);
             separatorView.hidden = self.separatorHidden;
             if (!separatorView.hidden) {
                 CGRect frame = separatorView.frame;

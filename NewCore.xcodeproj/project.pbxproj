@@ -45,6 +45,7 @@
 		EE58989B19AB23520093C7C0 /* Operation.m in Sources */ = {isa = PBXBuildFile; fileRef = EE58989619AB23520093C7C0 /* Operation.m */; };
 		EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FBC19B58437005D4F14 /* AccountResponse.m */; };
 		EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FC119B95C21005D4F14 /* DictionaryReader.m */; };
+		EE8DF64C19E79CF80085C80D /* UIView+Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8DF64B19E79CF80085C80D /* UIView+Log.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -161,6 +162,8 @@
 		EE724FBC19B58437005D4F14 /* AccountResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AccountResponse.m; sourceTree = "<group>"; };
 		EE724FC019B95C21005D4F14 /* DictionaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DictionaryReader.h; sourceTree = "<group>"; };
 		EE724FC119B95C21005D4F14 /* DictionaryReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DictionaryReader.m; sourceTree = "<group>"; };
+		EE8DF64A19E79CF80085C80D /* UIView+Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Log.h"; sourceTree = "<group>"; };
+		EE8DF64B19E79CF80085C80D /* UIView+Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Log.m"; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -306,6 +309,8 @@
 				46FD21CA19C470DB00DB34A8 /* SkinScheme.m */,
 				EED85C5519C6C9330031FB89 /* UIColor+Skin.h */,
 				EED85C5619C6C9330031FB89 /* UIColor+Skin.m */,
+				EE8DF64A19E79CF80085C80D /* UIView+Log.h */,
+				EE8DF64B19E79CF80085C80D /* UIView+Log.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -735,6 +740,7 @@
 				EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */,
 				EE0036DB1993731D0002628D /* Database.m in Sources */,
 				EEB550901986448300F8A614 /* PogoplugResponse.m in Sources */,
+				EE8DF64C19E79CF80085C80D /* UIView+Log.m in Sources */,
 				EE0036CA19936C9D0002628D /* Backup.xcdatamodeld in Sources */,
 				EE0036D6199372150002628D /* BackupFile.m in Sources */,
 				EEB550EE198649E000F8A614 /* UIImageView+WebCache.m in Sources */,
@@ -842,7 +848,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
@@ -874,7 +880,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
