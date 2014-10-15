@@ -27,10 +27,15 @@
 @property (nonatomic,weak) id<HorizontalTableViewDataSource> dataSource;
 @property (nonatomic,weak) id<HorizontalTableViewDelegate> delegate;
 @property (nonatomic) BOOL showsHorizontalScrollIndicator; // default YES. show indicator while we are tracking. fades out after tracking
+@property (nonatomic) BOOL allowsSelection;
 @property (nonatomic) CGFloat cellDefaultWidth;
 @property (nonatomic) UIColor *backgroundColor;
 @property (nonatomic) UIColor *separatorColor;
 @property (nonatomic) UIEdgeInsets separatorInset;
+@property (nonatomic) UITableViewCellSeparatorStyle separatorStyle;
+@property (nonatomic) BOOL hideTailSeparator;
+@property (nonatomic) BOOL middleCellsIfPossible;
+@property BOOL scrollEnabled;
 - (HorizontalTableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier;
 @end
 

@@ -31,9 +31,9 @@
     return self;
 }
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier
 {
-    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+    if (self = [super initWithReuseIdentifier:reuseIdentifier]) {
         [self privateInitWithFrame:self.frame];
     }
     return self;

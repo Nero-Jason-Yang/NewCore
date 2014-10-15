@@ -9,8 +9,8 @@
 #import "BackupCounterView.h"
 #import "BackupCounterCell.h"
 
-@interface BackupCounterView () <UITableViewDataSource, UITableViewDelegate>
-@property (nonatomic) UITableView *tableView;
+@interface BackupCounterView () <HorizontalTableViewDataSource, HorizontalTableViewDelegate>
+@property (nonatomic) HorizontalTableView *tableView;
 @end
 
 @implementation BackupCounterView
@@ -18,14 +18,16 @@
 - (id)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        UITableView *tableView = [[HorizontalTableView alloc] initWithFrame:self.frame];
-        tableView.dataSource = self;
-        tableView.delegate = self;
-        tableView.separatorInset = UIEdgeInsetsMake(0, 12, 0, 12);
-        //tableView.allowsSelection = NO;
-        tableView.rowHeight = 120;
-        [self addSubview:tableView];
-        self.tableView = tableView;
+        self.tableView = [[HorizontalTableView alloc] initWithFrame:self.frame];
+        self.tableView.dataSource = self;
+        self.tableView.delegate = self;
+        self.tableView.separatorInset = UIEdgeInsetsMake(12, 0, 12, 0);
+        //self.tableView.allowsSelection = NO;
+        self.tableView.cellDefaultWidth = 100;
+        self.tableView.hideTailSeparator = YES;
+        //self.tableView.scrollEnabled = NO;
+        self.tableView.middleCellsIfPossible = YES;
+        [self addSubview:self.tableView];
     }
     return self;
 }
@@ -39,22 +41,21 @@
     self.tableView.frame = tableFrame;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+- (NSInteger)tableViewNumberOfCells:(HorizontalTableView *)tableView
 {
-    return 5;
+    return 3;
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    static NSString *CellIdentifier = @"Cell";
-    BackupCounterCell *cell = (BackupCounterCell *)[tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[BackupCounterCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        cell.selectionStyle = UITableViewCellSelectionStyleGray;
+- (HorizontalTableViewCell *)tableView:(HorizontalTableView *)tableView cellAtIndex:(NSInteger)index {
+    static NSString *identifier = @"cell";
+    BackupCounterCell *cell = (BackupCounterCell *)[tableView dequeueReusableCellWithIdentifier:identifier];
+    if (!cell) {
+        cell = [[BackupCounterCell alloc] initWithReuseIdentifier:identifier];
+        //cell.selectionStyle = UITableViewCellSelectionStyleGray;
     }
     
-    cell.title = @(indexPath.row).description;
-    switch (indexPath.row) {
+    cell.title = @(index).description;
+    switch (index) {
         case 0:
             cell.subtitle = @"ALL PHOTOS";
             break;
@@ -64,16 +65,10 @@
             break;
             
         default:
-            cell.subtitle = @"HELLO";
+            cell.subtitle = @"ALL MUSICS";
             break;
     }
     
-    if (indexPath.row == [self tableView:tableView numberOfRowsInSection:0] - 1) {
-        cell.separatorHidden = YES;
-        //cell.separatorInset = UIEdgeInsetsMake(0, CGFLOAT_MAX, 0, 0); // another way to hide separator
-    } else {
-        cell.separatorHidden = NO;
-    }
     return cell;
 }
 

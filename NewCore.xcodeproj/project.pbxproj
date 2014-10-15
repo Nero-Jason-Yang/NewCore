@@ -10,7 +10,6 @@
 		46A715C819A8C4D500A9FCD4 /* AccountParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715C719A8C4D500A9FCD4 /* AccountParameters.m */; };
 		46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = 46A715CA19A8C55100A9FCD4 /* PogoplugParameters.m */; };
 		46B5424619D96BE000ECBAAA /* BackupCounterView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B5424519D96BE000ECBAAA /* BackupCounterView.m */; };
-		46B5424919D9AF7C00ECBAAA /* HorizontalTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */; };
 		46BB54E919CD970000EF43F9 /* BackupLogo.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E519CD970000EF43F9 /* BackupLogo.png */; };
 		46BB54EA19CD970000EF43F9 /* BackupLogo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */; };
 		46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 46BB54E819CD970000EF43F9 /* BackupLogoView.m */; };
@@ -104,8 +103,6 @@
 		46A715CF19A8C7CC00A9FCD4 /* Cancellable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cancellable.h; sourceTree = "<group>"; };
 		46B5424419D96BE000ECBAAA /* BackupCounterView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupCounterView.h; sourceTree = "<group>"; };
 		46B5424519D96BE000ECBAAA /* BackupCounterView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackupCounterView.m; sourceTree = "<group>"; };
-		46B5424719D9AF7B00ECBAAA /* HorizontalTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalTableView.h; sourceTree = "<group>"; };
-		46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HorizontalTableView.m; sourceTree = "<group>"; };
 		46BB54E519CD970000EF43F9 /* BackupLogo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = BackupLogo.png; sourceTree = "<group>"; };
 		46BB54E619CD970000EF43F9 /* BackupLogo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "BackupLogo@2x.png"; sourceTree = "<group>"; };
 		46BB54E719CD970000EF43F9 /* BackupLogoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackupLogoView.h; sourceTree = "<group>"; };
@@ -384,8 +381,6 @@
 				46B5424519D96BE000ECBAAA /* BackupCounterView.m */,
 				EE0FDB6B19DA885F0018F221 /* BackupCounterCell.h */,
 				EE0FDB6C19DA885F0018F221 /* BackupCounterCell.m */,
-				46B5424719D9AF7B00ECBAAA /* HorizontalTableView.h */,
-				46B5424819D9AF7C00ECBAAA /* HorizontalTableView.m */,
 			);
 			path = BackupCounterView;
 			sourceTree = "<group>";
@@ -753,7 +748,6 @@
 				EEB55118198B71E100F8A614 /* AccountNetwork.m in Sources */,
 				46A715CB19A8C55100A9FCD4 /* PogoplugParameters.m in Sources */,
 				EEB550EA198649E000F8A614 /* UIButton+WebCache.m in Sources */,
-				46B5424919D9AF7C00ECBAAA /* HorizontalTableView.m in Sources */,
 				EEB550EC198649E000F8A614 /* UIImage+MultiFormat.m in Sources */,
 				EEB550E5198649E000F8A614 /* SDWebImageDecoder.m in Sources */,
 				EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */,
@@ -915,6 +909,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NewCore/NewCore-Prefix.pch";
 				INFOPLIST_FILE = "NewCore/NewCore-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -929,6 +924,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "NewCore/NewCore-Prefix.pch";
 				INFOPLIST_FILE = "NewCore/NewCore-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

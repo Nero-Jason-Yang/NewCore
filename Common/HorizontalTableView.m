@@ -8,13 +8,33 @@
 
 #import "HorizontalTableView.h"
 
+UIEdgeInsets UIEdgeInsetsRotateClockwise(UIEdgeInsets value) {
+    UIEdgeInsets inset = UIEdgeInsetsZero;
+    inset.left = value.top;
+    inset.top = value.right;
+    inset.right = value.bottom;
+    inset.bottom = value.left;
+    return inset;
+}
+
+UIEdgeInsets UIEdgeInsetsRotateAnticlockwise(UIEdgeInsets value) {
+    UIEdgeInsets inset = UIEdgeInsetsZero;
+    inset.top = value.left;
+    inset.right = value.top;
+    inset.bottom = value.right;
+    inset.left = value.bottom;
+    return inset;
+}
+
 @interface HorizontalTableView () <UITableViewDataSource, UITableViewDelegate>
 @property (nonatomic) UITableView *tableView;
 @property (nonatomic,readonly) NSMutableDictionary *freeCells;
+@property (nonatomic) NSInteger numberOfCells; // used for finding footer cell.
 @end
 
 @interface HorizontalTableViewCellShell : UITableViewCell
 @property (nonatomic,weak) HorizontalTableViewCell *cell;
+@property (nonatomic) BOOL shouldHideSeparator;
 @end
 
 @implementation HorizontalTableView
@@ -27,18 +47,31 @@
         self.tableView.delegate = self;
         [self addSubview:self.tableView];
         
-        _freeCells = [NSMutableDictionary dictionary];
         _cellDefaultWidth = self.tableView.rowHeight;
+        _freeCells = [NSMutableDictionary dictionary];
+        
+        self.tableView.tableHeaderView = [[UIView alloc] init];
+        self.tableView.tableHeaderView.backgroundColor = [UIColor clearColor];
+        self.tableView.tableFooterView = [[UIView alloc] init];
+        self.tableView.tableFooterView.backgroundColor = [UIColor clearColor];
     }
     return self;
 }
 
 - (BOOL)showsHorizontalScrollIndicator {
-    return [self.tableView showsVerticalScrollIndicator];
+    return self.tableView.showsVerticalScrollIndicator;
 }
 
 - (void)setShowsHorizontalScrollIndicator:(BOOL)showsHorizontalScrollIndicator {
-    [self.tableView setShowsVerticalScrollIndicator:showsHorizontalScrollIndicator];
+    self.tableView.showsVerticalScrollIndicator = showsHorizontalScrollIndicator;
+}
+
+- (BOOL)allowsSelection {
+    return self.tableView.allowsSelection;
+}
+
+- (void)setAllowsSelection:(BOOL)allowsSelection {
+    self.tableView.allowsSelection = allowsSelection;
 }
 
 - (UIColor *)backgroundColor {
@@ -58,22 +91,34 @@
 }
 
 - (UIEdgeInsets)separatorInset {
-    UIEdgeInsets inset = self.tableView.separatorInset;
-    UIEdgeInsets separatorInset = UIEdgeInsetsZero;
-    separatorInset.left = inset.top;
-    separatorInset.top = inset.right;
-    separatorInset.right = inset.bottom;
-    separatorInset.bottom = inset.left;
-    return separatorInset;
+    return UIEdgeInsetsRotateClockwise(self.tableView.separatorInset);
 }
 
 - (void)setSeparatorInset:(UIEdgeInsets)separatorInset {
-    UIEdgeInsets inset = UIEdgeInsetsZero;
-    inset.top = separatorInset.left;
-    inset.right = separatorInset.top;
-    inset.bottom = separatorInset.right;
-    inset.left = separatorInset.bottom;
-    self.tableView.separatorInset = inset;
+    self.tableView.separatorInset = UIEdgeInsetsRotateAnticlockwise(separatorInset);
+}
+
+- (UITableViewCellSeparatorStyle)separatorStyle {
+    return self.tableView.separatorStyle;
+}
+
+- (void)setSeparatorStyle:(UITableViewCellSeparatorStyle)separatorStyle {
+    self.tableView.separatorStyle = separatorStyle;
+}
+
+- (void)setMiddleCellsIfPossible:(BOOL)middleCellsIfPossible {
+    if (_middleCellsIfPossible != middleCellsIfPossible) {
+        _middleCellsIfPossible = middleCellsIfPossible;
+        [self setNeedsLayout];
+    }
+}
+
+- (BOOL)scrollEnabled {
+    return self.tableView.scrollEnabled;
+}
+
+- (void)setScrollEnabled:(BOOL)scrollEnabled {
+    self.tableView.scrollEnabled = scrollEnabled;
 }
 
 - (HorizontalTableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier {
@@ -108,12 +153,29 @@
     CGRect frame = self.frame;
     frame.origin = CGPointZero;
     self.tableView.frame = frame;
+    
+    if (self.middleCellsIfPossible) {
+        CGFloat width = 0.0;
+        for (NSInteger i = 0; i < self.numberOfCells; i ++) {
+            width += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
+            if (width >= frame.size.width) {
+                return;
+            }
+        }
+        
+        width = (frame.size.width - width) / 2;
+        frame = self.tableView.tableHeaderView.frame;
+        frame.size.height = width;
+        self.tableView.tableHeaderView.frame = frame;
+        self.tableView.tableHeaderView = self.tableView.tableHeaderView;
+    }
 }
 
 #pragma mark <UITableViewDataSource>
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.dataSource tableViewNumberOfCells:self];
+    self.numberOfCells = [self.dataSource tableViewNumberOfCells:self];
+    return self.numberOfCells;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -126,6 +188,12 @@
     HorizontalTableViewCellShell *shell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (!shell) {
         shell = [[HorizontalTableViewCellShell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    }
+    
+    if (self.hideTailSeparator && indexPath.row + 1 == self.numberOfCells) {
+        shell.shouldHideSeparator = YES;
+    } else {
+        shell.shouldHideSeparator = NO;
     }
     
     shell.cell = cell;
@@ -225,6 +293,14 @@
     CGRect frame = CGRectZero;
     frame.size = self.frame.size;
     self.cell.frame = frame;
+    
+    // for separator view.
+    for (UIView *separatorView in self.subviews) {
+        if ([NSStringFromClass(separatorView.class) isEqualToString:@"_UITableViewCellSeparatorView"]) {
+            separatorView.hidden = self.shouldHideSeparator;
+            break;
+        }
+    }
 }
 
 @end
