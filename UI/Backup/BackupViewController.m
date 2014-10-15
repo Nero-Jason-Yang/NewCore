@@ -28,7 +28,7 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
 @interface BackupViewController ()
 @property (nonatomic) BackupButtonView *buttonView;
 @property (nonatomic) UILabel *messageView;
-@property (nonatomic) UIView *counterView;
+@property (nonatomic) BackupCounterView *counterView;
 @end
 
 @implementation BackupViewController
@@ -62,6 +62,11 @@ CGRect CGRectMakeAtBottomWithHeight(CGRect rect, CGFloat height)
     
     self.counterView = [[BackupCounterView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 60)];
     [self.view addSubview:self.counterView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.counterView willAppear];
 }
 
 - (void)viewWillLayoutSubviews

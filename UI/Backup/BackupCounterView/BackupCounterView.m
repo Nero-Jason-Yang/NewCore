@@ -32,6 +32,13 @@
     return self;
 }
 
+- (void)willAppear {
+    NSInteger index = self.tableView.indexForSelectedCell;
+    if (index >= 0) {
+        [self.tableView deselectCellAtIndex:index animated:YES];
+    }
+}
+
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -51,7 +58,6 @@
     BackupCounterCell *cell = (BackupCounterCell *)[tableView dequeueReusableCellWithIdentifier:identifier];
     if (!cell) {
         cell = [[BackupCounterCell alloc] initWithReuseIdentifier:identifier];
-        //cell.selectionStyle = UITableViewCellSelectionStyleGray;
     }
     
     cell.title = @(index).description;
@@ -72,15 +78,11 @@
     return cell;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return tableView.rowHeight;
+- (CGFloat)tableView:(HorizontalTableView *)tableView widthForCellAtIndex:(NSInteger)index {
+    return tableView.cellDefaultWidth;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
+- (void)tableView:(HorizontalTableView *)tableView didSelectCellAtIndex:(NSInteger)index {
     // TODO
     // ...
     // to perform some action.

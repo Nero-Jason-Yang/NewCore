@@ -15,12 +15,12 @@
 - (NSInteger)tableViewNumberOfCells:(HorizontalTableView *)tableView;
 - (HorizontalTableViewCell *)tableView:(HorizontalTableView *)tableView cellAtIndex:(NSInteger)index;
 @optional
-//...
+- (CGFloat)tableView:(HorizontalTableView *)tableView widthForCellAtIndex:(NSInteger)index;
 @end
 
 @protocol HorizontalTableViewDelegate <NSObject>
 @optional
-- (CGFloat)tableView:(HorizontalTableView *)tableView widthForCellAtIndex:(NSInteger)index;
+- (void)tableView:(HorizontalTableView *)tableView didSelectCellAtIndex:(NSInteger)index;
 @end
 
 @interface HorizontalTableView : UIView
@@ -37,6 +37,8 @@
 @property (nonatomic) BOOL middleCellsIfPossible;
 @property BOOL scrollEnabled;
 - (HorizontalTableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier;
+- (void)deselectCellAtIndex:(NSInteger)indexPath animated:(BOOL)animated;
+- (NSInteger)indexForSelectedCell; // -1 means not found.
 @end
 
 @interface HorizontalTableViewCell : UIView

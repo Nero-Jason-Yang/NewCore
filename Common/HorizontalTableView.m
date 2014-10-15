@@ -147,6 +147,18 @@ UIEdgeInsets UIEdgeInsetsRotateAnticlockwise(UIEdgeInsets value) {
     }
 }
 
+- (void)deselectCellAtIndex:(NSInteger)index animated:(BOOL)animated {
+    [self.tableView deselectRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0] animated:animated];
+}
+
+- (NSInteger)indexForSelectedCell {
+    NSIndexPath *selected = self.tableView.indexPathForSelectedRow;
+    if (selected) {
+        return selected.row;
+    }
+    return -1;
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     
@@ -203,8 +215,8 @@ UIEdgeInsets UIEdgeInsetsRotateAnticlockwise(UIEdgeInsets value) {
 #pragma mark <UITableViewDelegate>
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([self.delegate respondsToSelector:@selector(tableView:widthForCellAtIndex:)]) {
-        return [self.delegate tableView:self widthForCellAtIndex:indexPath.row];
+    if ([self.dataSource respondsToSelector:@selector(tableView:widthForCellAtIndex:)]) {
+        return [self.dataSource tableView:self widthForCellAtIndex:indexPath.row];
     }
     else {
         return [self cellDefaultWidth];
@@ -218,6 +230,12 @@ UIEdgeInsets UIEdgeInsetsRotateAnticlockwise(UIEdgeInsets value) {
             [self enqueueReusableCell:shell.cell];
             shell.cell = nil;
         }
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([self.delegate respondsToSelector:@selector(tableView:didSelectCellAtIndex:)]) {
+        [self.delegate tableView:self didSelectCellAtIndex:indexPath.row];
     }
 }
 

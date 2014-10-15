@@ -10,5 +10,5 @@
 #import "HorizontalTableView.h"
 
 @interface BackupCounterView : UIView
-
+- (void)willAppear;
 @end
