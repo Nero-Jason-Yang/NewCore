@@ -46,6 +46,8 @@
 		EE724FBD19B58437005D4F14 /* AccountResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FBC19B58437005D4F14 /* AccountResponse.m */; };
 		EE724FC219B95C21005D4F14 /* DictionaryReader.m in Sources */ = {isa = PBXBuildFile; fileRef = EE724FC119B95C21005D4F14 /* DictionaryReader.m */; };
 		EE8DF64C19E79CF80085C80D /* UIView+Log.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8DF64B19E79CF80085C80D /* UIView+Log.m */; };
+		EE8DF68A19EE6E1B0085C80D /* HorizontalTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8DF68919EE6E1B0085C80D /* HorizontalTableView.m */; };
+		EE8DF69C19EE75760085C80D /* UINavigationRotatableController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8DF69A19EE75760085C80D /* UINavigationRotatableController.m */; };
 		EEB54FE119862C0200F8A614 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE019862C0200F8A614 /* Foundation.framework */; };
 		EEB54FE319862C0200F8A614 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE219862C0200F8A614 /* CoreGraphics.framework */; };
 		EEB54FE519862C0200F8A614 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEB54FE419862C0200F8A614 /* UIKit.framework */; };
@@ -164,6 +166,10 @@
 		EE724FC119B95C21005D4F14 /* DictionaryReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DictionaryReader.m; sourceTree = "<group>"; };
 		EE8DF64A19E79CF80085C80D /* UIView+Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Log.h"; sourceTree = "<group>"; };
 		EE8DF64B19E79CF80085C80D /* UIView+Log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Log.m"; sourceTree = "<group>"; };
+		EE8DF68819EE6E1B0085C80D /* HorizontalTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HorizontalTableView.h; sourceTree = "<group>"; };
+		EE8DF68919EE6E1B0085C80D /* HorizontalTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HorizontalTableView.m; sourceTree = "<group>"; };
+		EE8DF69919EE75760085C80D /* UINavigationRotatableController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UINavigationRotatableController.h; sourceTree = "<group>"; };
+		EE8DF69A19EE75760085C80D /* UINavigationRotatableController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UINavigationRotatableController.m; sourceTree = "<group>"; };
 		EEB54FDD19862C0200F8A614 /* NewCore.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NewCore.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEB54FE019862C0200F8A614 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		EEB54FE219862C0200F8A614 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -407,11 +413,23 @@
 			path = Public;
 			sourceTree = "<group>";
 		};
+		EE8DF68719EE6DE10085C80D /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				EE8DF68819EE6E1B0085C80D /* HorizontalTableView.h */,
+				EE8DF68919EE6E1B0085C80D /* HorizontalTableView.m */,
+				EE8DF69919EE75760085C80D /* UINavigationRotatableController.h */,
+				EE8DF69A19EE75760085C80D /* UINavigationRotatableController.m */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		EEB54FD419862C0200F8A614 = {
 			isa = PBXGroup;
 			children = (
 				46FD218919C4142700DB34A8 /* UI */,
 				EEB5501E198630AB00F8A614 /* Core */,
+				EE8DF68719EE6DE10085C80D /* Common */,
 				EEB54FE819862C0200F8A614 /* NewCore */,
 				EEB5500E19862C0200F8A614 /* NewCoreTests */,
 				EEB54FDF19862C0200F8A614 /* Frameworks */,
@@ -721,6 +739,7 @@
 				46B5424619D96BE000ECBAAA /* BackupCounterView.m in Sources */,
 				46FD21AC19C4374300DB34A8 /* FilesViewController.m in Sources */,
 				46FD21AD19C4374300DB34A8 /* TabBarController.m in Sources */,
+				EE8DF69C19EE75760085C80D /* UINavigationRotatableController.m in Sources */,
 				EE58989919AB23520093C7C0 /* Error.m in Sources */,
 				46BB54EB19CD970000EF43F9 /* BackupLogoView.m in Sources */,
 				EEB550EB198649E000F8A614 /* UIImage+GIF.m in Sources */,
@@ -746,6 +765,7 @@
 				EEB550EE198649E000F8A614 /* UIImageView+WebCache.m in Sources */,
 				EEB550E2198649E000F8A614 /* NSData+ImageContentType.m in Sources */,
 				EE0036BA198F68930002628D /* NSBundle+Utils.m in Sources */,
+				EE8DF68A19EE6E1B0085C80D /* HorizontalTableView.m in Sources */,
 				EEB550E6198649E000F8A614 /* SDWebImageDownloader.m in Sources */,
 				EEB5511C198B73FC00F8A614 /* PogoplugNetwork.m in Sources */,
 				EE58989A19AB23520093C7C0 /* File.m in Sources */,
